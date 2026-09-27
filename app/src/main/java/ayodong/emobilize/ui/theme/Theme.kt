@@ -7,7 +7,6 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
@@ -16,11 +15,10 @@ fun EmobilizeTheme(
     palette: AppPalette,
     content: @Composable () -> Unit,
 ) {
-    val onPrimary = if (palette.id == 2) Color(0xFF0D0C18) else Color.White
     val colorScheme = if (palette.id == 2) {
         darkColorScheme(
             primary = palette.primary,
-            onPrimary = onPrimary,
+            onPrimary = palette.onFilled,
             secondary = palette.primaryDark,
             background = palette.surface,
             surface = palette.card,
@@ -30,7 +28,7 @@ fun EmobilizeTheme(
     } else {
         lightColorScheme(
             primary = palette.primary,
-            onPrimary = onPrimary,
+            onPrimary = palette.onFilled,
             secondary = palette.primaryDark,
             background = palette.surface,
             surface = palette.card,

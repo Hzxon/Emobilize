@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
@@ -47,9 +48,11 @@ import ayodong.emobilize.model.deadlineRank
 import ayodong.emobilize.model.formatInputDate
 import ayodong.emobilize.model.formatInputTime
 import ayodong.emobilize.model.isOverdue
+import ayodong.emobilize.ui.theme.AppMetrics
 import ayodong.emobilize.ui.theme.LocalPalette
 import ayodong.emobilize.ui.theme.appStyle
 import ayodong.emobilize.ui.theme.at
+import ayodong.emobilize.ui.theme.inkOn
 import ayodong.emobilize.ui.theme.categoryColor
 import ayodong.emobilize.ui.theme.priorityColor
 import java.time.LocalTime
@@ -87,7 +90,7 @@ fun TasksScreen(
     Column(modifier.fillMaxSize()) {
         Text(
             text = "MY TASKS",
-            modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 14.dp),
+            modifier = Modifier.padding(start = AppMetrics.headerHorizontal, end = AppMetrics.headerHorizontal, top = 14.dp),
             style = appStyle(54.sp, FontWeight.Normal, letterSpacing = 1.5.sp, lineHeight = 54.sp),
             color = palette.text,
             maxLines = 1,
@@ -96,7 +99,7 @@ fun TasksScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 24.dp, end = 24.dp, top = 18.dp),
+                .padding(start = AppMetrics.headerHorizontal, end = AppMetrics.headerHorizontal, top = 18.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             filters.forEach { (key, label) ->
@@ -138,7 +141,7 @@ fun TasksScreen(
             SelectionBanner(
                 action = action,
                 onCancel = viewModel::cancelPending,
-                modifier = Modifier.padding(start = 18.dp, end = 18.dp, top = 10.dp),
+                modifier = Modifier.padding(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, top = 10.dp),
             )
         }
 
@@ -147,7 +150,7 @@ fun TasksScreen(
                 .weight(1f)
                 .fillMaxWidth()
                 .padding(top = 14.dp),
-            contentPadding = PaddingValues(start = 18.dp, end = 18.dp, bottom = 20.dp),
+            contentPadding = PaddingValues(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, bottom = 20.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             groups.forEach { (status, groupTasks) ->
@@ -170,14 +173,14 @@ fun TasksScreen(
         val selected = viewModel.selectedTaskId
         if (pending != null && selected != null && pending != FabAction.Update) {
             val delete = pending == FabAction.Delete
-            val color = if (delete) Color(0xFFEF4444) else palette.primary
+            val color = if (delete) palette.danger else palette.primary
             Box(
                 modifier = Modifier
-                    .padding(start = 18.dp, end = 18.dp, top = 8.dp, bottom = 12.dp)
+                    .padding(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, top = 8.dp, bottom = 12.dp)
                     .fillMaxWidth()
-                    .height(44.dp)
-                    .shadow(8.dp, RoundedCornerShape(12.dp), spotColor = color.at(0x40))
-                    .clip(RoundedCornerShape(12.dp))
+                    .height(AppMetrics.actionHeight)
+                    .shadow(8.dp, RoundedCornerShape(AppMetrics.actionRadius), spotColor = color.at(0x40))
+                    .clip(RoundedCornerShape(AppMetrics.actionRadius))
                     .background(color)
                     .clickable(onClick = viewModel::confirmAction),
                 contentAlignment = Alignment.Center,
@@ -185,12 +188,12 @@ fun TasksScreen(
                 Text(
                     text = if (delete) "Delete Task  →" else "Edit Task  →",
                     style = appStyle(13.sp, FontWeight.Bold, letterSpacing = 0.05.em),
-                    color = Color.White,
+                    color = palette.inkOn(color),
                 )
             }
         }
         if (pending == FabAction.Update && selected != null) {
-            Column(Modifier.padding(start = 18.dp, end = 18.dp, top = 8.dp, bottom = 12.dp)) {
+            Column(Modifier.padding(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, top = 8.dp, bottom = 12.dp)) {
                 Text(
                     text = "SET STATUS",
                     style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 0.08.em),
@@ -209,7 +212,7 @@ fun TasksScreen(
                     StatusChoice(
                         label = "✓ Done",
                         container = palette.statusDone,
-                        content = if (palette.id == 2) Color(0xFF0D0C18) else Color.White,
+                        content = palette.inkOn(palette.statusDone),
                         border = null,
                         modifier = Modifier.weight(1f),
                         onClick = { viewModel.applyStatus(TaskStatus.Done) },
@@ -258,12 +261,12 @@ private fun SelectionBanner(
 ) {
     val palette = LocalPalette.current
     val dot = when (action) {
-        FabAction.Delete -> Color(0xFFEF4444)
+        FabAction.Delete -> palette.danger
         FabAction.Update -> palette.actionUpdate
         else -> palette.primary
     }
     val labelColor = when (action) {
-        FabAction.Delete -> Color(0xFFEF4444)
+        FabAction.Delete -> palette.danger
         FabAction.Update -> palette.actionUpdate
         else -> palette.primaryDark
     }
@@ -306,7 +309,7 @@ private fun SelectionBanner(
                 .clickable(onClick = onCancel)
                 .padding(horizontal = 6.dp, vertical = 2.dp),
             style = appStyle(11.sp, FontWeight.SemiBold),
-            color = if (action == FabAction.Delete) Color(0xFFEF4444) else palette.primary,
+            color = if (action == FabAction.Delete) palette.danger else palette.primary,
         )
     }
 }
@@ -343,7 +346,7 @@ private fun TaskCard(
     onClick: () -> Unit,
 ) {
     val palette = LocalPalette.current
-    val shape = RoundedCornerShape(14.dp)
+    val shape = RoundedCornerShape(AppMetrics.cardRadius)
     val background = when {
         !isSelected -> palette.card
         pending == FabAction.Delete -> palette.cardSelBgDelete
@@ -352,78 +355,125 @@ private fun TaskCard(
     }
     val borderColor = when {
         !isSelected -> palette.primary.at(0x20)
-        pending == FabAction.Delete -> Color(0xFFEF4444)
+        pending == FabAction.Delete -> palette.danger
         pending == FabAction.Update -> palette.actionUpdate
         else -> palette.primary
     }
     val accent = palette.categoryColor(task.category)
-    Row(
+    val glow = when {
+        !isSelected -> Color.Transparent
+        pending == FabAction.Delete -> palette.danger.at(0x20)
+        pending == FabAction.Update -> palette.actionUpdate.at(0x20)
+        else -> palette.primary.at(0x25)
+    }
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 68.dp)
             .alpha(if (pending != null && !isSelected) 0.6f else 1f)
-            .shadow(
-                elevation = if (isSelected) 0.dp else if (palette.id == 2) 6.dp else 2.dp,
-                shape = shape,
-                ambientColor = Color.Black.copy(alpha = if (palette.id == 2) 0.3f else 0.05f),
-                spotColor = Color.Black.copy(alpha = if (palette.id == 2) 0.3f else 0.06f),
-            )
-            .clip(shape)
-            .background(background)
-            .border(if (isSelected) 2.dp else 1.dp, borderColor, shape)
-            .then(if (pending != null) Modifier.clickable(onClick = onClick) else Modifier),
-        verticalAlignment = Alignment.CenterVertically,
+            .then(
+                if (isSelected) {
+                    Modifier
+                        .clip(RoundedCornerShape(17.dp))
+                        .background(glow)
+                        .padding(3.dp)
+                } else {
+                    Modifier
+                },
+            ),
     ) {
-        Box(Modifier.width(4.dp).fillMaxHeight().background(accent))
-        Column(
-            Modifier
-                .weight(1f)
-                .padding(horizontal = 10.dp, vertical = 14.dp),
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = AppMetrics.cardMinHeight)
+                .shadow(
+                    elevation = if (isSelected) 0.dp else if (palette.id == 2) 6.dp else 2.dp,
+                    shape = shape,
+                    ambientColor = palette.shadow,
+                    spotColor = palette.shadow,
+                )
+                .clip(shape)
+                .background(background)
+                .border(if (isSelected) 2.dp else 1.dp, borderColor, shape)
+                .then(if (pending != null) Modifier.clickable(onClick = onClick) else Modifier),
         ) {
-            Text(
-                text = task.name,
-                style = appStyle(15.sp, FontWeight.SemiBold, lineHeight = 19.5.sp),
-                color = if (isDone) palette.textSubtle else palette.text,
-                textDecoration = if (isDone) TextDecoration.LineThrough else null,
-            )
-            Spacer(Modifier.height(6.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Priority.entries.forEach { level ->
-                    val active = task.priority == level
-                    val color = palette.priorityColor(level)
-                    Row(
-                        modifier = Modifier
-                            .padding(end = 3.dp)
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(if (active) color.at(0x20) else Color.Transparent)
-                            .border(1.dp, if (active) color.at(0x40) else Color.Transparent, RoundedCornerShape(20.dp))
-                            .padding(
-                                start = if (active) 5.dp else 0.dp,
-                                end = if (active) 7.dp else 0.dp,
-                                top = 2.dp,
-                                bottom = 2.dp,
-                            ),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Box(
-                            Modifier
-                                .size(6.dp)
-                                .clip(CircleShape)
-                                .background(if (active) color else palette.textMuted),
-                        )
-                        if (active) {
-                            Spacer(Modifier.width(3.dp))
-                            Text(
-                                level.name,
-                                style = appStyle(10.sp, FontWeight.Bold, letterSpacing = 0.04.em),
-                                color = color,
+            Row(
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+            Spacer(Modifier.width(4.dp))
+            Column(
+                Modifier
+                    .weight(1f)
+                    .padding(horizontal = 10.dp, vertical = 14.dp),
+            ) {
+                Text(
+                    text = task.name,
+                    style = appStyle(15.sp, FontWeight.SemiBold, lineHeight = 19.5.sp),
+                    color = if (isDone) palette.textSubtle else palette.text,
+                    textDecoration = if (isDone) TextDecoration.LineThrough else null,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Spacer(Modifier.height(6.dp))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(5.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Priority.entries.forEach { level ->
+                        val active = task.priority == level
+                        val color = palette.priorityColor(level)
+                        Row(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(if (active) color.at(0x20) else Color.Transparent)
+                                .border(
+                                    1.dp,
+                                    if (active) color.at(0x40) else Color.Transparent,
+                                    RoundedCornerShape(20.dp),
+                                )
+                                .padding(
+                                    start = if (active) 5.dp else 0.dp,
+                                    end = if (active) 7.dp else 0.dp,
+                                    top = 2.dp,
+                                    bottom = 2.dp,
+                                ),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Box(
+                                Modifier
+                                    .size(6.dp)
+                                    .clip(CircleShape)
+                                    .background(if (active) color else palette.textMuted),
                             )
+                            if (active) {
+                                Spacer(Modifier.width(3.dp))
+                                Text(
+                                    level.name,
+                                    style = appStyle(10.sp, FontWeight.Bold, letterSpacing = 0.04.em),
+                                    color = color,
+                                )
+                            }
                         }
                     }
                 }
             }
+            TaskMeta(task, overdue)
+            }
+            Box(Modifier.matchParentSize()) {
+                Box(Modifier.width(4.dp).fillMaxHeight().background(accent))
+            }
+            if (!isSelected && palette.cardHighlight.alpha > 0f) {
+                Box(
+                    Modifier
+                        .align(Alignment.TopCenter)
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(palette.cardHighlight),
+                )
+            }
         }
-        TaskMeta(task, overdue)
     }
 }
 
@@ -450,11 +500,14 @@ private fun TaskMeta(task: Task, overdue: Boolean) {
     ) {
         Text(
             text = dateLabel,
+            modifier = Modifier.padding(bottom = if (timeLabel == null) 17.dp else 0.dp),
             style = appStyle(if (range != null) 10.sp else 12.sp, FontWeight.Medium),
             color = palette.textMuted,
+            maxLines = 1,
+            softWrap = false,
         )
         if (timeLabel != null) {
-            val timeColor = if (overdue) Color(0xFFEF4444) else palette.primary
+            val timeColor = if (overdue) palette.danger else palette.primary
             Row(verticalAlignment = Alignment.CenterVertically) {
                 ClockIcon(timeColor)
                 Spacer(Modifier.width(3.dp))
@@ -462,10 +515,10 @@ private fun TaskMeta(task: Task, overdue: Boolean) {
                     text = timeLabel,
                     style = appStyle(if (range != null) 10.sp else 11.sp, FontWeight.SemiBold),
                     color = timeColor,
+                    maxLines = 1,
+                    softWrap = false,
                 )
             }
-        } else {
-            Spacer(Modifier.height(17.dp))
         }
     }
 }
@@ -473,9 +526,10 @@ private fun TaskMeta(task: Task, overdue: Boolean) {
 @Composable
 private fun ClockIcon(color: Color) {
     Canvas(Modifier.size(11.dp)) {
-        drawCircle(color = color, style = Stroke(width = 1.4f, cap = StrokeCap.Round))
+        val stroke = 2.5f * size.minDimension / 24f
+        drawCircle(color = color, style = Stroke(width = stroke, cap = StrokeCap.Round))
         val center = Offset(size.width / 2f, size.height / 2f)
-        drawLine(color, center, Offset(center.x, size.height * 0.28f), strokeWidth = 1.4f, cap = StrokeCap.Round)
-        drawLine(color, center, Offset(size.width * 0.68f, size.height * 0.58f), strokeWidth = 1.4f, cap = StrokeCap.Round)
+        drawLine(color, center, Offset(center.x, size.height * 0.28f), strokeWidth = stroke, cap = StrokeCap.Round)
+        drawLine(color, center, Offset(size.width * 0.68f, size.height * 0.58f), strokeWidth = stroke, cap = StrokeCap.Round)
     }
 }

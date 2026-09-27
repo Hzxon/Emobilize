@@ -252,7 +252,7 @@ fun TaskFormSheet(
                             "End time must be after start time",
                             modifier = Modifier.padding(top = 5.dp),
                             style = appStyle(10.sp),
-                            color = Color(0xFFEF4444),
+                            color = palette.danger,
                         )
                     }
                 }
@@ -372,7 +372,7 @@ private fun DateField(
             .height(44.dp)
             .clip(RoundedCornerShape(11.dp))
             .background(palette.primary.at(0x08))
-            .border(1.5.dp, if (valid) palette.primary.at(0x40) else Color(0xFFEF4444).at(0x70), RoundedCornerShape(11.dp))
+            .border(1.5.dp, if (valid) palette.primary.at(0x40) else palette.danger.at(0x70), RoundedCornerShape(11.dp))
             .clickable { open = true }
             .padding(horizontal = 12.dp),
         contentAlignment = Alignment.CenterStart,
@@ -428,7 +428,7 @@ private fun TimeField(
             .height(44.dp)
             .clip(RoundedCornerShape(11.dp))
             .background(palette.primary.at(0x06))
-            .border(1.5.dp, if (valid) palette.primary.at(0x35) else Color(0xFFEF4444).at(0x70), RoundedCornerShape(11.dp))
+            .border(1.5.dp, if (valid) palette.primary.at(0x35) else palette.danger.at(0x70), RoundedCornerShape(11.dp))
             .clickable { open = true }
             .padding(horizontal = 12.dp),
         contentAlignment = Alignment.CenterStart,

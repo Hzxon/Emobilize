@@ -3,7 +3,14 @@ package ayodong.emobilize.ui.theme
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
+private val Danger = Color(0xFFEF4444)
+
 fun Color.at(alphaByte: Int): Color = copy(alpha = alphaByte / 255f)
+
+fun AppPalette.inkOn(color: Color): Color {
+    val luminance = 0.299f * color.red + 0.587f * color.green + 0.114f * color.blue
+    return if (luminance > 0.72f) ink else onDark
+}
 
 data class AppPalette(
     val id: Int,
@@ -50,7 +57,13 @@ data class AppPalette(
     val cubeEdge: Color,
     val cubeShine: Color,
     val cubeInner: List<Color>,
+    val cubeGlow: Color,
     val onFilled: Color,
+    val onDark: Color,
+    val ink: Color,
+    val danger: Color,
+    val cardHighlight: Color,
+    val shadow: Color,
 )
 
 val SagePalette = AppPalette(
@@ -82,7 +95,7 @@ val SagePalette = AppPalette(
     catUniversity = Color(0xFF8E9AAE),
     prioLow = Color(0xFF7AAE8A),
     prioMedium = Color(0xFFD4A017),
-    prioHigh = Color(0xFFEF4444),
+    prioHigh = Danger,
     actionAdd = Color(0xFF8B9A6E),
     actionUpdate = Color(0xFFD4A017),
     actionEdit = Color(0xFF6B7A4E),
@@ -101,17 +114,23 @@ val SagePalette = AppPalette(
     cubeEdge = Color(0xFFF7F2EB),
     cubeShine = Color(0xFFF7F2EB),
     cubeInner = listOf(Color(0xFFF7F2EB), Color(0xFFB4C890)),
+    cubeGlow = Color.Transparent,
     onFilled = Color.White,
+    onDark = Color.White,
+    ink = Color(0xFF1A1A14),
+    danger = Danger,
+    cardHighlight = Color.Transparent,
+    shadow = Color.Black.copy(alpha = 0.055f),
 )
 
 val HoloPalette = AppPalette(
     id = 2,
-    primary = Color(0xFF00D4FF),
-    primaryDark = Color(0xFF0099CC),
-    primaryLight = Color(0xFF80EAFF),
+    primary = Color(0xFFFFFFFF),
+    primaryDark = Color(0xFFF4FEFF),
+    primaryLight = Color(0xFFFFFFFF),
     ring = listOf(
-        Color(0xFF0099CC), Color(0xFF00D4FF), Color(0xFF39FF7A), Color(0xFFC678FF),
-        Color(0xFFFF7B35), Color(0xFF00D4FF), Color(0xFF0099CC),
+        Color(0xFF050505), Color(0xFFFFFFFF), Color(0xFF1A1A1A),
+        Color(0xFFF7F7F7), Color(0xFF050505),
     ),
     surface = Color(0xFF0D0C18),
     card = Color(0xFF1C1A2C),
@@ -122,7 +141,7 @@ val HoloPalette = AppPalette(
     overlayBg = Color(0xFF0D0C18).copy(alpha = 0.82f),
     modalBg = Color(0xFF0D0C18).copy(alpha = 0.65f),
     signalInactive = Color(0xFFF0EEFF).copy(alpha = 0.30f),
-    homeIndicator = Color(0xFF00D4FF),
+    homeIndicator = Color(0xFFFFFFFF),
     statusTodo = Color(0xFF7A78A0),
     statusProgress = Color(0xFF00D4FF),
     statusDone = Color(0xFF39FF7A),
@@ -137,22 +156,28 @@ val HoloPalette = AppPalette(
     actionAdd = Color(0xFF00D4FF),
     actionUpdate = Color(0xFFFF7B35),
     actionEdit = Color(0xFF9B5CF6),
-    selBgDelete = Color(0xFFEF4444).copy(alpha = 0.12f),
+    selBgDelete = Danger.copy(alpha = 0.12f),
     selBgUpdate = Color(0xFFFFD600).copy(alpha = 0.10f),
-    selBorderDelete = Color(0xFFEF4444).copy(alpha = 0.35f),
+    selBorderDelete = Danger.copy(alpha = 0.35f),
     selBorderUpdate = Color(0xFFFFD600).copy(alpha = 0.30f),
-    cardSelBgDelete = Color(0xFFEF4444).copy(alpha = 0.10f),
+    cardSelBgDelete = Danger.copy(alpha = 0.10f),
     cardSelBgUpdate = Color(0xFFFFD600).copy(alpha = 0.08f),
     progBtnBg = Color(0xFF00D4FF).copy(alpha = 0.12f),
     progBtnColor = Color(0xFF00D4FF),
     progBtnBorder = Color(0xFF00D4FF).copy(alpha = 0.40f),
-    cubeTop = listOf(Color(0xFF7BFEFF), Color(0xFF00B8CC)),
-    cubeLeft = listOf(Color(0xFFFF8C42), Color(0xFFC23B00)),
-    cubeRight = listOf(Color(0xFFC8FF00), Color(0xFF00CC55)),
-    cubeEdge = Color(0xFFA855F7),
+    cubeTop = listOf(Color(0xFFFFFFFF), Color(0xFFE6E6E6)),
+    cubeLeft = listOf(Color(0xFF3A3A3A), Color(0xFF050505)),
+    cubeRight = listOf(Color(0xFFF5F5F5), Color(0xFF8E8E8E)),
+    cubeEdge = Color(0xFFFFFFFF),
     cubeShine = Color.White,
-    cubeInner = listOf(Color(0xFF1E1C30), Color(0xFF0D0C18)),
+    cubeInner = listOf(Color(0xFF141414), Color(0xFF050505)),
+    cubeGlow = Color.White.copy(alpha = 0.55f),
     onFilled = Color(0xFF0D0C18),
+    onDark = Color.White,
+    ink = Color(0xFF0D0C18),
+    danger = Danger,
+    cardHighlight = Color.White.copy(alpha = 0.04f),
+    shadow = Color.Black.copy(alpha = 0.30f),
 )
 
 val LocalPalette = staticCompositionLocalOf { SagePalette }

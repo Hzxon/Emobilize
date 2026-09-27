@@ -16,7 +16,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
@@ -36,6 +35,7 @@ import ayodong.emobilize.ui.theme.LocalPalette
 import ayodong.emobilize.ui.theme.SagePalette
 import ayodong.emobilize.ui.theme.appStyle
 import ayodong.emobilize.ui.theme.at
+import ayodong.emobilize.ui.theme.inkOn
 
 @Composable
 fun EmobilizeApp(viewModel: TasksViewModel = viewModel()) {
@@ -90,6 +90,12 @@ fun EmobilizeApp(viewModel: TasksViewModel = viewModel()) {
                     if (tab != NavTab.Tasks) tabName = NavTab.Tasks.name
                     viewModel.onFabAction(action)
                 },
+                onFilter = { key ->
+                    menuOpen = false
+                    tabName = NavTab.Tasks.name
+                    viewModel.cancelPending()
+                    viewModel.selectFilter(key)
+                },
                 modifier = Modifier.zIndex(2f),
             )
             ThemeOrb(
@@ -124,7 +130,7 @@ fun EmobilizeApp(viewModel: TasksViewModel = viewModel()) {
                         draft = viewModel.editDraft,
                         canSubmit = viewModel.canSubmit(viewModel.editDraft),
                         saveColor = colors.primaryDark,
-                        saveContent = Color.White,
+                        saveContent = colors.inkOn(colors.primaryDark),
                         disabledColor = colors.primary.at(0x40),
                         onDismiss = viewModel::dismissEdit,
                         onSubmit = viewModel::submitEdit,

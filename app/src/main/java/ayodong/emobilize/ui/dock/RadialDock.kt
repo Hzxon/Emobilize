@@ -30,13 +30,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -59,7 +55,9 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -70,19 +68,32 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import ayodong.emobilize.model.FabAction
+import ayodong.emobilize.model.FilterKey
 import ayodong.emobilize.model.NavTab
 import ayodong.emobilize.model.displayAngle
+import ayodong.emobilize.ui.theme.AppMetrics
+import ayodong.emobilize.ui.theme.HoloPalette
 import ayodong.emobilize.ui.theme.LocalPalette
+import ayodong.emobilize.ui.theme.SagePalette
 import ayodong.emobilize.ui.theme.appStyle
 import ayodong.emobilize.ui.theme.at
+import ayodong.emobilize.ui.theme.inkOn
+import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
-private const val ArcRadius = 120f
-private const val FabSize = 88f
-private const val NodeSize = 48f
+
+private enum class MenuMode { Actions, Filters }
+
+private data class RadialNode(
+    val key: String,
+    val label: String,
+    val angle: Float,
+    val color: Color,
+    val onClick: () -> Unit,
+)
 
 @Composable
 fun BottomDock(
@@ -96,7 +107,7 @@ fun BottomDock(
             .fillMaxWidth()
             .background(palette.navBg)
             .navigationBarsPadding()
-            .height(88.dp),
+            .height(AppMetrics.navHeight),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         DockTab(
@@ -106,7 +117,7 @@ fun BottomDock(
             onClick = { onTab(NavTab.Tasks) },
             modifier = Modifier.weight(1f),
         )
-        Spacer(Modifier.width((FabSize + 8).dp))
+        Spacer(Modifier.width(AppMetrics.fabSize + 8.dp))
         DockTab(
             label = "CALENDAR",
             selected = tab == NavTab.Calendar,
@@ -161,22 +172,35 @@ fun RadialMenu(
     menuOpen: Boolean,
     onMenuOpenChange: (Boolean) -> Unit,
     onAction: (FabAction) -> Unit,
+    onFilter: (FilterKey) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val palette = LocalPalette.current
+    val haptic = LocalHapticFeedback.current
     val progress = remember { Animatable(0f) }
     var dragging by remember { mutableStateOf(false) }
     var gestureProgress by remember { mutableFloatStateOf(0f) }
+    var menuMode by remember { mutableStateOf(MenuMode.Actions) }
     val onOpenState = rememberUpdatedState(onMenuOpenChange)
+    val menuOpenState = rememberUpdatedState(menuOpen)
+    val onActionState = rememberUpdatedState(onAction)
+    val onFilterState = rememberUpdatedState(onFilter)
     var widthPx by remember { mutableStateOf(0f) }
     var heightPx by remember { mutableStateOf(0f) }
     val density = LocalDensity.current
     val bottomInset = with(density) { WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding().toPx() }
-    val arcPx = with(density) { ArcRadius.dp.toPx() }
-    val fabPx = with(density) { FabSize.dp.toPx() }
-    val nodePx = with(density) { NodeSize.dp.toPx() }
+    val arcPx = with(density) { AppMetrics.arcRadius.toPx() }
+    val fabPx = with(density) { AppMetrics.fabSize.toPx() }
+    val nodePx = with(density) { AppMetrics.nodeSize.toPx() }
     val centerX = widthPx / 2f
-    val centerY = heightPx - bottomInset - with(density) { 52.dp.toPx() }
+    val centerY = heightPx - bottomInset - with(density) { AppMetrics.fabCenterFromBottom.toPx() }
+    val nodes = radialNodes(
+        mode = menuMode,
+        tab = tab,
+        palette = palette,
+        onAction = onActionState.value,
+        onFilter = onFilterState.value,
+    )
 
     LaunchedEffect(menuOpen, dragging) {
         if (!dragging) {
@@ -224,12 +248,11 @@ fun RadialMenu(
                     size = Size(arcPx * 2, arcPx * 2),
                     style = Stroke(width = 1.5.dp.toPx(), cap = StrokeCap.Round, pathEffect = dash),
                 )
-                FabAction.entries.forEach { action ->
-                    if (action == FabAction.Update && tab == NavTab.Calendar) return@forEach
-                    val theta = Math.toRadians(displayAngle(action, tab).toDouble())
+                nodes.forEach { node ->
+                    val theta = Math.toRadians(node.angle.toDouble())
                     val dx = (arcPx * sin(theta)).toFloat()
                     val dy = (-arcPx * cos(theta)).toFloat()
-                    val color = actionColor(action, palette).copy(alpha = 0.55f * shown)
+                    val color = node.color.copy(alpha = 0.55f * shown)
                     drawLine(
                         color = color,
                         start = Offset(centerX + dx * 0.52f, centerY + dy * 0.52f),
@@ -242,13 +265,12 @@ fun RadialMenu(
                 }
             }
 
-            FabAction.entries.forEachIndexed { index, action ->
-                if (action == FabAction.Update && tab == NavTab.Calendar) return@forEachIndexed
-                val theta = Math.toRadians(displayAngle(action, tab).toDouble())
+            nodes.forEachIndexed { index, node ->
+                val theta = Math.toRadians(node.angle.toDouble())
                 val x = centerX + (arcPx * sin(theta)).toFloat()
                 val y = centerY + (-arcPx * cos(theta)).toFloat()
                 val nodeP = ((shown - index * 0.08f) / 0.75f).coerceIn(0f, 1f)
-                val color = actionColor(action, palette)
+                val ink = palette.inkOn(node.color)
                 Box(
                     modifier = Modifier
                         .zIndex(2f)
@@ -258,7 +280,7 @@ fun RadialMenu(
                                 (y - nodePx / 2f).roundToInt(),
                             )
                         }
-                        .size(NodeSize.dp)
+                        .size(AppMetrics.nodeSize)
                         .graphicsLayer {
                             alpha = nodeP
                             val scale = 0.2f + nodeP * 0.8f
@@ -267,25 +289,23 @@ fun RadialMenu(
                             translationY = (1f - nodeP) * 20.dp.toPx()
                         }
                         .clip(CircleShape)
-                        .background(color)
+                        .background(node.color)
                         .then(
                             if (menuOpen) {
-                                Modifier.clickable { onAction(action) }
+                                Modifier.clickable { node.onClick() }
                             } else {
                                 Modifier
                             },
                         ),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(actionIcon(action), contentDescription = action.label, tint = Color.White, modifier = Modifier.size(16.dp))
-                        Text(
-                            text = action.label.uppercase(),
-                            style = appStyle(7.5.sp, FontWeight.Bold, letterSpacing = 0.05.em),
-                            color = Color.White,
-                            textAlign = TextAlign.Center,
-                        )
-                    }
+                    Text(
+                        text = node.label,
+                        style = appStyle(if (node.label.length > 6) 7.sp else 9.sp, FontWeight.Bold, letterSpacing = 0.04.em),
+                        color = ink,
+                        textAlign = TextAlign.Center,
+                        maxLines = 1,
+                    )
                 }
             }
         }
@@ -324,7 +344,7 @@ fun RadialMenu(
                             (centerY - fabPx / 2f).roundToInt(),
                         )
                     }
-                    .size(FabSize.dp)
+                    .size(AppMetrics.fabSize)
                     .graphicsLayer {
                         val scale = 1f + shown * 0.07f
                         scaleX = scale
@@ -333,23 +353,61 @@ fun RadialMenu(
                     }
                     .pointerInput(Unit) {
                         val swipe = 90.dp.toPx()
+                        val slop = viewConfiguration.touchSlop
                         awaitEachGesture {
                             val down = awaitFirstDown()
-                            gestureProgress = 0f
-                            dragging = true
-                            var pulled = 0f
                             val pointerId = down.id
-                            while (true) {
-                                val event = awaitPointerEvent()
-                                val change = event.changes.firstOrNull { it.id == pointerId } ?: break
-                                if (!change.pressed) break
-                                pulled += change.previousPosition.y - change.position.y
-                                change.consume()
-                                gestureProgress = (pulled / swipe).coerceIn(0f, 1f)
+                            var pulled = 0f
+                            var swiping = false
+                            val earlyRelease = withTimeoutOrNull(500L) {
+                                while (true) {
+                                    val event = awaitPointerEvent()
+                                    val change = event.changes.firstOrNull { it.id == pointerId } ?: return@withTimeoutOrNull true
+                                    if (!change.pressed) return@withTimeoutOrNull true
+                                    pulled += change.previousPosition.y - change.position.y
+                                    if (abs(pulled) > slop) {
+                                        swiping = true
+                                        change.consume()
+                                        return@withTimeoutOrNull false
+                                    }
+                                }
                             }
-                            val open = gestureProgress >= 0.4f
-                            onOpenState.value(open)
-                            dragging = false
+                            when {
+                                earlyRelease == true -> {
+                                    if (menuOpenState.value) onOpenState.value(false)
+                                    dragging = false
+                                }
+                                !swiping -> {
+                                    menuMode = MenuMode.Filters
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    if (!menuOpenState.value) {
+                                        gestureProgress = 0f
+                                        dragging = false
+                                        onOpenState.value(true)
+                                    }
+                                    while (true) {
+                                        val event = awaitPointerEvent()
+                                        val change = event.changes.firstOrNull { it.id == pointerId } ?: break
+                                        if (!change.pressed) break
+                                        change.consume()
+                                    }
+                                }
+                                else -> {
+                                    menuMode = MenuMode.Actions
+                                    dragging = true
+                                    gestureProgress = (pulled / swipe).coerceIn(0f, 1f)
+                                    while (true) {
+                                        val event = awaitPointerEvent()
+                                        val change = event.changes.firstOrNull { it.id == pointerId } ?: break
+                                        if (!change.pressed) break
+                                        pulled += change.previousPosition.y - change.position.y
+                                        change.consume()
+                                        gestureProgress = (pulled / swipe).coerceIn(0f, 1f)
+                                    }
+                                    onOpenState.value(gestureProgress >= 0.4f)
+                                    dragging = false
+                                }
+                            }
                         }
                     },
                 contentAlignment = Alignment.Center,
@@ -390,6 +448,16 @@ private fun FabFace(progress: Float) {
                 ),
             contentAlignment = Alignment.Center,
         ) {
+            if (palette.cubeGlow.alpha > 0f) {
+                Box(
+                    Modifier
+                        .size(46.dp)
+                        .background(
+                            Brush.radialGradient(listOf(palette.cubeGlow, Color.Transparent)),
+                            CircleShape,
+                        ),
+                )
+            }
             HoloCube(
                 modifier = Modifier
                     .size(42.dp, 46.dp)
@@ -417,10 +485,17 @@ fun HoloCube(modifier: Modifier = Modifier) {
         drawPath(top, Brush.linearGradient(palette.cubeTop))
         drawPath(left, Brush.linearGradient(palette.cubeLeft))
         drawPath(right, Brush.linearGradient(palette.cubeRight))
-        drawPath(top, palette.cubeShine.copy(alpha = 0.28f))
-        val edge = Stroke(width = 0.8.dp.toPx())
-        drawPath(top, palette.cubeEdge.copy(alpha = 0.33f), style = edge)
-        drawLine(palette.cubeEdge.copy(alpha = 0.25f), at(21f, 24f), at(21f, 42f), strokeWidth = 0.8.dp.toPx())
+        val neon = palette.id == 2
+        drawPath(top, palette.cubeShine.copy(alpha = if (neon) 0.55f else 0.28f))
+        val edgeWidth = if (neon) 1.3.dp.toPx() else 0.8.dp.toPx()
+        val edge = Stroke(width = edgeWidth)
+        drawPath(top, palette.cubeEdge.copy(alpha = if (neon) 0.95f else 0.33f), style = edge)
+        drawLine(
+            palette.cubeEdge.copy(alpha = if (neon) 0.8f else 0.25f),
+            at(21f, 24f),
+            at(21f, 42f),
+            strokeWidth = edgeWidth,
+        )
     }
 }
 
@@ -430,15 +505,12 @@ fun ThemeOrb(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val colors = listOf(
-        Color(0xFF0099CC), Color(0xFF00D4FF), Color(0xFF39FF7A),
-        Color(0xFFC678FF), Color(0xFFFF7B35), Color(0xFF0099CC),
-    )
+    val swatch = if (themeId == 1) HoloPalette.ring else listOf(SagePalette.primary, SagePalette.primary)
     Box(
         modifier
             .size(26.dp)
             .clip(CircleShape)
-            .background(if (themeId == 1) Brush.sweepGradient(colors) else Brush.linearGradient(listOf(Color(0xFF8B9A6E), Color(0xFF8B9A6E))))
+            .background(Brush.sweepGradient(swatch))
             .clickable(onClick = onClick),
     )
 }
@@ -447,12 +519,42 @@ private fun actionColor(action: FabAction, palette: ayodong.emobilize.ui.theme.A
     FabAction.Add -> palette.actionAdd
     FabAction.Update -> palette.actionUpdate
     FabAction.Edit -> palette.actionEdit
-    FabAction.Delete -> Color(0xFFEF4444)
+    FabAction.Delete -> palette.danger
 }
 
-private fun actionIcon(action: FabAction) = when (action) {
-    FabAction.Add -> Icons.Filled.Add
-    FabAction.Update -> Icons.Filled.Refresh
-    FabAction.Edit -> Icons.Filled.Edit
-    FabAction.Delete -> Icons.Filled.Delete
+private fun radialNodes(
+    mode: MenuMode,
+    tab: NavTab,
+    palette: ayodong.emobilize.ui.theme.AppPalette,
+    onAction: (FabAction) -> Unit,
+    onFilter: (FilterKey) -> Unit,
+): List<RadialNode> {
+    if (mode == MenuMode.Filters) {
+        val filters = listOf(
+            Triple(FilterKey.All, "ALL", -87f),
+            Triple(FilterKey.Today, "TODAY", -30f),
+            Triple(FilterKey.Tomorrow, "TOMORROW", 30f),
+            Triple(FilterKey.Later, "LATER", 87f),
+        )
+        val colors = listOf(palette.primary, palette.statusProgress, palette.actionUpdate, palette.catPersonal)
+        return filters.mapIndexed { index, (key, label, angle) ->
+            RadialNode(
+                key = key.name,
+                label = label,
+                angle = angle,
+                color = colors[index],
+                onClick = { onFilter(key) },
+            )
+        }
+    }
+    return FabAction.entries.mapNotNull { action ->
+        if (action == FabAction.Update && tab == NavTab.Calendar) return@mapNotNull null
+        RadialNode(
+            key = action.name,
+            label = action.label.uppercase(),
+            angle = displayAngle(action, tab),
+            color = actionColor(action, palette),
+            onClick = { onAction(action) },
+        )
+    }
 }
