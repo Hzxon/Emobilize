@@ -72,9 +72,9 @@ import ayodong.emobilize.model.FilterKey
 import ayodong.emobilize.model.NavTab
 import ayodong.emobilize.model.displayAngle
 import ayodong.emobilize.ui.theme.AppMetrics
-import ayodong.emobilize.ui.theme.HoloPalette
 import ayodong.emobilize.ui.theme.LocalPalette
-import ayodong.emobilize.ui.theme.SagePalette
+import ayodong.emobilize.ui.theme.NeutralDark
+import ayodong.emobilize.ui.theme.NeutralLight
 import ayodong.emobilize.ui.theme.appStyle
 import ayodong.emobilize.ui.theme.at
 import ayodong.emobilize.ui.theme.inkOn
@@ -505,7 +505,7 @@ fun ThemeOrb(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val swatch = if (themeId == 1) HoloPalette.ring else listOf(SagePalette.primary, SagePalette.primary)
+    val swatch = if (themeId == 1) NeutralDark.ring else listOf(NeutralLight.primary, NeutralLight.primary)
     Box(
         modifier
             .size(26.dp)

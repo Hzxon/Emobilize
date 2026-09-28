@@ -30,9 +30,9 @@ import ayodong.emobilize.ui.tasks.TaskFormSheet
 import ayodong.emobilize.ui.tasks.TasksScreen
 import ayodong.emobilize.ui.tasks.TasksViewModel
 import ayodong.emobilize.ui.theme.EmobilizeTheme
-import ayodong.emobilize.ui.theme.HoloPalette
 import ayodong.emobilize.ui.theme.LocalPalette
-import ayodong.emobilize.ui.theme.SagePalette
+import ayodong.emobilize.ui.theme.NeutralDark
+import ayodong.emobilize.ui.theme.NeutralLight
 import ayodong.emobilize.ui.theme.appStyle
 import ayodong.emobilize.ui.theme.at
 import ayodong.emobilize.ui.theme.inkOn
@@ -43,7 +43,7 @@ fun EmobilizeApp(viewModel: TasksViewModel = viewModel()) {
     var tabName by rememberSaveable { mutableStateOf(NavTab.Tasks.name) }
     var menuOpen by rememberSaveable { mutableStateOf(false) }
     val tab = if (tabName == NavTab.Calendar.name) NavTab.Calendar else NavTab.Tasks
-    val palette = if (themeId == 1) SagePalette else HoloPalette
+    val palette = if (themeId == 1) NeutralLight else NeutralDark
 
     EmobilizeTheme(palette) {
         val colors = LocalPalette.current

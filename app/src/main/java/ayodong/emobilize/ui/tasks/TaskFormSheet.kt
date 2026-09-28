@@ -57,9 +57,11 @@ import ayodong.emobilize.model.ScheduleMode
 import ayodong.emobilize.model.formatInputTime
 import ayodong.emobilize.ui.theme.AppFont
 import ayodong.emobilize.ui.theme.LocalPalette
+import ayodong.emobilize.ui.theme.ShadcnRadius
 import ayodong.emobilize.ui.theme.appStyle
 import ayodong.emobilize.ui.theme.at
 import ayodong.emobilize.ui.theme.categoryColor
+import ayodong.emobilize.ui.theme.inkOn
 import ayodong.emobilize.ui.theme.priorityColor
 import java.time.Instant
 import java.time.LocalDate
@@ -79,7 +81,7 @@ fun TaskFormSheet(
     onSubmit: () -> Unit,
 ) {
     val palette = LocalPalette.current
-    val shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
+    val shape = RoundedCornerShape(topStart = ShadcnRadius.xl, topEnd = ShadcnRadius.xl)
     val scrimSource = remember { MutableInteractionSource() }
     val sheetSource = remember { MutableInteractionSource() }
     Box(
@@ -100,14 +102,8 @@ fun TaskFormSheet(
                     .fillMaxWidth()
                     .heightIn(max = maxHeight)
                     .clip(shape)
-                    .background(palette.card)
-                    .then(
-                        if (palette.id == 2) {
-                            Modifier.border(1.dp, palette.primary.at(0x20), shape)
-                        } else {
-                            Modifier
-                        },
-                    )
+                    .background(palette.scheme.popover)
+                    .border(1.dp, palette.scheme.border, shape)
                     .verticalScroll(rememberScrollState())
                     .navigationBarsPadding()
                     .padding(start = 22.dp, end = 22.dp, top = 24.dp, bottom = 36.dp),
@@ -119,11 +115,11 @@ fun TaskFormSheet(
                         Modifier
                             .size(30.dp)
                             .clip(CircleShape)
-                            .background(palette.primary.at(0x18))
+                            .background(palette.scheme.secondary)
                             .clickable(onClick = onDismiss),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Text("✕", style = appStyle(16.sp), color = palette.primaryDark)
+                        Text("✕", style = appStyle(16.sp), color = palette.scheme.secondaryForeground)
                     }
                 }
                 Spacer(Modifier.height(20.dp))
@@ -148,12 +144,12 @@ fun TaskFormSheet(
                         Text(
                             text = category.name,
                             modifier = Modifier
-                                .clip(RoundedCornerShape(20.dp))
+                                .clip(RoundedCornerShape(ShadcnRadius.md))
                                 .background(if (selected) color else color.at(0x18))
                                 .clickable { draft.category = category }
                                 .padding(horizontal = 12.dp, vertical = 5.dp),
                             style = appStyle(11.5.sp, FontWeight.Bold),
-                            color = if (selected) palette.onFilled else color,
+                            color = if (selected) palette.inkOn(color) else color,
                         )
                     }
                 }
@@ -169,7 +165,7 @@ fun TaskFormSheet(
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .clip(RoundedCornerShape(10.dp))
+                                .clip(RoundedCornerShape(ShadcnRadius.md))
                                 .background(if (selected) color else color.at(0x18))
                                 .clickable { draft.priority = level }
                                 .padding(vertical = 8.dp),
@@ -178,7 +174,7 @@ fun TaskFormSheet(
                             Text(
                                 level.name,
                                 style = appStyle(12.sp, FontWeight.Bold),
-                                color = if (selected) palette.onFilled else color,
+                                color = if (selected) palette.inkOn(color) else color,
                             )
                         }
                     }
@@ -196,12 +192,12 @@ fun TaskFormSheet(
                             modifier = Modifier
                                 .weight(1f)
                                 .height(36.dp)
-                                .clip(RoundedCornerShape(10.dp))
-                                .background(if (active) palette.primary.at(0x18) else Color.Transparent)
+                                .clip(RoundedCornerShape(ShadcnRadius.md))
+                                .background(if (active) palette.scheme.primary else Color.Transparent)
                                 .border(
-                                    1.5.dp,
-                                    if (active) palette.primary else palette.primary.at(0x30),
-                                    RoundedCornerShape(10.dp),
+                                    1.dp,
+                                    if (active) palette.scheme.primary else palette.scheme.border,
+                                    RoundedCornerShape(ShadcnRadius.md),
                                 )
                                 .clickable { draft.scheduleMode = mode },
                             contentAlignment = Alignment.Center,
@@ -209,7 +205,7 @@ fun TaskFormSheet(
                             Text(
                                 label,
                                 style = appStyle(11.5.sp, FontWeight.Bold),
-                                color = if (active) palette.primaryDark else palette.textMuted,
+                                color = if (active) palette.scheme.primaryForeground else palette.scheme.mutedForeground,
                             )
                         }
                     }
@@ -306,9 +302,9 @@ private fun DraftField(
         ),
         cursorBrush = SolidColor(palette.primary),
         modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
-            .background(palette.primary.at(0x08))
-            .border(1.5.dp, palette.primary.at(0x40), RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(ShadcnRadius.lg))
+            .background(palette.scheme.background)
+            .border(1.dp, palette.scheme.input, RoundedCornerShape(ShadcnRadius.lg))
             .padding(horizontal = 14.dp),
         decorationBox = { inner ->
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
@@ -370,9 +366,9 @@ private fun DateField(
     Box(
         modifier
             .height(44.dp)
-            .clip(RoundedCornerShape(11.dp))
-            .background(palette.primary.at(0x08))
-            .border(1.5.dp, if (valid) palette.primary.at(0x40) else palette.danger.at(0x70), RoundedCornerShape(11.dp))
+            .clip(RoundedCornerShape(ShadcnRadius.lg))
+            .background(palette.scheme.background)
+            .border(1.dp, if (valid) palette.scheme.input else palette.scheme.destructive, RoundedCornerShape(ShadcnRadius.lg))
             .clickable { open = true }
             .padding(horizontal = 12.dp),
         contentAlignment = Alignment.CenterStart,
@@ -426,9 +422,9 @@ private fun TimeField(
     Box(
         modifier
             .height(44.dp)
-            .clip(RoundedCornerShape(11.dp))
-            .background(palette.primary.at(0x06))
-            .border(1.5.dp, if (valid) palette.primary.at(0x35) else palette.danger.at(0x70), RoundedCornerShape(11.dp))
+            .clip(RoundedCornerShape(ShadcnRadius.lg))
+            .background(palette.scheme.background)
+            .border(1.dp, if (valid) palette.scheme.input else palette.scheme.destructive, RoundedCornerShape(ShadcnRadius.lg))
             .clickable { open = true }
             .padding(horizontal = 12.dp),
         contentAlignment = Alignment.CenterStart,

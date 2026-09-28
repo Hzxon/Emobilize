@@ -3,8 +3,6 @@ package ayodong.emobilize.ui.theme
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
-private val Danger = Color(0xFFEF4444)
-
 fun Color.at(alphaByte: Int): Color = copy(alpha = alphaByte / 255f)
 
 fun AppPalette.inkOn(color: Color): Color {
@@ -14,6 +12,7 @@ fun AppPalette.inkOn(color: Color): Color {
 
 data class AppPalette(
     val id: Int,
+    val scheme: ShadcnColors,
     val primary: Color,
     val primaryDark: Color,
     val primaryLight: Color,
@@ -66,121 +65,92 @@ data class AppPalette(
     val shadow: Color,
 )
 
-val SagePalette = AppPalette(
-    id = 1,
-    primary = Color(0xFF8B9A6E),
-    primaryDark = Color(0xFF6B7A4E),
-    primaryLight = Color(0xFFB4C890),
-    ring = listOf(
-        Color(0xFF6B7A4E), Color(0xFF8B9A6E), Color(0xFFB4C890), Color(0xFFF7F2EB),
-        Color(0xFFB4C890), Color(0xFF8B9A6E), Color(0xFF6B7A4E),
-    ),
-    surface = Color(0xFFF7F2EB),
-    card = Color(0xFFFFFFFF),
-    text = Color(0xFF1A1A14),
-    textMuted = Color(0xFF1A1A14).copy(alpha = 0.38f),
-    textSubtle = Color(0xFF1A1A14).copy(alpha = 0.30f),
-    navBg = Color(0xFFF7F2EB).copy(alpha = 0.96f),
-    overlayBg = Color(0xFFF7F2EB).copy(alpha = 0.72f),
-    modalBg = Color(0xFFF7F2EB).copy(alpha = 0.55f),
-    signalInactive = Color(0xFFC0BAB0),
-    homeIndicator = Color(0xFF6B7A4E),
-    statusTodo = Color(0xFF8A8A84),
-    statusProgress = Color(0xFF4F7DB8),
-    statusDone = Color(0xFF6F9565),
-    catStudy = Color(0xFF8B9A6E),
-    catWork = Color(0xFFC4A46E),
-    catHealth = Color(0xFF7AAE8A),
-    catPersonal = Color(0xFFA87C9E),
-    catUniversity = Color(0xFF8E9AAE),
-    prioLow = Color(0xFF7AAE8A),
-    prioMedium = Color(0xFFD4A017),
-    prioHigh = Danger,
-    actionAdd = Color(0xFF8B9A6E),
-    actionUpdate = Color(0xFFD4A017),
-    actionEdit = Color(0xFF6B7A4E),
-    selBgDelete = Color(0xFFFEF2F2),
-    selBgUpdate = Color(0xFFFFFBEB),
-    selBorderDelete = Color(0xFFFCA5A5),
-    selBorderUpdate = Color(0xFFF59E0B).at(0x60),
-    cardSelBgDelete = Color(0xFFFFF5F5),
-    cardSelBgUpdate = Color(0xFFFFFBEB),
-    progBtnBg = Color(0xFFEEF5FC),
-    progBtnColor = Color(0xFF3F6FA9),
-    progBtnBorder = Color(0xFF4F7DB8).at(0x60),
-    cubeTop = listOf(Color(0xFF8B9A6E), Color(0xFF6B7A4E)),
-    cubeLeft = listOf(Color(0xFF6B7A4E), Color(0xFF3A4428)),
-    cubeRight = listOf(Color(0xFF4A5830), Color(0xFF2C3620)),
-    cubeEdge = Color(0xFFF7F2EB),
-    cubeShine = Color(0xFFF7F2EB),
-    cubeInner = listOf(Color(0xFFF7F2EB), Color(0xFFB4C890)),
-    cubeGlow = Color.Transparent,
-    onFilled = Color.White,
-    onDark = Color.White,
-    ink = Color(0xFF1A1A14),
-    danger = Danger,
-    cardHighlight = Color.Transparent,
-    shadow = Color.Black.copy(alpha = 0.055f),
-)
+private fun paletteFrom(id: Int, scheme: ShadcnColors, dark: Boolean): AppPalette {
+    val scrim = if (dark) Color.Black.copy(alpha = 0.62f) else Color.Black.copy(alpha = 0.40f)
+    return AppPalette(
+        id = id,
+        scheme = scheme,
+        primary = scheme.primary,
+        primaryDark = scheme.foreground,
+        primaryLight = scheme.muted,
+        ring = if (dark) {
+            listOf(scheme.background, scheme.foreground, scheme.secondary, scheme.mutedForeground, scheme.background)
+        } else {
+            listOf(
+                scheme.primary,
+                scheme.mutedForeground,
+                scheme.border,
+                scheme.background,
+                scheme.border,
+                scheme.mutedForeground,
+                scheme.primary,
+            )
+        },
+        surface = scheme.background,
+        card = scheme.card,
+        text = scheme.foreground,
+        textMuted = scheme.mutedForeground,
+        textSubtle = scheme.mutedForeground.copy(alpha = 0.62f),
+        navBg = scheme.background.copy(alpha = if (dark) 0.97f else 0.96f),
+        overlayBg = scrim,
+        modalBg = scrim,
+        signalInactive = scheme.border,
+        homeIndicator = scheme.primary,
+        statusTodo = scheme.mutedForeground,
+        statusProgress = scheme.chart1,
+        statusDone = scheme.chart2,
+        catStudy = scheme.chart1,
+        catWork = scheme.chart5,
+        catHealth = scheme.chart2,
+        catPersonal = scheme.chart4,
+        catUniversity = scheme.chart3,
+        prioLow = scheme.chart2,
+        prioMedium = scheme.chart4,
+        prioHigh = scheme.destructive,
+        actionAdd = scheme.primary,
+        actionUpdate = scheme.chart3,
+        actionEdit = scheme.chart4,
+        selBgDelete = scheme.destructive.copy(alpha = 0.12f),
+        selBgUpdate = scheme.chart4.copy(alpha = 0.16f),
+        selBorderDelete = scheme.destructive.copy(alpha = 0.45f),
+        selBorderUpdate = scheme.chart4.copy(alpha = 0.55f),
+        cardSelBgDelete = scheme.destructive.copy(alpha = 0.10f),
+        cardSelBgUpdate = scheme.chart4.copy(alpha = 0.12f),
+        progBtnBg = scheme.chart1.copy(alpha = 0.12f),
+        progBtnColor = scheme.chart1,
+        progBtnBorder = scheme.chart1.copy(alpha = 0.40f),
+        cubeTop = if (dark) {
+            listOf(scheme.foreground, scheme.mutedForeground)
+        } else {
+            listOf(scheme.mutedForeground, scheme.primary)
+        },
+        cubeLeft = if (dark) {
+            listOf(scheme.secondary, scheme.background)
+        } else {
+            listOf(scheme.primary, scheme.foreground)
+        },
+        cubeRight = if (dark) {
+            listOf(scheme.foreground, scheme.mutedForeground)
+        } else {
+            listOf(scheme.border, scheme.mutedForeground)
+        },
+        cubeEdge = if (dark) scheme.foreground else scheme.background,
+        cubeShine = scheme.foreground,
+        cubeInner = listOf(scheme.background, if (dark) scheme.secondary else scheme.muted),
+        cubeGlow = if (dark) scheme.foreground.copy(alpha = 0.35f) else Color.Transparent,
+        onFilled = scheme.primaryForeground,
+        onDark = hsl(0f, 0f, 98f),
+        ink = if (dark) scheme.background else scheme.foreground,
+        danger = scheme.destructive,
+        cardHighlight = Color.Transparent,
+        shadow = Color.Black.copy(alpha = if (dark) 0.35f else 0.06f),
+    )
+}
 
-val HoloPalette = AppPalette(
-    id = 2,
-    primary = Color(0xFFFFFFFF),
-    primaryDark = Color(0xFFF4FEFF),
-    primaryLight = Color(0xFFFFFFFF),
-    ring = listOf(
-        Color(0xFF050505), Color(0xFFFFFFFF), Color(0xFF1A1A1A),
-        Color(0xFFF7F7F7), Color(0xFF050505),
-    ),
-    surface = Color(0xFF0D0C18),
-    card = Color(0xFF1C1A2C),
-    text = Color(0xFFF0EEFF),
-    textMuted = Color(0xFFF0EEFF).copy(alpha = 0.38f),
-    textSubtle = Color(0xFFF0EEFF).copy(alpha = 0.30f),
-    navBg = Color(0xFF0D0C18).copy(alpha = 0.97f),
-    overlayBg = Color(0xFF0D0C18).copy(alpha = 0.82f),
-    modalBg = Color(0xFF0D0C18).copy(alpha = 0.65f),
-    signalInactive = Color(0xFFF0EEFF).copy(alpha = 0.30f),
-    homeIndicator = Color(0xFFFFFFFF),
-    statusTodo = Color(0xFF7A78A0),
-    statusProgress = Color(0xFF00D4FF),
-    statusDone = Color(0xFF39FF7A),
-    catStudy = Color(0xFF00D4FF),
-    catWork = Color(0xFFFF7B35),
-    catHealth = Color(0xFF39FF7A),
-    catPersonal = Color(0xFFC678FF),
-    catUniversity = Color(0xFF9B5CF6),
-    prioLow = Color(0xFF39FF7A),
-    prioMedium = Color(0xFFFFD600),
-    prioHigh = Color(0xFFFF4444),
-    actionAdd = Color(0xFF00D4FF),
-    actionUpdate = Color(0xFFFF7B35),
-    actionEdit = Color(0xFF9B5CF6),
-    selBgDelete = Danger.copy(alpha = 0.12f),
-    selBgUpdate = Color(0xFFFFD600).copy(alpha = 0.10f),
-    selBorderDelete = Danger.copy(alpha = 0.35f),
-    selBorderUpdate = Color(0xFFFFD600).copy(alpha = 0.30f),
-    cardSelBgDelete = Danger.copy(alpha = 0.10f),
-    cardSelBgUpdate = Color(0xFFFFD600).copy(alpha = 0.08f),
-    progBtnBg = Color(0xFF00D4FF).copy(alpha = 0.12f),
-    progBtnColor = Color(0xFF00D4FF),
-    progBtnBorder = Color(0xFF00D4FF).copy(alpha = 0.40f),
-    cubeTop = listOf(Color(0xFFFFFFFF), Color(0xFFE6E6E6)),
-    cubeLeft = listOf(Color(0xFF3A3A3A), Color(0xFF050505)),
-    cubeRight = listOf(Color(0xFFF5F5F5), Color(0xFF8E8E8E)),
-    cubeEdge = Color(0xFFFFFFFF),
-    cubeShine = Color.White,
-    cubeInner = listOf(Color(0xFF141414), Color(0xFF050505)),
-    cubeGlow = Color.White.copy(alpha = 0.55f),
-    onFilled = Color(0xFF0D0C18),
-    onDark = Color.White,
-    ink = Color(0xFF0D0C18),
-    danger = Danger,
-    cardHighlight = Color.White.copy(alpha = 0.04f),
-    shadow = Color.Black.copy(alpha = 0.30f),
-)
+val NeutralLight = paletteFrom(1, ShadcnLight, dark = false)
+val NeutralDark = paletteFrom(2, ShadcnDark, dark = true)
 
-val LocalPalette = staticCompositionLocalOf { SagePalette }
+val LocalPalette = staticCompositionLocalOf { NeutralLight }
 
 fun AppPalette.categoryColor(category: ayodong.emobilize.model.Category): Color = when (category) {
     ayodong.emobilize.model.Category.Study -> catStudy

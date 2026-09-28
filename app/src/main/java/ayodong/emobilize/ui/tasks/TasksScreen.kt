@@ -354,7 +354,7 @@ private fun TaskCard(
         else -> palette.primary.at(0x12)
     }
     val borderColor = when {
-        !isSelected -> palette.primary.at(0x20)
+        !isSelected -> palette.scheme.border
         pending == FabAction.Delete -> palette.danger
         pending == FabAction.Update -> palette.actionUpdate
         else -> palette.primary
@@ -373,7 +373,7 @@ private fun TaskCard(
             .then(
                 if (isSelected) {
                     Modifier
-                        .clip(RoundedCornerShape(17.dp))
+                        .clip(RoundedCornerShape(AppMetrics.cardRadius + 4.dp))
                         .background(glow)
                         .padding(3.dp)
                 } else {
