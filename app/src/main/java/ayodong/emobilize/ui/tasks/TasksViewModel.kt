@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import ayodong.emobilize.model.Category
 import ayodong.emobilize.model.DateRange
 import ayodong.emobilize.model.FabAction
+import ayodong.emobilize.model.TimeBlock
+import ayodong.emobilize.model.hoursToInput
 import ayodong.emobilize.model.FilterKey
 import ayodong.emobilize.model.Priority
 import ayodong.emobilize.model.ScheduleMode
@@ -67,6 +69,21 @@ class TasksViewModel : ViewModel() {
         filter = next
     }
 
+    fun showBlockEditor(block: TimeBlock, date: LocalDate) {
+        val iso = isoDate(date)
+        addDraft.name = block.title
+        addDraft.category = block.category
+        addDraft.priority = Priority.Medium
+        addDraft.scheduleMode = ScheduleMode.Range
+        addDraft.date = iso
+        addDraft.time = hoursToInput(block.start)
+        addDraft.startDate = iso
+        addDraft.startTime = hoursToInput(block.start)
+        addDraft.endDate = iso
+        addDraft.endTime = hoursToInput(block.end)
+        showAdd = true
+    }
+
     fun onFabAction(action: FabAction) {
         if (action == FabAction.Add) {
             val today = isoDate(LocalDate.now())
@@ -90,6 +107,15 @@ class TasksViewModel : ViewModel() {
     fun selectTask(id: Long) {
         if (pendingAction == null) return
         selectedTaskId = id
+    }
+
+    fun toggleTaskSelection(id: Long) {
+        if (pendingAction == null) return
+        selectedTaskId = if (selectedTaskId == id) null else id
+    }
+
+    fun clearTaskSelection() {
+        selectedTaskId = null
     }
 
     fun cancelPending() {

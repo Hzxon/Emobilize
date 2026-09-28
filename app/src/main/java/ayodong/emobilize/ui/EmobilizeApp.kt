@@ -7,22 +7,25 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import java.time.LocalDate
 import androidx.lifecycle.viewmodel.compose.viewModel
+import ayodong.emobilize.model.FabAction
 import ayodong.emobilize.model.NavTab
+import ayodong.emobilize.model.inputToHours
+import ayodong.emobilize.model.replaceBlock
+import ayodong.emobilize.model.sampleBlocks
+import ayodong.emobilize.ui.calendar.CalendarScreen
 import ayodong.emobilize.ui.dock.BottomDock
 import ayodong.emobilize.ui.dock.RadialMenu
 import ayodong.emobilize.ui.dock.ThemeOrb
@@ -33,7 +36,6 @@ import ayodong.emobilize.ui.theme.EmobilizeTheme
 import ayodong.emobilize.ui.theme.LocalPalette
 import ayodong.emobilize.ui.theme.NeutralDark
 import ayodong.emobilize.ui.theme.NeutralLight
-import ayodong.emobilize.ui.theme.appStyle
 import ayodong.emobilize.ui.theme.at
 import ayodong.emobilize.ui.theme.inkOn
 
@@ -42,17 +44,26 @@ fun EmobilizeApp(viewModel: TasksViewModel = viewModel()) {
     var themeId by rememberSaveable { mutableIntStateOf(1) }
     var tabName by rememberSaveable { mutableStateOf(NavTab.Tasks.name) }
     var menuOpen by rememberSaveable { mutableStateOf(false) }
+    var blocks by remember { mutableStateOf(sampleBlocks()) }
+    var selectedBlockId by remember { mutableStateOf<Long?>(null) }
+    var editingBlockId by remember { mutableStateOf<Long?>(null) }
     val tab = if (tabName == NavTab.Calendar.name) NavTab.Calendar else NavTab.Tasks
     val palette = if (themeId == 1) NeutralLight else NeutralDark
 
     EmobilizeTheme(palette) {
         val colors = LocalPalette.current
-        BackHandler(enabled = viewModel.showAdd || viewModel.showEdit || menuOpen || viewModel.pendingAction != null) {
+        BackHandler(enabled = viewModel.showAdd || viewModel.showEdit || menuOpen || viewModel.pendingAction != null || selectedBlockId != null) {
             when {
-                viewModel.showAdd -> viewModel.dismissAdd()
+                viewModel.showAdd -> {
+                    editingBlockId = null
+                    viewModel.dismissAdd()
+                }
                 viewModel.showEdit -> viewModel.dismissEdit()
                 menuOpen -> menuOpen = false
-                else -> viewModel.cancelPending()
+                else -> {
+                    selectedBlockId = null
+                    viewModel.cancelPending()
+                }
             }
         }
         Box(
@@ -70,7 +81,57 @@ fun EmobilizeApp(viewModel: TasksViewModel = viewModel()) {
                     if (tab == NavTab.Tasks) {
                         TasksScreen(viewModel)
                     } else {
-                        CalendarPlaceholder()
+                        CalendarScreen(
+                            tasks = viewModel.tasks,
+                            blocks = blocks,
+                            pending = viewModel.pendingAction,
+                            selectedTaskId = viewModel.selectedTaskId,
+                            selectedBlockId = selectedBlockId,
+                            onSelectTask = { task ->
+                                when (viewModel.pendingAction) {
+                                    FabAction.Edit -> {
+                                        selectedBlockId = null
+                                        viewModel.selectTask(task.id)
+                                        viewModel.confirmAction()
+                                    }
+                                    FabAction.Delete -> {
+                                        selectedBlockId = null
+                                        viewModel.toggleTaskSelection(task.id)
+                                    }
+                                    else -> Unit
+                                }
+                            },
+                            onSelectBlock = { date, block ->
+                                when (viewModel.pendingAction) {
+                                    FabAction.Edit -> {
+                                        editingBlockId = block.id
+                                        selectedBlockId = null
+                                        viewModel.cancelPending()
+                                        viewModel.showBlockEditor(block, date)
+                                    }
+                                    FabAction.Delete -> {
+                                        viewModel.clearTaskSelection()
+                                        selectedBlockId = if (selectedBlockId == block.id) null else block.id
+                                    }
+                                    else -> selectedBlockId = if (selectedBlockId == block.id) null else block.id
+                                }
+                            },
+                            onDelete = {
+                                val blockId = selectedBlockId
+                                if (viewModel.selectedTaskId != null) viewModel.confirmAction()
+                                if (blockId != null) {
+                                    blocks = blocks
+                                        .mapValues { (_, list) -> list.filter { it.id != blockId } }
+                                        .filterValues { it.isNotEmpty() }
+                                    selectedBlockId = null
+                                    viewModel.cancelPending()
+                                }
+                            },
+                            onCancel = {
+                                selectedBlockId = null
+                                viewModel.cancelPending()
+                            },
+                        )
                     }
                 }
                 BottomDock(
@@ -78,6 +139,10 @@ fun EmobilizeApp(viewModel: TasksViewModel = viewModel()) {
                     onTab = { next ->
                         tabName = next.name
                         menuOpen = false
+                        selectedBlockId = null
+                        if (next == NavTab.Calendar && viewModel.pendingAction == FabAction.Update) {
+                            viewModel.cancelPending()
+                        }
                     },
                 )
             }
@@ -87,14 +152,9 @@ fun EmobilizeApp(viewModel: TasksViewModel = viewModel()) {
                 onMenuOpenChange = { menuOpen = it },
                 onAction = { action ->
                     menuOpen = false
-                    if (tab != NavTab.Tasks) tabName = NavTab.Tasks.name
+                    editingBlockId = null
+                    selectedBlockId = null
                     viewModel.onFabAction(action)
-                },
-                onFilter = { key ->
-                    menuOpen = false
-                    tabName = NavTab.Tasks.name
-                    viewModel.cancelPending()
-                    viewModel.selectFilter(key)
                 },
                 modifier = Modifier.zIndex(2f),
             )
@@ -107,18 +167,41 @@ fun EmobilizeApp(viewModel: TasksViewModel = viewModel()) {
                     .statusBarsPadding()
                     .padding(top = 6.dp, end = 18.dp),
             )
-            if (viewModel.showAdd && tab == NavTab.Tasks) {
+            if (viewModel.showAdd) {
+                val editingBlock = editingBlockId != null
                 Box(Modifier.zIndex(4f)) {
                     TaskFormSheet(
-                        title = "New Task",
-                        submitLabel = "Add Task",
+                        title = if (editingBlock) "Edit Schedule" else "New Task",
+                        submitLabel = if (editingBlock) "Save" else "Add Task",
                         draft = viewModel.addDraft,
                         canSubmit = viewModel.canSubmit(viewModel.addDraft),
                         saveColor = colors.primary,
                         saveContent = colors.onFilled,
                         disabledColor = colors.primary.at(0x40),
-                        onDismiss = viewModel::dismissAdd,
-                        onSubmit = viewModel::submitAdd,
+                        onDismiss = {
+                            editingBlockId = null
+                            viewModel.dismissAdd()
+                        },
+                        onSubmit = {
+                            val blockId = editingBlockId
+                            val draft = viewModel.addDraft
+                            val target = blockId?.let { runCatching { LocalDate.parse(draft.startDate) }.getOrNull() }
+                            if (blockId != null && target != null && viewModel.canSubmit(draft)) {
+                                blocks = replaceBlock(
+                                    blocks,
+                                    blockId,
+                                    draft.name.trim(),
+                                    draft.category,
+                                    inputToHours(draft.startTime),
+                                    inputToHours(draft.endTime),
+                                    target,
+                                )
+                                editingBlockId = null
+                                viewModel.dismissAdd()
+                            } else {
+                                viewModel.submitAdd()
+                            }
+                        },
                     )
                 }
             }
@@ -137,26 +220,6 @@ fun EmobilizeApp(viewModel: TasksViewModel = viewModel()) {
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun CalendarPlaceholder() {
-    val palette = LocalPalette.current
-    Box(Modifier.fillMaxSize().padding(horizontal = 24.dp), contentAlignment = Alignment.Center) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                "CALENDAR",
-                style = appStyle(28.sp, FontWeight.Normal, letterSpacing = 0.08.em),
-                color = palette.text,
-            )
-            Text(
-                "Week, day, and month views come next.",
-                modifier = Modifier.padding(top = 8.dp),
-                style = appStyle(13.sp, FontWeight.Medium),
-                color = palette.textMuted,
-            )
         }
     }
 }
