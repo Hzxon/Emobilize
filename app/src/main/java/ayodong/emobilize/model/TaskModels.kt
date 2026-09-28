@@ -15,6 +15,12 @@ enum class NavTab { Tasks, Calendar }
 
 enum class ScheduleMode { Deadline, Range }
 
+enum class EventType(val label: String) {
+    Event("Event"),
+    Task("Task"),
+    RegularSchedule("Regular Schedule"),
+}
+
 enum class Priority { Low, Medium, High }
 
 enum class TaskStatus { Todo, Progress, Done }
@@ -42,6 +48,8 @@ data class Task(
     val filterKey: FilterKey,
     val priority: Priority = Priority.Medium,
     val range: DateRange? = null,
+    val eventType: EventType = EventType.Task,
+    val eventEndTime: String? = null,
 )
 
 private val monthDay: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d", Locale.US)

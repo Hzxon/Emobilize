@@ -73,6 +73,19 @@ fun formatBlockTime(value: Float): String {
     return if (minutes == 0) "$display $suffix" else "$display:${minutes.toString().padStart(2, '0')} $suffix"
 }
 
+fun placeSchedule(
+    blocks: Map<LocalDate, List<TimeBlock>>,
+    block: TimeBlock,
+    date: LocalDate,
+): Map<LocalDate, List<TimeBlock>> {
+    val exists = blocks.values.any { list -> list.any { it.id == block.id } }
+    return if (exists) {
+        replaceBlock(blocks, block.id, block.title, block.category, block.start, block.end, date)
+    } else {
+        blocks + (date to (blocks[date].orEmpty() + block))
+    }
+}
+
 fun replaceBlock(
     blocks: Map<LocalDate, List<TimeBlock>>,
     id: Long,

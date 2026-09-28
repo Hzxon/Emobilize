@@ -2,12 +2,20 @@ package ayodong.emobilize.ui.theme
 
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import ayodong.emobilize.model.FabAction
 
 fun Color.at(alphaByte: Int): Color = copy(alpha = alphaByte / 255f)
 
 fun AppPalette.inkOn(color: Color): Color {
     val luminance = 0.299f * color.red + 0.587f * color.green + 0.114f * color.blue
     return if (luminance > 0.72f) ink else onDark
+}
+
+fun AppPalette.menuColor(action: FabAction): Color = when (action) {
+    FabAction.Add -> Color(0xFF16A34A)
+    FabAction.Update -> Color(0xFF2563EB)
+    FabAction.Edit -> actionEdit
+    FabAction.Delete -> danger
 }
 
 data class AppPalette(

@@ -75,8 +75,6 @@ fun TaskFormSheet(
     draft: TaskDraft,
     canSubmit: Boolean,
     saveColor: Color,
-    saveContent: Color,
-    disabledColor: Color,
     onDismiss: () -> Unit,
     onSubmit: () -> Unit,
 ) {
@@ -253,19 +251,21 @@ fun TaskFormSheet(
                     }
                 }
                 Spacer(Modifier.height(22.dp))
+                val buttonShape = RoundedCornerShape(12.dp)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp)
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(if (canSubmit) saveColor else disabledColor)
+                        .height(44.dp)
+                        .clip(buttonShape)
+                        .background(saveColor.copy(alpha = if (canSubmit) 0.12f else 0.06f))
+                        .border(1.5.dp, saveColor.copy(alpha = if (canSubmit) 0.40f else 0.18f), buttonShape)
                         .clickable(enabled = canSubmit, onClick = onSubmit),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
                         submitLabel,
-                        style = appStyle(14.sp, FontWeight.Bold, letterSpacing = 0.04.em),
-                        color = if (canSubmit) saveContent else saveContent.copy(alpha = 0.7f),
+                        style = appStyle(13.sp, FontWeight.Bold, letterSpacing = 0.04.em),
+                        color = saveColor.copy(alpha = if (canSubmit) 1f else 0.4f),
                     )
                 }
             }
@@ -274,7 +274,7 @@ fun TaskFormSheet(
 }
 
 @Composable
-private fun SectionLabel(text: String) {
+internal fun SectionLabel(text: String) {
     Text(
         text = text.uppercase(),
         style = appStyle(10.5.sp, FontWeight.Bold, letterSpacing = 0.1.em),
@@ -318,7 +318,7 @@ private fun DraftField(
 }
 
 @Composable
-private fun RangeRow(
+internal fun RangeRow(
     label: String,
     date: String,
     time: String,
@@ -352,7 +352,7 @@ private fun RangeRow(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DateField(
+internal fun DateField(
     value: String,
     onValue: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -410,12 +410,13 @@ private fun DateField(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TimeField(
+internal fun TimeField(
     value: String,
     onValue: (String) -> Unit,
     allowClear: Boolean,
     modifier: Modifier = Modifier,
     valid: Boolean = true,
+    placeholder: String = "Time",
 ) {
     val palette = LocalPalette.current
     var open by remember { mutableStateOf(false) }
@@ -429,7 +430,7 @@ private fun TimeField(
             .padding(horizontal = 12.dp),
         contentAlignment = Alignment.CenterStart,
     ) {
-        val label = if (value.isBlank()) "Time" else formatInputTime(value)
+        val label = if (value.isBlank()) placeholder else formatInputTime(value)
         Text(
             text = label,
             style = appStyle(13.sp, FontWeight.SemiBold),

@@ -34,12 +34,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import ayodong.emobilize.model.CalView
@@ -52,13 +52,13 @@ import ayodong.emobilize.model.monthCells
 import ayodong.emobilize.model.parseDisplayTime
 import ayodong.emobilize.model.taskOccursOn
 import ayodong.emobilize.model.weekOf
-import ayodong.emobilize.ui.theme.AppMetrics
 import ayodong.emobilize.ui.theme.LocalPalette
 import ayodong.emobilize.ui.theme.ShadcnRadius
 import ayodong.emobilize.ui.theme.appStyle
 import ayodong.emobilize.ui.theme.at
 import ayodong.emobilize.ui.theme.categoryColor
 import ayodong.emobilize.ui.theme.inkOn
+import ayodong.emobilize.ui.theme.menuColor
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.YearMonth
@@ -69,8 +69,8 @@ import kotlin.math.roundToInt
 
 private val monthTitle = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.US)
 private val HourHeight = 60.dp
-private val GridStart = 7
-private val GridEnd = 22
+private val DayStart = 0
+private val DayEnd = 24
 
 @Composable
 fun CalendarScreen(
@@ -156,21 +156,22 @@ fun CalendarScreen(
             }
         }
         if (canDelete) {
+            val shape = RoundedCornerShape(12.dp)
             Box(
                 modifier = Modifier
                     .padding(start = 18.dp, end = 18.dp, top = 8.dp, bottom = 12.dp)
                     .fillMaxWidth()
-                    .height(AppMetrics.actionHeight)
-                    .shadow(8.dp, RoundedCornerShape(AppMetrics.actionRadius), spotColor = palette.danger.at(0x40))
-                    .clip(RoundedCornerShape(AppMetrics.actionRadius))
-                    .background(palette.danger)
+                    .height(44.dp)
+                    .clip(shape)
+                    .background(palette.danger.copy(alpha = 0.12f))
+                    .border(1.5.dp, palette.danger.copy(alpha = 0.40f), shape)
                     .clickable(onClick = onDelete),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
                     "Delete Calendar Item  →",
-                    style = appStyle(13.sp, FontWeight.Bold, letterSpacing = 0.05.sp),
-                    color = palette.inkOn(palette.danger),
+                    style = appStyle(13.sp, FontWeight.Bold, letterSpacing = 0.04.em),
+                    color = palette.danger,
                 )
             }
         }
@@ -255,23 +256,21 @@ private fun SelectionBanner(
     onCancel: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val palette = LocalPalette.current
-    val delete = action == FabAction.Delete
-    val color = if (delete) palette.danger else palette.primary
+    val color = LocalPalette.current.menuColor(action)
     Row(
         modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(ShadcnRadius.xl))
-            .background(if (delete) palette.selBgDelete else palette.primary.at(0x18))
-            .border(1.dp, if (delete) palette.selBorderDelete else palette.primary.at(0x40), RoundedCornerShape(ShadcnRadius.xl))
+            .background(color.copy(alpha = 0.12f))
+            .border(1.dp, color.copy(alpha = 0.45f), RoundedCornerShape(ShadcnRadius.xl))
             .padding(horizontal = 14.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = if (delete) "Select a calendar item to delete" else "Select a calendar item to edit",
+            text = if (action == FabAction.Delete) "Select a calendar item to delete" else "Select a calendar item to edit",
             modifier = Modifier.weight(1f),
             style = appStyle(11.5.sp, FontWeight.Bold),
-            color = if (delete) palette.danger else palette.primaryDark,
+            color = color,
         )
         Text(
             "Cancel",
@@ -338,8 +337,8 @@ private fun MonthBody(
         )
         DayTimeline(
             date = activeDate,
-            startHour = 0,
-            endHour = 24,
+            startHour = DayStart,
+            endHour = DayEnd,
             tasks = tasks,
             blocks = blocks[activeDate].orEmpty(),
             today = today,
@@ -412,8 +411,8 @@ private fun WeekBody(
         )
         DayTimeline(
             date = activeDate,
-            startHour = GridStart,
-            endHour = GridEnd,
+            startHour = DayStart,
+            endHour = DayEnd,
             tasks = tasks,
             blocks = blocks[activeDate].orEmpty(),
             today = today,
@@ -476,8 +475,8 @@ private fun DayBody(
         )
         DayTimeline(
             date = activeDate,
-            startHour = GridStart,
-            endHour = GridEnd,
+            startHour = DayStart,
+            endHour = DayEnd,
             tasks = tasks,
             blocks = blocks[activeDate].orEmpty(),
             today = today,
@@ -593,7 +592,7 @@ private fun DayTimeline(
                 .fillMaxWidth()
                 .height(HourHeight * hours),
         ) {
-            repeat(hours + 1) { index ->
+            repeat(hours) { index ->
                 val hour = startHour + index
                 Row(
                     Modifier
@@ -602,7 +601,7 @@ private fun DayTimeline(
                     verticalAlignment = Alignment.Top,
                 ) {
                     Text(
-                        if (hour <= endHour) if (endHour == 24) "%02d:00".format(hour) else formatHourLabel(hour) else "",
+                        formatHourLabel(hour),
                         modifier = Modifier.width(46.dp).offset(y = (-7).dp),
                         style = appStyle(10.5.sp, FontWeight.Medium),
                         color = palette.textMuted,
@@ -613,7 +612,16 @@ private fun DayTimeline(
                             .padding(start = 8.dp)
                             .weight(1f)
                             .height(1.dp)
-                            .background(if (hour == startHour) palette.primary.at(0x30) else palette.primary.at(0x14)),
+                            .background(palette.scheme.border),
+                    )
+                }
+                if (index < hours - 1) {
+                    Box(
+                        Modifier
+                            .offset(y = HourHeight * index + HourHeight / 2)
+                            .fillMaxWidth()
+                            .height(1.dp)
+                            .background(palette.scheme.border.copy(alpha = 0.45f)),
                     )
                 }
             }
@@ -635,6 +643,7 @@ private fun DayTimeline(
                 BlockCard(
                     block = block,
                     selected = block.id == selectedBlockId,
+                    pending = pending,
                     compact = height < 36f,
                     modifier = Modifier
                         .offset(x = 2.dp, y = top.dp + 2.dp)
@@ -645,16 +654,19 @@ private fun DayTimeline(
             }
             timedTasks.forEach { task ->
                 val top = (parseDisplayTime(task.time!!) - startHour) * 60f - 12f
-                val delete = pending == FabAction.Delete && selectedTaskId == task.id
-                val color = if (delete) palette.danger else palette.categoryColor(task.category)
+                val picked = selectedTaskId == task.id && (pending == FabAction.Edit || pending == FabAction.Delete)
+                val menu = pending?.let { palette.menuColor(it) }
+                val color = palette.categoryColor(task.category)
+                val chip = RoundedCornerShape(6.dp)
                 Row(
                     Modifier
                         .zIndex(3f)
                         .offset(y = top.dp)
                         .fillMaxWidth()
                         .height(22.dp)
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(if (delete) palette.cardSelBgDelete else color.at(0x18))
+                        .clip(chip)
+                        .background(if (picked && menu != null) menu.copy(alpha = 0.12f) else color.at(0x18))
+                        .border(if (picked && menu != null) 1.5.dp else 0.dp, menu ?: Color.Transparent, chip)
                         .clickable(enabled = pending == FabAction.Edit || pending == FabAction.Delete) {
                             onSelectTask(task)
                         },
@@ -687,16 +699,20 @@ private fun DayTimeline(
 private fun BlockCard(
     block: TimeBlock,
     selected: Boolean,
+    pending: FabAction?,
     compact: Boolean,
     modifier: Modifier,
 ) {
     val palette = LocalPalette.current
     val color = palette.categoryColor(block.category)
-    val ink = if (selected) palette.inkOn(color) else color
+    val menu = if (selected) pending?.let { palette.menuColor(it) } else null
+    val shape = RoundedCornerShape(ShadcnRadius.lg)
+    val ink = if (selected && menu == null) palette.inkOn(color) else color
     Row(
         modifier
-            .clip(RoundedCornerShape(ShadcnRadius.lg))
-            .background(if (selected) color else color.copy(alpha = 0.16f)),
+            .clip(shape)
+            .background(if (menu != null) menu.copy(alpha = 0.12f) else if (selected) color else color.copy(alpha = 0.16f))
+            .border(if (menu != null) 2.dp else 0.dp, menu ?: Color.Transparent, shape),
     ) {
         Box(Modifier.width(3.dp).fillMaxHeight().background(color))
         Column(

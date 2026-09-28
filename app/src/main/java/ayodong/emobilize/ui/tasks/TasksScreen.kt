@@ -53,6 +53,7 @@ import ayodong.emobilize.ui.theme.LocalPalette
 import ayodong.emobilize.ui.theme.appStyle
 import ayodong.emobilize.ui.theme.at
 import ayodong.emobilize.ui.theme.inkOn
+import ayodong.emobilize.ui.theme.menuColor
 import ayodong.emobilize.ui.theme.categoryColor
 import ayodong.emobilize.ui.theme.priorityColor
 import java.time.LocalTime
@@ -173,22 +174,23 @@ fun TasksScreen(
         val selected = viewModel.selectedTaskId
         if (pending != null && selected != null && pending != FabAction.Update) {
             val delete = pending == FabAction.Delete
-            val color = if (delete) palette.danger else palette.primary
+            val color = palette.menuColor(pending)
+            val shape = RoundedCornerShape(12.dp)
             Box(
                 modifier = Modifier
                     .padding(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, top = 8.dp, bottom = 12.dp)
                     .fillMaxWidth()
-                    .height(AppMetrics.actionHeight)
-                    .shadow(8.dp, RoundedCornerShape(AppMetrics.actionRadius), spotColor = color.at(0x40))
-                    .clip(RoundedCornerShape(AppMetrics.actionRadius))
-                    .background(color)
+                    .height(44.dp)
+                    .clip(shape)
+                    .background(color.copy(alpha = 0.12f))
+                    .border(1.5.dp, color.copy(alpha = 0.40f), shape)
                     .clickable(onClick = viewModel::confirmAction),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text = if (delete) "Delete Task  →" else "Edit Task  →",
-                    style = appStyle(13.sp, FontWeight.Bold, letterSpacing = 0.05.em),
-                    color = palette.inkOn(color),
+                    style = appStyle(13.sp, FontWeight.Bold, letterSpacing = 0.04.em),
+                    color = color,
                 )
             }
         }
@@ -197,7 +199,7 @@ fun TasksScreen(
                 Text(
                     text = "SET STATUS",
                     style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 0.08.em),
-                    color = palette.actionUpdate,
+                    color = palette.menuColor(FabAction.Update),
                 )
                 Spacer(Modifier.height(8.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -210,10 +212,10 @@ fun TasksScreen(
                         onClick = { viewModel.applyStatus(TaskStatus.Progress) },
                     )
                     StatusChoice(
-                        label = "✓ Done",
-                        container = palette.statusDone,
-                        content = palette.inkOn(palette.statusDone),
-                        border = null,
+                        label = "Done",
+                        container = palette.statusDone.copy(alpha = 0.12f),
+                        content = palette.statusDone,
+                        border = palette.statusDone.copy(alpha = 0.40f),
                         modifier = Modifier.weight(1f),
                         onClick = { viewModel.applyStatus(TaskStatus.Done) },
                     )
@@ -260,26 +262,7 @@ private fun SelectionBanner(
     modifier: Modifier = Modifier,
 ) {
     val palette = LocalPalette.current
-    val dot = when (action) {
-        FabAction.Delete -> palette.danger
-        FabAction.Update -> palette.actionUpdate
-        else -> palette.primary
-    }
-    val labelColor = when (action) {
-        FabAction.Delete -> palette.danger
-        FabAction.Update -> palette.actionUpdate
-        else -> palette.primaryDark
-    }
-    val background = when (action) {
-        FabAction.Delete -> palette.selBgDelete
-        FabAction.Update -> palette.selBgUpdate
-        else -> palette.primary.at(0x18)
-    }
-    val border = when (action) {
-        FabAction.Delete -> palette.selBorderDelete.at(0x40)
-        FabAction.Update -> palette.selBorderUpdate
-        else -> palette.primary.at(0x40)
-    }
+    val color = palette.menuColor(action)
     val message = when (action) {
         FabAction.Edit -> "Select a card to edit"
         FabAction.Delete -> "Select a card to delete"
@@ -290,18 +273,18 @@ private fun SelectionBanner(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(background)
-            .border(1.dp, border, RoundedCornerShape(12.dp))
+            .background(color.copy(alpha = 0.12f))
+            .border(1.dp, color.copy(alpha = 0.45f), RoundedCornerShape(12.dp))
             .padding(horizontal = 14.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(Modifier.size(8.dp).clip(CircleShape).background(dot))
+        Box(Modifier.size(8.dp).clip(CircleShape).background(color))
         Spacer(Modifier.width(8.dp))
         Text(
             text = message,
             modifier = Modifier.weight(1f),
             style = appStyle(12.sp, FontWeight.Bold),
-            color = labelColor,
+            color = color,
         )
         Text(
             text = "Cancel",
@@ -309,7 +292,7 @@ private fun SelectionBanner(
                 .clickable(onClick = onCancel)
                 .padding(horizontal = 6.dp, vertical = 2.dp),
             style = appStyle(11.sp, FontWeight.SemiBold),
-            color = if (action == FabAction.Delete) palette.danger else palette.primary,
+            color = color,
         )
     }
 }
@@ -347,25 +330,14 @@ private fun TaskCard(
 ) {
     val palette = LocalPalette.current
     val shape = RoundedCornerShape(AppMetrics.cardRadius)
+    val menu = pending?.let { palette.menuColor(it) }
     val background = when {
-        !isSelected -> palette.card
-        pending == FabAction.Delete -> palette.cardSelBgDelete
-        pending == FabAction.Update -> palette.cardSelBgUpdate
-        else -> palette.primary.at(0x12)
+        !isSelected || menu == null -> palette.card
+        else -> menu.copy(alpha = 0.12f)
     }
-    val borderColor = when {
-        !isSelected -> palette.scheme.border
-        pending == FabAction.Delete -> palette.danger
-        pending == FabAction.Update -> palette.actionUpdate
-        else -> palette.primary
-    }
+    val borderColor = if (!isSelected || menu == null) palette.scheme.border else menu
     val accent = palette.categoryColor(task.category)
-    val glow = when {
-        !isSelected -> Color.Transparent
-        pending == FabAction.Delete -> palette.danger.at(0x20)
-        pending == FabAction.Update -> palette.actionUpdate.at(0x20)
-        else -> palette.primary.at(0x25)
-    }
+    val glow = if (!isSelected || menu == null) Color.Transparent else menu.copy(alpha = 0.22f)
     Box(
         modifier = Modifier
             .fillMaxWidth()

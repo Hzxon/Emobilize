@@ -57,9 +57,9 @@ import ayodong.emobilize.model.FabAction
 import ayodong.emobilize.model.NavTab
 import ayodong.emobilize.model.displayAngle
 import ayodong.emobilize.ui.theme.AppMetrics
-import ayodong.emobilize.ui.theme.AppPalette
 import ayodong.emobilize.ui.theme.LocalPalette
 import ayodong.emobilize.ui.theme.appStyle
+import ayodong.emobilize.ui.theme.menuColor
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -122,7 +122,7 @@ fun RadialMenu(
             Canvas(Modifier.fillMaxSize().graphicsLayer { alpha = shown }) {
                 actions.forEach { action ->
                     val angle = displayAngle(action, tab)
-                    val color = actionColor(action, palette)
+                    val color = palette.menuColor(action)
                     val active = highlighted == action
                     val path = sectorPath(
                         center = Offset(centerX, centerY),
@@ -147,7 +147,7 @@ fun RadialMenu(
                 val x = centerX + (reach * sin(radians)).toFloat()
                 val y = centerY + (-reach * cos(radians)).toFloat()
                 val nodeP = ((shown - index * 0.08f) / 0.75f).coerceIn(0f, 1f)
-                val color = actionColor(action, palette)
+                val color = palette.menuColor(action)
                 val active = highlighted == action
                 Column(
                     modifier = Modifier
@@ -305,13 +305,6 @@ fun RadialMenu(
             }
         }
     }
-}
-
-private fun actionColor(action: FabAction, palette: AppPalette): Color = when (action) {
-    FabAction.Add -> Color(0xFF16A34A)
-    FabAction.Update -> Color(0xFF2563EB)
-    FabAction.Edit -> palette.actionEdit
-    FabAction.Delete -> palette.danger
 }
 
 private fun actionIcon(action: FabAction): ImageVector = when (action) {
