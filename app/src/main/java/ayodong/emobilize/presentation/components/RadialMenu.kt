@@ -1,9 +1,16 @@
 package ayodong.emobilize.presentation.components
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -16,9 +23,6 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,9 +34,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -44,6 +45,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
@@ -52,6 +54,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import ayodong.emobilize.R
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.roundToInt
@@ -69,8 +72,9 @@ private const val INNER_FRACTION = 0.30f
 private const val OUTER_FRACTION = 0.86f
 private const val RING_FRACTION = 0.90f
 private const val START_ANGLE = -90f
-private val GearSize = 56.dp
-private val TouchTargetSize = 64.dp
+private val GearSize = 64.dp
+private val TouchTargetSize = 72.dp
+
 
 @Composable
 fun RadialMenu(
@@ -91,6 +95,18 @@ fun RadialMenu(
         label = "radialProgress",
     )
     var hoverIndex by remember { mutableStateOf<Int?>(null) }
+
+    val floating = rememberInfiniteTransition(label = "cubeFloat")
+    val bobT by floating.animateFloat(
+        initialValue = 0f, targetValue = 1f,
+        animationSpec = infiniteRepeatable(tween(2600, easing = FastOutSlowInEasing), RepeatMode.Reverse),
+        label = "bob",
+    )
+    val tiltT by floating.animateFloat(
+        initialValue = 0f, targetValue = 1f,
+        animationSpec = infiniteRepeatable(tween(3700, easing = FastOutSlowInEasing), RepeatMode.Reverse),
+        label = "tilt",
+    )
 
     val count = items.size
     val sweep = 360f / count
@@ -114,7 +130,6 @@ fun RadialMenu(
     val travelPx = marginPx + radiusPx - gapPx - gearHalfPx
 
     val gearAlpha = lerp(idleAlpha, 1f, progress.coerceIn(0f, 1f))
-    val gearElevation = (8 * progress.coerceIn(0f, 1f)).dp
 
     val currentItems by rememberUpdatedState(items)
     val currentExpanded by rememberUpdatedState(expanded)
@@ -235,19 +250,24 @@ fun RadialMenu(
                     alpha = gearAlpha
                     translationY = -travelPx * progress
                 }
-                .size(GearSize)
-                .shadow(gearElevation, CircleShape)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary),
+                .size(GearSize),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(
-                imageVector = Icons.Filled.Settings,
+            Image(
+                painter = painterResource(R.drawable.ic_radial_cube),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier
-                    .size(28.dp)
-                    .rotate(progress * 90f),
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        // float: gentle up/down bob, calmer while the wheel is open
+                        val amp = 5.dp.toPx() * (1f - 0.5f * progress.coerceIn(0f, 1f))
+                        translationY = lerp(-amp, amp, bobT)
+                        // slight tilt back and forth
+                        rotationZ = lerp(-6f, 6f, tiltT)
+                        // one full flip while the menu opens
+                        rotationY = progress * 360f
+                        cameraDistance = 12f * this.density
+                    },
             )
         }
 
