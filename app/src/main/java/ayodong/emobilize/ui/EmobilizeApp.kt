@@ -19,6 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import ayodong.emobilize.domain.model.FabAction
 import ayodong.emobilize.domain.model.NavTab
+import ayodong.emobilize.ui.auth.AuthScreen
+import ayodong.emobilize.ui.auth.AuthViewModel
 import ayodong.emobilize.ui.calendar.CalendarScreen
 import ayodong.emobilize.ui.dock.BottomDock
 import ayodong.emobilize.ui.dock.RadialMenu
@@ -26,6 +28,7 @@ import ayodong.emobilize.ui.dock.ThemeOrb
 import ayodong.emobilize.ui.tasks.AddTaskCard
 import ayodong.emobilize.ui.tasks.CalendarFormSheet
 import ayodong.emobilize.ui.tasks.TaskFormSheet
+import ayodong.emobilize.ui.splash.SplashScreen
 import ayodong.emobilize.ui.tasks.TasksScreen
 import ayodong.emobilize.ui.tasks.TasksViewModel
 import ayodong.emobilize.ui.theme.EmobilizeTheme
@@ -35,15 +38,28 @@ import ayodong.emobilize.ui.theme.NeutralLight
 import ayodong.emobilize.ui.theme.menuColor
 
 @Composable
-fun EmobilizeApp(viewModel: TasksViewModel) {
+fun EmobilizeApp(viewModel: TasksViewModel, authViewModel: AuthViewModel) {
     var themeId by rememberSaveable { mutableIntStateOf(1) }
     var tabName by rememberSaveable { mutableStateOf(NavTab.Tasks.name) }
     var menuOpen by rememberSaveable { mutableStateOf(false) }
+    var splashDone by rememberSaveable { mutableStateOf(false) }
     val tab = if (tabName == NavTab.Calendar.name) NavTab.Calendar else NavTab.Tasks
     val palette = if (themeId == 1) NeutralLight else NeutralDark
 
     EmobilizeTheme(palette) {
         val colors = LocalPalette.current
+        if (!splashDone) {
+            SplashScreen(onFinished = { splashDone = true })
+            return@EmobilizeTheme
+        }
+        if (!authViewModel.signedIn) {
+            AuthScreen(
+                viewModel = authViewModel,
+                themeId = themeId,
+                onToggleTheme = { themeId = if (themeId == 1) 2 else 1 },
+            )
+            return@EmobilizeTheme
+        }
         BackHandler(enabled = viewModel.showAdd || viewModel.showCalendar || viewModel.showEdit || menuOpen || viewModel.pendingAction != null || viewModel.selectedBlockId != null) {
             when {
                 viewModel.showAdd -> viewModel.dismissAdd()

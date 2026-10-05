@@ -1,22 +1,28 @@
 package ayodong.emobilize.di
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import ayodong.emobilize.data.repository.InMemoryScheduleRepository
 import ayodong.emobilize.data.repository.InMemoryTaskRepository
+import ayodong.emobilize.data.repository.PreferencesAuthRepository
 import ayodong.emobilize.domain.usecase.AddTaskUseCase
 import ayodong.emobilize.domain.usecase.DeleteTaskUseCase
 import ayodong.emobilize.domain.usecase.DeleteTimeBlockUseCase
 import ayodong.emobilize.domain.usecase.GetScheduleUseCase
 import ayodong.emobilize.domain.usecase.GetTasksUseCase
+import ayodong.emobilize.domain.usecase.LoginUseCase
 import ayodong.emobilize.domain.usecase.PlaceTimeBlockUseCase
+import ayodong.emobilize.domain.usecase.RegisterAccountUseCase
 import ayodong.emobilize.domain.usecase.SetTaskStatusUseCase
 import ayodong.emobilize.domain.usecase.UpdateTaskUseCase
+import ayodong.emobilize.ui.auth.AuthViewModel
 import ayodong.emobilize.ui.tasks.TasksViewModel
 
-class AppContainer {
+class AppContainer(context: Context) {
     private val tasks = InMemoryTaskRepository()
     private val schedule = InMemoryScheduleRepository()
+    private val auth = PreferencesAuthRepository(context)
 
     val getTasks = GetTasksUseCase(tasks)
     val addTask = AddTaskUseCase(tasks)
@@ -26,6 +32,8 @@ class AppContainer {
     val getSchedule = GetScheduleUseCase(schedule)
     val placeTimeBlock = PlaceTimeBlockUseCase(schedule)
     val deleteTimeBlock = DeleteTimeBlockUseCase(schedule)
+    val login = LoginUseCase(auth)
+    val register = RegisterAccountUseCase(auth)
 }
 
 class TasksViewModelFactory(
@@ -42,6 +50,18 @@ class TasksViewModelFactory(
             getSchedule = container.getSchedule,
             placeTimeBlock = container.placeTimeBlock,
             deleteTimeBlock = container.deleteTimeBlock,
+        ) as T
+    }
+}
+
+class AuthViewModelFactory(
+    private val container: AppContainer,
+) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return AuthViewModel(
+            login = container.login,
+            register = container.register,
         ) as T
     }
 }
