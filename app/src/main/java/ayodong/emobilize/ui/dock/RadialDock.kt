@@ -78,8 +78,6 @@ import ayodong.emobilize.domain.model.NavTab
 import ayodong.emobilize.domain.model.displayAngle
 import ayodong.emobilize.ui.theme.AppMetrics
 import ayodong.emobilize.ui.theme.LocalPalette
-import ayodong.emobilize.ui.theme.NeutralDark
-import ayodong.emobilize.ui.theme.NeutralLight
 import ayodong.emobilize.ui.theme.appStyle
 import kotlin.math.abs
 import kotlin.math.atan2
@@ -123,7 +121,6 @@ fun BottomDock(
         )
     }
 }
-
 @Composable
 private fun DockTab(
     label: String,
@@ -178,22 +175,4 @@ internal fun FabFace(progress: Float, showCancel: Boolean) {
             )
         }
     }
-}
-
-@Composable
-fun ThemeOrb(
-    themeId: Int,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val palette = LocalPalette.current
-    val next = if (themeId == 1) NeutralDark else NeutralLight
-    Box(
-        modifier
-            .size(26.dp)
-            .clip(CircleShape)
-            .background(next.scheme.background)
-            .border(1.dp, palette.scheme.border, CircleShape)
-            .clickable(onClick = onClick),
-    )
 }

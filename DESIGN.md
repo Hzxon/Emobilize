@@ -10,7 +10,7 @@ Sumber di kode:
 - `app/src/main/java/ayodong/emobilize/ui/theme/Metrics.kt`
 - `app/src/main/java/ayodong/emobilize/ui/theme/Theme.kt`
 
-Ada dua tema. Orb di kanan atas berpindah di antara keduanya.
+Ada dua palet, Neutral Light dan Neutral Dark. Pilihan tema ada di Settings dengan opsi System, Light, dan Dark; ikon gear di header membuka Settings.
 
 | Tema | Kode | Kapan dipakai |
 | --- | --- | --- |

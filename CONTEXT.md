@@ -72,6 +72,7 @@ Package: `ayodong.emobilize`. Satu modul Gradle: `:app`. `minSdk` 28. `compileSd
 | Bagian layar | File | Composable |
 | --- | --- | --- |
 | Susunan semua layar, kapan form muncul | `ui/EmobilizeApp.kt` | `EmobilizeApp` |
+| Preferensi aplikasi dan kategori | `ui/settings/SettingsScreen.kt` | `SettingsScreen` |
 | Daftar tugas, filter, kartu tugas | `ui/tasks/TasksScreen.kt` | `TasksScreen`, `TaskCard` |
 | Kartu Add di tab Tasks | `ui/tasks/AddTaskCard.kt` | `AddTaskCard` |
 | Sheet edit tugas | `ui/tasks/TaskFormSheet.kt` | `TaskFormSheet`, `DateField`, `TimeField` |
@@ -98,7 +99,7 @@ Jangan menambah palet baru. Nilai token dijelaskan di `DESIGN.md`.
 
 Produk: aplikasi tugas dan kalender. Data di memori, hilang saat proses mati. Sampel di `data/repository/SampleData.kt`.
 
-Dua tab: Tasks dan Calendar. Tombol tengah membuka radial menu. Orb kanan atas mengganti tema.
+Dua tab: Tasks dan Calendar. Tombol tengah membuka radial menu. Ikon gear di header membuka Settings. Tema hanya diubah dari Settings.
 
 ### Tasks
 

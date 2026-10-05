@@ -61,6 +61,7 @@ import ayodong.emobilize.ui.theme.at
 import ayodong.emobilize.ui.theme.categoryColor
 import ayodong.emobilize.ui.theme.menuColor
 import java.time.LocalDate
+import java.time.DayOfWeek
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
@@ -72,6 +73,8 @@ private val monthTitle = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.US)
 fun CalendarScreen(
     tasks: List<Task>,
     blocks: Map<LocalDate, List<TimeBlock>>,
+    defaultView: CalView = CalView.Week,
+    weekStart: DayOfWeek = DayOfWeek.MONDAY,
     pending: FabAction?,
     selectedTaskId: Long?,
     selectedBlockId: Long?,
@@ -85,7 +88,7 @@ fun CalendarScreen(
     val today = LocalDate.now()
     var activeIso by rememberSaveable { mutableStateOf(today.toString()) }
     var monthIso by rememberSaveable { mutableStateOf(today.withDayOfMonth(1).toString()) }
-    var viewName by rememberSaveable { mutableStateOf(CalView.Week.name) }
+    var viewName by rememberSaveable(defaultView) { mutableStateOf(defaultView.name) }
     val activeDate = runCatching { LocalDate.parse(activeIso) }.getOrDefault(today)
     val visibleMonth = YearMonth.from(runCatching { LocalDate.parse(monthIso) }.getOrDefault(today))
     val view = runCatching { CalView.valueOf(viewName) }.getOrDefault(CalView.Week)
@@ -110,6 +113,7 @@ fun CalendarScreen(
             when (view) {
                 CalView.Month -> MonthBody(
                     month = visibleMonth,
+                    weekStart = weekStart,
                     activeDate = activeDate,
                     today = today,
                     tasks = tasks,
@@ -123,6 +127,7 @@ fun CalendarScreen(
                 )
                 CalView.Week -> WeekBody(
                     activeDate = activeDate,
+                    weekStart = weekStart,
                     today = today,
                     tasks = tasks,
                     blocks = blocks,
@@ -276,6 +281,7 @@ private fun SelectionBanner(
 @Composable
 private fun MonthBody(
     month: YearMonth,
+    weekStart: DayOfWeek,
     activeDate: LocalDate,
     today: LocalDate,
     tasks: List<Task>,
@@ -288,10 +294,13 @@ private fun MonthBody(
     onSelectBlock: (LocalDate, TimeBlock) -> Unit,
 ) {
     val palette = LocalPalette.current
-    val cells = monthCells(month)
+    val cells = monthCells(month, weekStart)
+    val weekdayLabels = (0..6).map { offset ->
+        weekStart.plus(offset.toLong()).getDisplayName(TextStyle.SHORT, Locale.US).first().uppercaseChar().toString()
+    }
     Column(Modifier.fillMaxSize()) {
         Row(Modifier.padding(horizontal = 16.dp)) {
-            listOf("S", "M", "T", "W", "T", "F", "S").forEach { label ->
+            weekdayLabels.forEach { label ->
                 Text(
                     label,
                     modifier = Modifier.weight(1f),
@@ -344,6 +353,7 @@ private fun MonthBody(
 @Composable
 private fun WeekBody(
     activeDate: LocalDate,
+    weekStart: DayOfWeek,
     today: LocalDate,
     tasks: List<Task>,
     blocks: Map<LocalDate, List<TimeBlock>>,
@@ -357,7 +367,7 @@ private fun WeekBody(
     val palette = LocalPalette.current
     Column(Modifier.fillMaxSize()) {
         Row(Modifier.padding(horizontal = 14.dp)) {
-            weekOf(activeDate).forEach { date ->
+            weekOf(activeDate, weekStart).forEach { date ->
                 val active = date == activeDate
                 val marked = (blocks[date]?.isNotEmpty() == true) || tasks.any { taskOccursOn(it, date, today) }
                 Column(

@@ -1,6 +1,7 @@
 package ayodong.emobilize.domain.repository
 
 import ayodong.emobilize.domain.model.Category
+import ayodong.emobilize.domain.model.AppSettings
 import ayodong.emobilize.domain.model.Task
 import ayodong.emobilize.domain.model.TaskStatus
 import ayodong.emobilize.domain.model.TimeBlock
@@ -31,4 +32,9 @@ interface ScheduleRepository {
 interface CategoryRepository {
     fun all(): List<Category>
     fun update(category: Category): Category?
+}
+
+interface AppSettingsRepository {
+    fun get(): AppSettings
+    fun update(settings: AppSettings)
 }

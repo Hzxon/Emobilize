@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import ayodong.emobilize.domain.model.Category
+import ayodong.emobilize.domain.model.AppSettings
 import ayodong.emobilize.domain.model.DateRange
 import ayodong.emobilize.domain.model.EventType
 import ayodong.emobilize.domain.model.FabAction
@@ -28,9 +29,11 @@ import ayodong.emobilize.domain.usecase.AddTaskUseCase
 import ayodong.emobilize.domain.usecase.DeleteTaskUseCase
 import ayodong.emobilize.domain.usecase.DeleteTimeBlockUseCase
 import ayodong.emobilize.domain.usecase.GetCategoriesUseCase
+import ayodong.emobilize.domain.usecase.GetAppSettingsUseCase
 import ayodong.emobilize.domain.usecase.GetScheduleUseCase
 import ayodong.emobilize.domain.usecase.GetTasksUseCase
 import ayodong.emobilize.domain.usecase.UpdateCategoryUseCase
+import ayodong.emobilize.domain.usecase.UpdateAppSettingsUseCase
 import ayodong.emobilize.domain.usecase.PlaceTimeBlockUseCase
 import ayodong.emobilize.domain.usecase.SetTaskStatusUseCase
 import ayodong.emobilize.domain.usecase.UpdateTaskUseCase
@@ -65,6 +68,8 @@ class TasksViewModel(
     private val deleteTimeBlock: DeleteTimeBlockUseCase,
     private val getCategories: GetCategoriesUseCase,
     private val saveCategory: UpdateCategoryUseCase,
+    private val getAppSettings: GetAppSettingsUseCase,
+    private val saveAppSettings: UpdateAppSettingsUseCase,
 ) : ViewModel() {
     private val initialBoard = getTasks()
 
@@ -79,6 +84,8 @@ class TasksViewModel(
     var blocks by mutableStateOf(getSchedule())
         private set
     var categories by mutableStateOf(getCategories())
+        private set
+    var appSettings by mutableStateOf(getAppSettings())
         private set
     var showSettings by mutableStateOf(false)
         private set
@@ -333,11 +340,28 @@ class TasksViewModel(
         reloadSchedule()
     }
 
+    fun saveSettings(settings: AppSettings, editedCategories: List<Category>) {
+        editedCategories.forEach { category ->
+            if (categories.find { it.id == category.id } != category) saveCategory(category)
+        }
+        categories = getCategories()
+        addDraft.category = addDraft.category?.let { current -> categories.find { it.id == current.id } }
+        editDraft.category = editDraft.category?.let { current -> categories.find { it.id == current.id } }
+        reloadTasks()
+        reloadSchedule()
+        saveAppSettings(settings)
+        appSettings = getAppSettings()
+    }
+
     fun dismissAdd() {
         showAdd = false
     }
 
     private fun workCategory(): Category = categories.find { it.id == Category.Work.id } ?: categories.first()
+
+    private fun defaultTaskCategory(): Category? = appSettings.defaultCategoryId?.let { id ->
+        categories.find { it.id == id }
+    }
 
     fun dismissCalendar() {
         showCalendar = false
@@ -350,8 +374,8 @@ class TasksViewModel(
         val taskOnly = type == EventType.Task
         addDraft.name = ""
         addDraft.time = ""
-        addDraft.category = if (taskOnly) null else workCategory()
-        addDraft.priority = if (taskOnly) null else Priority.Medium
+        addDraft.category = if (taskOnly) defaultTaskCategory() else workCategory()
+        addDraft.priority = if (taskOnly) appSettings.defaultPriority else Priority.Medium
         addDraft.includeSchedule = !taskOnly
         addDraft.date = if (taskOnly) "" else today
         addDraft.scheduleMode = ScheduleMode.Deadline

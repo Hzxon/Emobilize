@@ -3,6 +3,7 @@ package ayodong.emobilize.ui
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,26 +11,30 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Icon
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import ayodong.emobilize.domain.model.FabAction
 import ayodong.emobilize.domain.model.NavTab
+import ayodong.emobilize.domain.model.ThemeMode
+import ayodong.emobilize.domain.model.WeekStart
+import java.time.DayOfWeek
 import ayodong.emobilize.ui.calendar.CalendarScreen
 import ayodong.emobilize.ui.dock.BottomDock
 import ayodong.emobilize.ui.dock.RadialMenu
-import ayodong.emobilize.ui.dock.ThemeOrb
 import ayodong.emobilize.ui.tasks.AddTaskCard
 import ayodong.emobilize.ui.tasks.CalendarFormSheet
 import ayodong.emobilize.ui.tasks.TaskFormSheet
@@ -39,19 +44,23 @@ import ayodong.emobilize.ui.tasks.TasksScreen
 import ayodong.emobilize.ui.tasks.TasksViewModel
 import ayodong.emobilize.ui.theme.EmobilizeTheme
 import ayodong.emobilize.ui.theme.LocalPalette
-import ayodong.emobilize.ui.theme.appStyle
 import ayodong.emobilize.ui.theme.NeutralDark
 import ayodong.emobilize.ui.theme.NeutralLight
 import ayodong.emobilize.ui.theme.menuColor
 
 @Composable
 fun EmobilizeApp(viewModel: TasksViewModel) {
-    var themeId by rememberSaveable { mutableIntStateOf(1) }
     var tabName by rememberSaveable { mutableStateOf(NavTab.Tasks.name) }
     var menuOpen by rememberSaveable { mutableStateOf(false) }
     var splashDone by rememberSaveable { mutableStateOf(false) }
     val tab = if (tabName == NavTab.Calendar.name) NavTab.Calendar else NavTab.Tasks
-    val palette = if (themeId == 1) NeutralLight else NeutralDark
+    val systemDark = isSystemInDarkTheme()
+    val isDark = when (viewModel.appSettings.themeMode) {
+        ThemeMode.System -> systemDark
+        ThemeMode.Light -> false
+        ThemeMode.Dark -> true
+    }
+    val palette = if (isDark) NeutralDark else NeutralLight
 
     EmobilizeTheme(palette) {
         val colors = LocalPalette.current
@@ -86,21 +95,23 @@ fun EmobilizeApp(viewModel: TasksViewModel) {
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Spacer(Modifier.weight(1f))
-                    Text(
-                        "Settings",
-                        modifier = Modifier
+                    Box(
+                        Modifier
+                            .size(44.dp)
+                            .clip(CircleShape)
                             .clickable {
                                 menuOpen = false
                                 viewModel.openSettings()
-                            }
-                            .padding(end = 12.dp, top = 4.dp, bottom = 4.dp),
-                        style = appStyle(14.sp, FontWeight.Medium),
-                        color = colors.text,
-                    )
-                    ThemeOrb(
-                        themeId = themeId,
-                        onClick = { themeId = if (themeId == 1) 2 else 1 },
-                    )
+                            },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Settings,
+                            contentDescription = "Settings",
+                            tint = colors.text,
+                            modifier = Modifier.size(22.dp),
+                        )
+                    }
                 }
                 Box(
                     Modifier
@@ -113,6 +124,8 @@ fun EmobilizeApp(viewModel: TasksViewModel) {
                         CalendarScreen(
                             tasks = viewModel.tasks,
                             blocks = viewModel.blocks,
+                            defaultView = viewModel.appSettings.defaultCalendarView,
+                            weekStart = if (viewModel.appSettings.weekStart == WeekStart.Monday) DayOfWeek.MONDAY else DayOfWeek.SUNDAY,
                             pending = viewModel.pendingAction,
                             selectedTaskId = viewModel.selectedTaskId,
                             selectedBlockId = viewModel.selectedBlockId,
@@ -209,8 +222,9 @@ fun EmobilizeApp(viewModel: TasksViewModel) {
             if (viewModel.showSettings) {
                 Box(Modifier.zIndex(4f)) {
                     SettingsScreen(
+                        appSettings = viewModel.appSettings,
                         categories = viewModel.categories,
-                        onCategory = viewModel::updateCategory,
+                        onSave = viewModel::saveSettings,
                         onClose = viewModel::dismissSettings,
                     )
                 }

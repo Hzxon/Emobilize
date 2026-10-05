@@ -7,6 +7,9 @@ import ayodong.emobilize.data.repository.InMemoryScheduleRepository
 import ayodong.emobilize.data.repository.InMemoryTaskRepository
 import ayodong.emobilize.data.repository.PreferencesAuthRepository
 import ayodong.emobilize.data.repository.PreferencesCategoryRepository
+import ayodong.emobilize.data.repository.PreferencesAppSettingsRepository
+import ayodong.emobilize.domain.usecase.GetAppSettingsUseCase
+import ayodong.emobilize.domain.usecase.UpdateAppSettingsUseCase
 import ayodong.emobilize.domain.usecase.AddTaskUseCase
 import ayodong.emobilize.domain.usecase.DeleteTaskUseCase
 import ayodong.emobilize.domain.usecase.DeleteTimeBlockUseCase
@@ -27,6 +30,7 @@ class AppContainer(context: Context) {
     private val schedule = InMemoryScheduleRepository()
     private val auth = PreferencesAuthRepository(context)
     private val categories = PreferencesCategoryRepository(context)
+    private val appSettings = PreferencesAppSettingsRepository(context)
 
     val getTasks = GetTasksUseCase(tasks)
     val addTask = AddTaskUseCase(tasks)
@@ -40,6 +44,8 @@ class AppContainer(context: Context) {
     val register = RegisterAccountUseCase(auth)
     val getCategories = GetCategoriesUseCase(categories)
     val updateCategory = UpdateCategoryUseCase(categories, tasks, schedule)
+    val getAppSettings = GetAppSettingsUseCase(appSettings)
+    val updateAppSettings = UpdateAppSettingsUseCase(appSettings)
 }
 
 class TasksViewModelFactory(
@@ -58,6 +64,8 @@ class TasksViewModelFactory(
             deleteTimeBlock = container.deleteTimeBlock,
             getCategories = container.getCategories,
             saveCategory = container.updateCategory,
+            getAppSettings = container.getAppSettings,
+            saveAppSettings = container.updateAppSettings,
         ) as T
     }
 }

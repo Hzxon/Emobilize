@@ -15,14 +15,15 @@ data class TimeBlock(
     val category: Category,
 )
 
-fun weekOf(date: LocalDate): List<LocalDate> {
-    val monday = date.with(DayOfWeek.MONDAY)
-    return (0..6).map { monday.plusDays(it.toLong()) }
+fun weekOf(date: LocalDate, firstDay: DayOfWeek = DayOfWeek.MONDAY): List<LocalDate> {
+    val daysBack = (date.dayOfWeek.value - firstDay.value + 7) % 7
+    val start = date.minusDays(daysBack.toLong())
+    return (0..6).map { start.plusDays(it.toLong()) }
 }
 
-fun monthCells(month: YearMonth): List<LocalDate?> {
+fun monthCells(month: YearMonth, firstDay: DayOfWeek = DayOfWeek.SUNDAY): List<LocalDate?> {
     val first = month.atDay(1)
-    val leading = first.dayOfWeek.value % 7
+    val leading = (first.dayOfWeek.value - firstDay.value + 7) % 7
     val days = (1..month.lengthOfMonth()).map { month.atDay(it) }
     return List(leading) { null } + days
 }

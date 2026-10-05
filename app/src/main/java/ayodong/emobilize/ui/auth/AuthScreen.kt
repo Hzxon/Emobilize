@@ -35,8 +35,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
-import ayodong.emobilize.ui.dock.ThemeOrb
 import ayodong.emobilize.ui.theme.AppFont
 import ayodong.emobilize.ui.theme.AppMetrics
 import ayodong.emobilize.ui.theme.LocalPalette
@@ -46,8 +44,6 @@ import ayodong.emobilize.ui.theme.appStyle
 @Composable
 fun AuthScreen(
     viewModel: AuthViewModel,
-    themeId: Int,
-    onToggleTheme: () -> Unit,
 ) {
     val palette = LocalPalette.current
     BackHandler(enabled = viewModel.page == AuthPage.Register) {
@@ -171,15 +167,6 @@ fun AuthScreen(
                 )
             }
         }
-        ThemeOrb(
-            themeId = themeId,
-            onClick = onToggleTheme,
-            modifier = Modifier
-                .zIndex(1f)
-                .align(Alignment.TopEnd)
-                .statusBarsPadding()
-                .padding(top = 6.dp, end = 18.dp),
-        )
     }
 }
 

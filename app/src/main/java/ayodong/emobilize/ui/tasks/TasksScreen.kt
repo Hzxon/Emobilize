@@ -84,7 +84,7 @@ fun TasksScreen(
             }
         }
         status to if (status == TaskStatus.Done) group else group.sortedBy { deadlineRank(it) }
-    }.filter { it.second.isNotEmpty() }
+    }.filter { it.second.isNotEmpty() && (it.first != TaskStatus.Done || viewModel.appSettings.showCompletedTasks) }
 
     Column(modifier.fillMaxSize()) {
         Text(
