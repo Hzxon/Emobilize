@@ -26,8 +26,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import ayodong.emobilize.domain.model.FabAction
 import ayodong.emobilize.domain.model.NavTab
-import ayodong.emobilize.ui.auth.AuthScreen
-import ayodong.emobilize.ui.auth.AuthViewModel
 import ayodong.emobilize.ui.calendar.CalendarScreen
 import ayodong.emobilize.ui.dock.BottomDock
 import ayodong.emobilize.ui.dock.RadialMenu
@@ -47,7 +45,7 @@ import ayodong.emobilize.ui.theme.NeutralLight
 import ayodong.emobilize.ui.theme.menuColor
 
 @Composable
-fun EmobilizeApp(viewModel: TasksViewModel, authViewModel: AuthViewModel) {
+fun EmobilizeApp(viewModel: TasksViewModel) {
     var themeId by rememberSaveable { mutableIntStateOf(1) }
     var tabName by rememberSaveable { mutableStateOf(NavTab.Tasks.name) }
     var menuOpen by rememberSaveable { mutableStateOf(false) }
@@ -59,14 +57,6 @@ fun EmobilizeApp(viewModel: TasksViewModel, authViewModel: AuthViewModel) {
         val colors = LocalPalette.current
         if (!splashDone) {
             SplashScreen(onFinished = { splashDone = true })
-            return@EmobilizeTheme
-        }
-        if (!authViewModel.signedIn) {
-            AuthScreen(
-                viewModel = authViewModel,
-                themeId = themeId,
-                onToggleTheme = { themeId = if (themeId == 1) 2 else 1 },
-            )
             return@EmobilizeTheme
         }
         BackHandler(enabled = viewModel.showSettings || viewModel.showAdd || viewModel.showCalendar || viewModel.showEdit || menuOpen || viewModel.pendingAction != null || viewModel.selectedBlockId != null) {
