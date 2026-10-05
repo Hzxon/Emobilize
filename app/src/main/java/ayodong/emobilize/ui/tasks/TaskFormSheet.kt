@@ -51,10 +51,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import ayodong.emobilize.model.Category
-import ayodong.emobilize.model.Priority
-import ayodong.emobilize.model.ScheduleMode
-import ayodong.emobilize.model.formatInputTime
+import ayodong.emobilize.domain.model.Category
+import ayodong.emobilize.domain.model.Priority
+import ayodong.emobilize.domain.model.ScheduleMode
+import ayodong.emobilize.domain.model.formatInputTime
 import ayodong.emobilize.ui.theme.AppFont
 import ayodong.emobilize.ui.theme.LocalPalette
 import ayodong.emobilize.ui.theme.ShadcnRadius

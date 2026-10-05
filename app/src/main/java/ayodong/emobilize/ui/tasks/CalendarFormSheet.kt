@@ -37,10 +37,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import ayodong.emobilize.model.Category
-import ayodong.emobilize.model.EventType
-import ayodong.emobilize.model.Priority
-import ayodong.emobilize.model.ScheduleMode
+import ayodong.emobilize.domain.model.Category
+import ayodong.emobilize.domain.model.EventType
+import ayodong.emobilize.domain.model.Priority
+import ayodong.emobilize.domain.model.ScheduleMode
 import ayodong.emobilize.ui.theme.AppFont
 import ayodong.emobilize.ui.theme.LocalPalette
 import ayodong.emobilize.ui.theme.ShadcnRadius

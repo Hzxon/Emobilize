@@ -4,27 +4,34 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import ayodong.emobilize.model.Category
-import ayodong.emobilize.model.DateRange
-import ayodong.emobilize.model.EventType
-import ayodong.emobilize.model.FabAction
-import ayodong.emobilize.model.TimeBlock
-import ayodong.emobilize.model.hoursToInput
-import ayodong.emobilize.model.inputToHours
-import ayodong.emobilize.model.FilterKey
-import ayodong.emobilize.model.Priority
-import ayodong.emobilize.model.ScheduleMode
-import ayodong.emobilize.model.Task
-import ayodong.emobilize.model.TaskStatus
-import ayodong.emobilize.model.deadlineToInputDate
-import ayodong.emobilize.model.displayTimeToInput
-import ayodong.emobilize.model.filterKeyFor
-import ayodong.emobilize.model.filteredTasks
-import ayodong.emobilize.model.formatInputDate
-import ayodong.emobilize.model.formatInputTime
-import ayodong.emobilize.model.isoDate
-import ayodong.emobilize.model.rangeIsValid
-import ayodong.emobilize.model.sampleTasks
+import ayodong.emobilize.domain.model.Category
+import ayodong.emobilize.domain.model.DateRange
+import ayodong.emobilize.domain.model.EventType
+import ayodong.emobilize.domain.model.FabAction
+import ayodong.emobilize.domain.model.FilterKey
+import ayodong.emobilize.domain.model.Priority
+import ayodong.emobilize.domain.model.ScheduleMode
+import ayodong.emobilize.domain.model.Task
+import ayodong.emobilize.domain.model.TaskStatus
+import ayodong.emobilize.domain.model.TimeBlock
+import ayodong.emobilize.domain.model.deadlineToInputDate
+import ayodong.emobilize.domain.model.displayTimeToInput
+import ayodong.emobilize.domain.model.filterKeyFor
+import ayodong.emobilize.domain.model.filteredTasks
+import ayodong.emobilize.domain.model.formatInputDate
+import ayodong.emobilize.domain.model.formatInputTime
+import ayodong.emobilize.domain.model.hoursToInput
+import ayodong.emobilize.domain.model.inputToHours
+import ayodong.emobilize.domain.model.isoDate
+import ayodong.emobilize.domain.model.rangeIsValid
+import ayodong.emobilize.domain.usecase.AddTaskUseCase
+import ayodong.emobilize.domain.usecase.DeleteTaskUseCase
+import ayodong.emobilize.domain.usecase.DeleteTimeBlockUseCase
+import ayodong.emobilize.domain.usecase.GetScheduleUseCase
+import ayodong.emobilize.domain.usecase.GetTasksUseCase
+import ayodong.emobilize.domain.usecase.PlaceTimeBlockUseCase
+import ayodong.emobilize.domain.usecase.SetTaskStatusUseCase
+import ayodong.emobilize.domain.usecase.UpdateTaskUseCase
 import java.time.LocalDate
 
 class TaskDraft {
@@ -45,19 +52,29 @@ class TaskDraft {
     fun rangeValid(): Boolean = rangeIsValid(startDate, startTime, endDate, endTime)
 }
 
-data class SavedSchedule(
-    val block: TimeBlock,
-    val date: LocalDate,
-)
+class TasksViewModel(
+    private val getTasks: GetTasksUseCase,
+    private val addTask: AddTaskUseCase,
+    private val updateTask: UpdateTaskUseCase,
+    private val deleteTask: DeleteTaskUseCase,
+    private val setTaskStatus: SetTaskStatusUseCase,
+    private val getSchedule: GetScheduleUseCase,
+    private val placeTimeBlock: PlaceTimeBlockUseCase,
+    private val deleteTimeBlock: DeleteTimeBlockUseCase,
+) : ViewModel() {
+    private val initialBoard = getTasks()
 
-class TasksViewModel : ViewModel() {
-    var tasks by mutableStateOf(sampleTasks())
+    var tasks by mutableStateOf(initialBoard.tasks)
         private set
     var filter by mutableStateOf(FilterKey.All)
         private set
-    var done by mutableStateOf(setOf(1L))
+    var done by mutableStateOf(initialBoard.doneIds)
         private set
-    var inProgress by mutableStateOf(setOf<Long>())
+    var inProgress by mutableStateOf(initialBoard.progressIds)
+        private set
+    var blocks by mutableStateOf(getSchedule())
+        private set
+    var selectedBlockId by mutableStateOf<Long?>(null)
         private set
     var pendingAction by mutableStateOf<FabAction?>(null)
         private set
@@ -86,6 +103,22 @@ class TasksViewModel : ViewModel() {
 
     fun selectFilter(next: FilterKey) {
         filter = next
+    }
+
+    fun clearBlockSelection() {
+        selectedBlockId = null
+    }
+
+    fun toggleBlockSelection(id: Long) {
+        selectedBlockId = if (selectedBlockId == id) null else id
+    }
+
+    fun deleteSelectedBlock() {
+        val id = selectedBlockId ?: return
+        deleteTimeBlock(id)
+        selectedBlockId = null
+        blocks = getSchedule()
+        cancelPending()
     }
 
     fun showBlockEditor(block: TimeBlock, date: LocalDate) {
@@ -172,9 +205,8 @@ class TasksViewModel : ViewModel() {
         val id = selectedTaskId
         when {
             pendingAction == FabAction.Delete && id != null -> {
-                tasks = tasks.filter { it.id != id }
-                done = done - id
-                inProgress = inProgress - id
+                deleteTask(id)
+                reloadTasks()
                 pendingAction = null
                 selectedTaskId = null
             }
@@ -210,13 +242,8 @@ class TasksViewModel : ViewModel() {
 
     fun applyStatus(status: TaskStatus) {
         val id = selectedTaskId ?: return
-        if (status == TaskStatus.Done) {
-            done = done + id
-            inProgress = inProgress - id
-        } else {
-            inProgress = inProgress + id
-            done = done - id
-        }
+        setTaskStatus(id, status)
+        reloadTasks()
         pendingAction = null
         selectedTaskId = null
     }
@@ -240,42 +267,43 @@ class TasksViewModel : ViewModel() {
         }
     }
 
-    fun submitCalendar(): SavedSchedule? {
-        if (!canSubmitCalendar(addDraft)) return null
-        val schedule = if (addDraft.eventType == EventType.RegularSchedule) {
-            val date = runCatching { LocalDate.parse(addDraft.startDate) }.getOrNull() ?: return null
-            SavedSchedule(
-                block = TimeBlock(
+    fun submitCalendar() {
+        if (!canSubmitCalendar(addDraft)) return
+        if (addDraft.eventType == EventType.RegularSchedule) {
+            val date = runCatching { LocalDate.parse(addDraft.startDate) }.getOrNull() ?: return
+            placeTimeBlock(
+                TimeBlock(
                     id = calendarBlockId ?: System.currentTimeMillis(),
                     title = addDraft.name.trim(),
                     start = inputToHours(addDraft.startTime),
                     end = inputToHours(addDraft.endTime),
                     category = addDraft.category ?: Category.Work,
                 ),
-                date = date,
+                date,
             )
+            reloadSchedule()
         } else {
             val id = calendarTaskId ?: System.currentTimeMillis()
             val task = draftToCalendarTask(addDraft, id)
-            tasks = if (calendarTaskId == null) tasks + task else tasks.map { if (it.id == id) task else it }
-            null
+            if (calendarTaskId == null) addTask(task) else updateTask(task)
+            reloadTasks()
         }
         dismissCalendar()
-        return schedule
     }
 
     fun submitAdd() {
         if (addDraft.name.isBlank()) return
         if (addDraft.includeSchedule && addDraft.scheduleMode == ScheduleMode.Range && !addDraft.rangeValid()) return
-        tasks = tasks + draftToTask(addDraft, System.currentTimeMillis())
+        addTask(draftToTask(addDraft, System.currentTimeMillis()))
+        reloadTasks()
         showAdd = false
     }
 
     fun submitEdit() {
         val id = editingId ?: return
         if (!canSubmit(editDraft)) return
-        val updated = draftToTask(editDraft, id)
-        tasks = tasks.map { if (it.id == id) updated else it }
+        updateTask(draftToTask(editDraft, id))
+        reloadTasks()
         showEdit = false
         editingId = null
     }
@@ -311,6 +339,17 @@ class TasksViewModel : ViewModel() {
     fun dismissEdit() {
         showEdit = false
         editingId = null
+    }
+
+    private fun reloadTasks() {
+        val board = getTasks()
+        tasks = board.tasks
+        done = board.doneIds
+        inProgress = board.progressIds
+    }
+
+    private fun reloadSchedule() {
+        blocks = getSchedule()
     }
 
     private fun draftToTask(draft: TaskDraft, id: Long): Task {

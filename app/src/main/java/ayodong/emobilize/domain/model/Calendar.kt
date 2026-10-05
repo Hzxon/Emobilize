@@ -1,4 +1,4 @@
-package ayodong.emobilize.model
+package ayodong.emobilize.domain.model
 
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -111,35 +111,3 @@ fun replaceBlock(
     return stripped + (target to (stripped[target].orEmpty() + block))
 }
 
-fun sampleBlocks(today: LocalDate = LocalDate.now()): Map<LocalDate, List<TimeBlock>> {
-    val days = weekOf(today)
-    return mapOf(
-        days[0] to listOf(
-            TimeBlock(101, "Read Research Paper", 9f, 10.5f, Category.Study),
-            TimeBlock(102, "Team Standup", 11f, 11.5f, Category.Work),
-            TimeBlock(103, "Lunch Break", 12.5f, 13.5f, Category.Personal),
-            TimeBlock(104, "Finish Backend API", 14f, 16f, Category.Work),
-            TimeBlock(105, "Gym", 17f, 18f, Category.Health),
-        ),
-        days[1] to listOf(
-            TimeBlock(106, "Portfolio Design", 10f, 12f, Category.Personal),
-            TimeBlock(107, "Lunch", 12.5f, 13.5f, Category.Personal),
-            TimeBlock(108, "Code Review", 15f, 16.5f, Category.Work),
-        ),
-        days[2] to listOf(
-            TimeBlock(109, "Morning Planning", 8f, 9f, Category.Study),
-            TimeBlock(110, "Deep Work", 9f, 12f, Category.Work),
-            TimeBlock(111, "Lunch", 12f, 13f, Category.Personal),
-            TimeBlock(112, "Standup", 14f, 14.5f, Category.Work),
-            TimeBlock(113, "Gym Session", 17.5f, 18.5f, Category.Health),
-            TimeBlock(114, "Buy Groceries", 19f, 19.5f, Category.Personal),
-        ),
-        days[4] to listOf(
-            TimeBlock(115, "Submit Assignment", 10f, 11f, Category.University),
-            TimeBlock(116, "Lunch", 13f, 14f, Category.Personal),
-        ),
-        days[5] to listOf(
-            TimeBlock(117, "Weekend Run", 8f, 9f, Category.Health),
-        ),
-    )
-}

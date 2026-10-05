@@ -2,7 +2,7 @@ package ayodong.emobilize.ui.theme
 
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
-import ayodong.emobilize.model.FabAction
+import ayodong.emobilize.domain.model.FabAction
 
 fun Color.at(alphaByte: Int): Color = copy(alpha = alphaByte / 255f)
 
@@ -160,16 +160,16 @@ val NeutralDark = paletteFrom(2, ShadcnDark, dark = true)
 
 val LocalPalette = staticCompositionLocalOf { NeutralLight }
 
-fun AppPalette.categoryColor(category: ayodong.emobilize.model.Category): Color = when (category) {
-    ayodong.emobilize.model.Category.Study -> catStudy
-    ayodong.emobilize.model.Category.Work -> catWork
-    ayodong.emobilize.model.Category.Health -> catHealth
-    ayodong.emobilize.model.Category.Personal -> catPersonal
-    ayodong.emobilize.model.Category.University -> catUniversity
+fun AppPalette.categoryColor(category: ayodong.emobilize.domain.model.Category): Color = when (category) {
+    ayodong.emobilize.domain.model.Category.Study -> catStudy
+    ayodong.emobilize.domain.model.Category.Work -> catWork
+    ayodong.emobilize.domain.model.Category.Health -> catHealth
+    ayodong.emobilize.domain.model.Category.Personal -> catPersonal
+    ayodong.emobilize.domain.model.Category.University -> catUniversity
 }
 
-fun AppPalette.priorityColor(priority: ayodong.emobilize.model.Priority): Color = when (priority) {
-    ayodong.emobilize.model.Priority.Low -> prioLow
-    ayodong.emobilize.model.Priority.Medium -> prioMedium
-    ayodong.emobilize.model.Priority.High -> prioHigh
+fun AppPalette.priorityColor(priority: ayodong.emobilize.domain.model.Priority): Color = when (priority) {
+    ayodong.emobilize.domain.model.Priority.Low -> prioLow
+    ayodong.emobilize.domain.model.Priority.Medium -> prioMedium
+    ayodong.emobilize.domain.model.Priority.High -> prioHigh
 }

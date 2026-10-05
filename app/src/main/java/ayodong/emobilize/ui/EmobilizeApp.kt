@@ -11,18 +11,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.lifecycle.viewmodel.compose.viewModel
-import ayodong.emobilize.model.FabAction
-import ayodong.emobilize.model.NavTab
-import ayodong.emobilize.model.placeSchedule
-import ayodong.emobilize.model.sampleBlocks
+import ayodong.emobilize.domain.model.FabAction
+import ayodong.emobilize.domain.model.NavTab
 import ayodong.emobilize.ui.calendar.CalendarScreen
 import ayodong.emobilize.ui.dock.BottomDock
 import ayodong.emobilize.ui.dock.RadialMenu
@@ -39,25 +35,23 @@ import ayodong.emobilize.ui.theme.NeutralLight
 import ayodong.emobilize.ui.theme.menuColor
 
 @Composable
-fun EmobilizeApp(viewModel: TasksViewModel = viewModel()) {
+fun EmobilizeApp(viewModel: TasksViewModel) {
     var themeId by rememberSaveable { mutableIntStateOf(1) }
     var tabName by rememberSaveable { mutableStateOf(NavTab.Tasks.name) }
     var menuOpen by rememberSaveable { mutableStateOf(false) }
-    var blocks by remember { mutableStateOf(sampleBlocks()) }
-    var selectedBlockId by remember { mutableStateOf<Long?>(null) }
     val tab = if (tabName == NavTab.Calendar.name) NavTab.Calendar else NavTab.Tasks
     val palette = if (themeId == 1) NeutralLight else NeutralDark
 
     EmobilizeTheme(palette) {
         val colors = LocalPalette.current
-        BackHandler(enabled = viewModel.showAdd || viewModel.showCalendar || viewModel.showEdit || menuOpen || viewModel.pendingAction != null || selectedBlockId != null) {
+        BackHandler(enabled = viewModel.showAdd || viewModel.showCalendar || viewModel.showEdit || menuOpen || viewModel.pendingAction != null || viewModel.selectedBlockId != null) {
             when {
                 viewModel.showAdd -> viewModel.dismissAdd()
                 viewModel.showCalendar -> viewModel.dismissCalendar()
                 viewModel.showEdit -> viewModel.dismissEdit()
                 menuOpen -> menuOpen = false
                 else -> {
-                    selectedBlockId = null
+                    viewModel.clearBlockSelection()
                     viewModel.cancelPending()
                 }
             }
@@ -79,18 +73,18 @@ fun EmobilizeApp(viewModel: TasksViewModel = viewModel()) {
                     } else {
                         CalendarScreen(
                             tasks = viewModel.tasks,
-                            blocks = blocks,
+                            blocks = viewModel.blocks,
                             pending = viewModel.pendingAction,
                             selectedTaskId = viewModel.selectedTaskId,
-                            selectedBlockId = selectedBlockId,
+                            selectedBlockId = viewModel.selectedBlockId,
                             onSelectTask = { task ->
                                 when (viewModel.pendingAction) {
                                     FabAction.Edit -> {
-                                        selectedBlockId = null
+                                        viewModel.clearBlockSelection()
                                         viewModel.beginCalendarEdit(task)
                                     }
                                     FabAction.Delete -> {
-                                        selectedBlockId = null
+                                        viewModel.clearBlockSelection()
                                         viewModel.toggleTaskSelection(task.id)
                                     }
                                     else -> Unit
@@ -99,29 +93,23 @@ fun EmobilizeApp(viewModel: TasksViewModel = viewModel()) {
                             onSelectBlock = { date, block ->
                                 when (viewModel.pendingAction) {
                                     FabAction.Edit -> {
-                                        selectedBlockId = null
+                                        viewModel.clearBlockSelection()
                                         viewModel.showBlockEditor(block, date)
                                     }
                                     FabAction.Delete -> {
                                         viewModel.clearTaskSelection()
-                                        selectedBlockId = if (selectedBlockId == block.id) null else block.id
+                                        viewModel.toggleBlockSelection(block.id)
                                     }
-                                    else -> selectedBlockId = if (selectedBlockId == block.id) null else block.id
+                                    else -> viewModel.toggleBlockSelection(block.id)
                                 }
                             },
                             onDelete = {
-                                val blockId = selectedBlockId
+                                val blockId = viewModel.selectedBlockId
                                 if (viewModel.selectedTaskId != null) viewModel.confirmAction()
-                                if (blockId != null) {
-                                    blocks = blocks
-                                        .mapValues { (_, list) -> list.filter { it.id != blockId } }
-                                        .filterValues { it.isNotEmpty() }
-                                    selectedBlockId = null
-                                    viewModel.cancelPending()
-                                }
+                                if (blockId != null) viewModel.deleteSelectedBlock()
                             },
                             onCancel = {
-                                selectedBlockId = null
+                                viewModel.clearBlockSelection()
                                 viewModel.cancelPending()
                             },
                         )
@@ -132,7 +120,7 @@ fun EmobilizeApp(viewModel: TasksViewModel = viewModel()) {
                     onTab = { next ->
                         tabName = next.name
                         menuOpen = false
-                        selectedBlockId = null
+                        viewModel.clearBlockSelection()
                         if (next == NavTab.Calendar && viewModel.pendingAction == FabAction.Update) {
                             viewModel.cancelPending()
                         }
@@ -145,7 +133,7 @@ fun EmobilizeApp(viewModel: TasksViewModel = viewModel()) {
                 onMenuOpenChange = { menuOpen = it },
                 onAction = { action ->
                     menuOpen = false
-                    selectedBlockId = null
+                    viewModel.clearBlockSelection()
                     if (tab == NavTab.Calendar && action == FabAction.Add) {
                         viewModel.beginCalendarAdd()
                     } else {
@@ -182,12 +170,7 @@ fun EmobilizeApp(viewModel: TasksViewModel = viewModel()) {
                         saveColor = accent,
                         submitLabel = if (viewModel.calendarEditing) "Save Changes" else "Save",
                         onDismiss = viewModel::dismissCalendar,
-                        onSubmit = {
-                            val schedule = viewModel.submitCalendar()
-                            if (schedule != null) {
-                                blocks = placeSchedule(blocks, schedule.block, schedule.date)
-                            }
-                        },
+                        onSubmit = viewModel::submitCalendar,
                     )
                 }
             }

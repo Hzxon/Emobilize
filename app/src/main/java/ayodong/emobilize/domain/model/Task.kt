@@ -1,4 +1,4 @@
-package ayodong.emobilize.model
+package ayodong.emobilize.domain.model
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -148,25 +148,6 @@ fun deadlineRank(task: Task, today: LocalDate = LocalDate.now()): Int {
 fun isOverdue(task: Task, nowHours: Float): Boolean {
     if (task.filterKey != FilterKey.Today || task.time.isNullOrBlank()) return false
     return parseDisplayTime(task.time) < nowHours
-}
-
-fun sampleTasks(today: LocalDate = LocalDate.now()): List<Task> {
-    val later = isoDate(today.plusDays(2))
-    return listOf(
-        Task(1, "Read research paper", Category.Study, "Today", "10:30 AM", FilterKey.Today, Priority.High),
-        Task(2, "Finish backend API", Category.Work, "Today", "4:00 PM", FilterKey.Today, Priority.High),
-        Task(3, "Gym", Category.Health, "Tomorrow", "6:00 PM", FilterKey.Tomorrow, Priority.Medium),
-        Task(
-            4,
-            "Design portfolio draft",
-            Category.Personal,
-            formatInputDate(later, today),
-            "11:00 AM",
-            FilterKey.Later,
-            Priority.Medium,
-        ),
-        Task(5, "Buy groceries", Category.Personal, "Today", null, FilterKey.Today, Priority.Low),
-    )
 }
 
 fun filteredTasks(

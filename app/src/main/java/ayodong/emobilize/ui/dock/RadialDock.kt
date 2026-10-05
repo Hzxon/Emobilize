@@ -73,9 +73,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import ayodong.emobilize.model.FabAction
-import ayodong.emobilize.model.NavTab
-import ayodong.emobilize.model.displayAngle
+import ayodong.emobilize.domain.model.FabAction
+import ayodong.emobilize.domain.model.NavTab
+import ayodong.emobilize.domain.model.displayAngle
 import ayodong.emobilize.ui.theme.AppMetrics
 import ayodong.emobilize.ui.theme.LocalPalette
 import ayodong.emobilize.ui.theme.NeutralDark
