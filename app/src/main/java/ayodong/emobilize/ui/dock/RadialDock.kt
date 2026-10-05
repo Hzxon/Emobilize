@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
@@ -51,6 +52,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Brush
@@ -154,23 +157,25 @@ private fun DockTab(
 
 @Composable
 internal fun FabFace(progress: Float, showCancel: Boolean) {
+    val lift = progress.coerceIn(0f, 1f)
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Box(
             Modifier
                 .size(72.dp)
+                .shadow((8f * lift).dp, CircleShape)
                 .clip(CircleShape)
                 .background(Color.Black)
                 .border(2.dp, Color.White, CircleShape),
             contentAlignment = Alignment.Center,
         ) {
-            if (showCancel) {
-                Icon(
-                    Icons.Filled.Close,
-                    contentDescription = "Cancel",
-                    tint = Color.White,
-                    modifier = Modifier.size(22.dp),
-                )
-            }
+            Icon(
+                if (showCancel) Icons.Filled.Close else Icons.Filled.Add,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier
+                    .size(22.dp)
+                    .rotate(progress * 90f),
+            )
         }
     }
 }
