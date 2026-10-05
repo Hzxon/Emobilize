@@ -1,5 +1,6 @@
 package ayodong.emobilize.domain.repository
 
+import ayodong.emobilize.domain.model.Category
 import ayodong.emobilize.domain.model.Task
 import ayodong.emobilize.domain.model.TaskStatus
 import ayodong.emobilize.domain.model.TimeBlock
@@ -17,10 +18,17 @@ interface TaskRepository {
     fun update(task: Task)
     fun delete(id: Long)
     fun setStatus(id: Long, status: TaskStatus)
+    fun applyCategory(category: Category)
 }
 
 interface ScheduleRepository {
     fun blocks(): Map<LocalDate, List<TimeBlock>>
     fun place(block: TimeBlock, date: LocalDate)
     fun delete(id: Long)
+    fun applyCategory(category: Category)
+}
+
+interface CategoryRepository {
+    fun all(): List<Category>
+    fun update(category: Category): Category?
 }

@@ -72,6 +72,7 @@ private enum class AddOption { Category, Priority, Schedule }
 @Composable
 fun AddTaskCard(
     draft: TaskDraft,
+    categories: List<Category>,
     onDismiss: () -> Unit,
     onSubmit: () -> Unit,
 ) {
@@ -150,7 +151,7 @@ fun AddTaskCard(
                     },
                 )
                 when (option) {
-                    AddOption.Category -> CategoryOptions(draft)
+                    AddOption.Category -> CategoryOptions(draft, categories)
                     AddOption.Priority -> PriorityOptions(draft)
                     AddOption.Schedule -> ScheduleOptions(draft)
                     null -> Unit
@@ -218,14 +219,14 @@ private fun OptionButton(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun CategoryOptions(draft: TaskDraft) {
+private fun CategoryOptions(draft: TaskDraft, categories: List<Category>) {
     val palette = LocalPalette.current
     FlowRow(
         modifier = Modifier.padding(bottom = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Category.entries.forEach { category ->
+        categories.forEach { category ->
             val color = palette.categoryColor(category)
             val selected = draft.category == category
             Text(

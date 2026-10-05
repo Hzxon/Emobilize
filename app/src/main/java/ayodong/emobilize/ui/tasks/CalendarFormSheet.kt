@@ -58,6 +58,7 @@ fun CalendarFormSheet(
     canSubmit: Boolean,
     saveColor: Color,
     submitLabel: String,
+    categories: List<Category>,
     onDismiss: () -> Unit,
     onSubmit: () -> Unit,
 ) {
@@ -156,8 +157,8 @@ fun CalendarFormSheet(
                 }
                 Spacer(Modifier.height(22.dp))
                 when (draft.eventType) {
-                    EventType.Event -> EventFields(draft)
-                    EventType.Task -> TaskFields(draft)
+                    EventType.Event -> EventFields(draft, categories)
+                    EventType.Task -> TaskFields(draft, categories)
                     EventType.RegularSchedule -> ScheduleFields(draft)
                 }
                 Spacer(Modifier.height(22.dp))
@@ -184,7 +185,7 @@ fun CalendarFormSheet(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun EventFields(draft: TaskDraft) {
+private fun EventFields(draft: TaskDraft, categories: List<Category>) {
     SectionLabel("Date & Time")
     Row(
         modifier = Modifier.padding(top = 10.dp),
@@ -207,14 +208,14 @@ private fun EventFields(draft: TaskDraft) {
         )
     }
     Spacer(Modifier.height(18.dp))
-    CategoryPicker(draft)
+    CategoryPicker(draft, categories)
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun TaskFields(draft: TaskDraft) {
+private fun TaskFields(draft: TaskDraft, categories: List<Category>) {
     val palette = LocalPalette.current
-    CategoryPicker(draft)
+    CategoryPicker(draft, categories)
     Spacer(Modifier.height(14.dp))
     SectionLabel("Priority")
     Row(
@@ -320,7 +321,7 @@ private fun ScheduleFields(draft: TaskDraft) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun CategoryPicker(draft: TaskDraft) {
+private fun CategoryPicker(draft: TaskDraft, categories: List<Category>) {
     val palette = LocalPalette.current
     SectionLabel("Category")
     FlowRow(
@@ -328,7 +329,7 @@ private fun CategoryPicker(draft: TaskDraft) {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Category.entries.forEach { category ->
+        categories.forEach { category ->
             val color = palette.categoryColor(category)
             val selected = draft.category == category
             Text(

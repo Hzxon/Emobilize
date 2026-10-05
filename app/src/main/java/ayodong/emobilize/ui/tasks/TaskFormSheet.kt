@@ -75,6 +75,7 @@ fun TaskFormSheet(
     draft: TaskDraft,
     canSubmit: Boolean,
     saveColor: Color,
+    categories: List<Category>,
     onDismiss: () -> Unit,
     onSubmit: () -> Unit,
 ) {
@@ -136,7 +137,7 @@ fun TaskFormSheet(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    Category.entries.forEach { category ->
+                    categories.forEach { category ->
                         val color = palette.categoryColor(category)
                         val selected = draft.category == category
                         Text(

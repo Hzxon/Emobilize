@@ -1,5 +1,6 @@
 package ayodong.emobilize.data.repository
 
+import ayodong.emobilize.domain.model.Category
 import ayodong.emobilize.domain.model.Task
 import ayodong.emobilize.domain.model.TaskStatus
 import ayodong.emobilize.domain.repository.TaskBoard
@@ -33,6 +34,12 @@ class InMemoryTaskRepository : TaskRepository {
         } else {
             progressIds = progressIds + id
             doneIds = doneIds - id
+        }
+    }
+
+    override fun applyCategory(category: Category) {
+        tasks = tasks.map { task ->
+            if (task.category?.id == category.id) task.copy(category = category) else task
         }
     }
 }

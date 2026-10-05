@@ -27,8 +27,10 @@ import ayodong.emobilize.domain.model.rangeIsValid
 import ayodong.emobilize.domain.usecase.AddTaskUseCase
 import ayodong.emobilize.domain.usecase.DeleteTaskUseCase
 import ayodong.emobilize.domain.usecase.DeleteTimeBlockUseCase
+import ayodong.emobilize.domain.usecase.GetCategoriesUseCase
 import ayodong.emobilize.domain.usecase.GetScheduleUseCase
 import ayodong.emobilize.domain.usecase.GetTasksUseCase
+import ayodong.emobilize.domain.usecase.UpdateCategoryUseCase
 import ayodong.emobilize.domain.usecase.PlaceTimeBlockUseCase
 import ayodong.emobilize.domain.usecase.SetTaskStatusUseCase
 import ayodong.emobilize.domain.usecase.UpdateTaskUseCase
@@ -61,6 +63,8 @@ class TasksViewModel(
     private val getSchedule: GetScheduleUseCase,
     private val placeTimeBlock: PlaceTimeBlockUseCase,
     private val deleteTimeBlock: DeleteTimeBlockUseCase,
+    private val getCategories: GetCategoriesUseCase,
+    private val saveCategory: UpdateCategoryUseCase,
 ) : ViewModel() {
     private val initialBoard = getTasks()
 
@@ -73,6 +77,10 @@ class TasksViewModel(
     var inProgress by mutableStateOf(initialBoard.progressIds)
         private set
     var blocks by mutableStateOf(getSchedule())
+        private set
+    var categories by mutableStateOf(getCategories())
+        private set
+    var showSettings by mutableStateOf(false)
         private set
     var selectedBlockId by mutableStateOf<Long?>(null)
         private set
@@ -277,7 +285,7 @@ class TasksViewModel(
                     title = addDraft.name.trim(),
                     start = inputToHours(addDraft.startTime),
                     end = inputToHours(addDraft.endTime),
-                    category = addDraft.category ?: Category.Work,
+                    category = addDraft.category ?: workCategory(),
                 ),
                 date,
             )
@@ -308,9 +316,28 @@ class TasksViewModel(
         editingId = null
     }
 
+    fun openSettings() {
+        showSettings = true
+    }
+
+    fun dismissSettings() {
+        showSettings = false
+    }
+
+    fun updateCategory(category: Category) {
+        if (saveCategory(category) == null) return
+        categories = getCategories()
+        addDraft.category = addDraft.category?.let { current -> categories.find { it.id == current.id } }
+        editDraft.category = editDraft.category?.let { current -> categories.find { it.id == current.id } }
+        reloadTasks()
+        reloadSchedule()
+    }
+
     fun dismissAdd() {
         showAdd = false
     }
+
+    private fun workCategory(): Category = categories.find { it.id == Category.Work.id } ?: categories.first()
 
     fun dismissCalendar() {
         showCalendar = false
@@ -323,7 +350,7 @@ class TasksViewModel(
         val taskOnly = type == EventType.Task
         addDraft.name = ""
         addDraft.time = ""
-        addDraft.category = if (taskOnly) null else Category.Work
+        addDraft.category = if (taskOnly) null else workCategory()
         addDraft.priority = if (taskOnly) null else Priority.Medium
         addDraft.includeSchedule = !taskOnly
         addDraft.date = if (taskOnly) "" else today

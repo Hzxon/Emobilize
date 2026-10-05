@@ -160,13 +160,7 @@ val NeutralDark = paletteFrom(2, ShadcnDark, dark = true)
 
 val LocalPalette = staticCompositionLocalOf { NeutralLight }
 
-fun AppPalette.categoryColor(category: ayodong.emobilize.domain.model.Category): Color = when (category) {
-    ayodong.emobilize.domain.model.Category.Study -> catStudy
-    ayodong.emobilize.domain.model.Category.Work -> catWork
-    ayodong.emobilize.domain.model.Category.Health -> catHealth
-    ayodong.emobilize.domain.model.Category.Personal -> catPersonal
-    ayodong.emobilize.domain.model.Category.University -> catUniversity
-}
+fun AppPalette.categoryColor(category: ayodong.emobilize.domain.model.Category): Color = Color(category.color)
 
 fun AppPalette.priorityColor(priority: ayodong.emobilize.domain.model.Priority): Color = when (priority) {
     ayodong.emobilize.domain.model.Priority.Low -> prioLow

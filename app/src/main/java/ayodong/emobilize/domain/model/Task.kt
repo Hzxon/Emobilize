@@ -7,7 +7,26 @@ import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-enum class Category { Study, Work, Health, Personal, University }
+data class Category(
+    val id: Long,
+    val name: String,
+    val color: Int,
+) {
+    companion object {
+        const val Limit = 3
+        val Study = Category(1L, "Study", 0xFFE76E50.toInt())
+        val Work = Category(2L, "Work", 0xFFF4A462.toInt())
+        val Health = Category(3L, "Health", 0xFF2A9D90.toInt())
+        val defaults = listOf(Study, Work, Health)
+        val colorChoices = listOf(
+            0xFFE76E50.toInt(),
+            0xFF2A9D90.toInt(),
+            0xFF274754.toInt(),
+            0xFFE8C468.toInt(),
+            0xFFF4A462.toInt(),
+        )
+    }
+}
 
 enum class FilterKey { All, Today, Tomorrow, Later }
 

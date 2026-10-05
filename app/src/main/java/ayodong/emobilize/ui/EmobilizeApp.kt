@@ -2,9 +2,13 @@ package ayodong.emobilize.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
@@ -13,9 +17,12 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import ayodong.emobilize.domain.model.FabAction
 import ayodong.emobilize.domain.model.NavTab
@@ -28,11 +35,13 @@ import ayodong.emobilize.ui.dock.ThemeOrb
 import ayodong.emobilize.ui.tasks.AddTaskCard
 import ayodong.emobilize.ui.tasks.CalendarFormSheet
 import ayodong.emobilize.ui.tasks.TaskFormSheet
+import ayodong.emobilize.ui.settings.SettingsScreen
 import ayodong.emobilize.ui.splash.SplashScreen
 import ayodong.emobilize.ui.tasks.TasksScreen
 import ayodong.emobilize.ui.tasks.TasksViewModel
 import ayodong.emobilize.ui.theme.EmobilizeTheme
 import ayodong.emobilize.ui.theme.LocalPalette
+import ayodong.emobilize.ui.theme.appStyle
 import ayodong.emobilize.ui.theme.NeutralDark
 import ayodong.emobilize.ui.theme.NeutralLight
 import ayodong.emobilize.ui.theme.menuColor
@@ -60,8 +69,9 @@ fun EmobilizeApp(viewModel: TasksViewModel, authViewModel: AuthViewModel) {
             )
             return@EmobilizeTheme
         }
-        BackHandler(enabled = viewModel.showAdd || viewModel.showCalendar || viewModel.showEdit || menuOpen || viewModel.pendingAction != null || viewModel.selectedBlockId != null) {
+        BackHandler(enabled = viewModel.showSettings || viewModel.showAdd || viewModel.showCalendar || viewModel.showEdit || menuOpen || viewModel.pendingAction != null || viewModel.selectedBlockId != null) {
             when {
+                viewModel.showSettings -> viewModel.dismissSettings()
                 viewModel.showAdd -> viewModel.dismissAdd()
                 viewModel.showCalendar -> viewModel.dismissCalendar()
                 viewModel.showEdit -> viewModel.dismissEdit()
@@ -78,11 +88,34 @@ fun EmobilizeApp(viewModel: TasksViewModel, authViewModel: AuthViewModel) {
                 .background(colors.surface),
         ) {
             Column(Modifier.fillMaxSize()) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .statusBarsPadding()
+                        .padding(start = 24.dp, end = 18.dp, top = 8.dp, bottom = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Spacer(Modifier.weight(1f))
+                    Text(
+                        "Settings",
+                        modifier = Modifier
+                            .clickable {
+                                menuOpen = false
+                                viewModel.openSettings()
+                            }
+                            .padding(end = 12.dp, top = 4.dp, bottom = 4.dp),
+                        style = appStyle(14.sp, FontWeight.Medium),
+                        color = colors.text,
+                    )
+                    ThemeOrb(
+                        themeId = themeId,
+                        onClick = { themeId = if (themeId == 1) 2 else 1 },
+                    )
+                }
                 Box(
                     Modifier
                         .weight(1f)
-                        .fillMaxSize()
-                        .statusBarsPadding(),
+                        .fillMaxSize(),
                 ) {
                     if (tab == NavTab.Tasks) {
                         TasksScreen(viewModel)
@@ -158,19 +191,11 @@ fun EmobilizeApp(viewModel: TasksViewModel, authViewModel: AuthViewModel) {
                 },
                 modifier = Modifier.zIndex(2f),
             )
-            ThemeOrb(
-                themeId = themeId,
-                onClick = { themeId = if (themeId == 1) 2 else 1 },
-                modifier = Modifier
-                    .zIndex(3f)
-                    .align(Alignment.TopEnd)
-                    .statusBarsPadding()
-                    .padding(top = 6.dp, end = 18.dp),
-            )
             if (viewModel.showAdd) {
                 Box(Modifier.zIndex(4f)) {
                     AddTaskCard(
                         draft = viewModel.addDraft,
+                        categories = viewModel.categories,
                         onDismiss = viewModel::dismissAdd,
                         onSubmit = viewModel::submitAdd,
                     )
@@ -181,6 +206,7 @@ fun EmobilizeApp(viewModel: TasksViewModel, authViewModel: AuthViewModel) {
                 Box(Modifier.zIndex(4f)) {
                     CalendarFormSheet(
                         draft = viewModel.addDraft,
+                        categories = viewModel.categories,
                         lockType = viewModel.calendarEditing,
                         canSubmit = viewModel.canSubmitCalendar(viewModel.addDraft),
                         saveColor = accent,
@@ -190,12 +216,22 @@ fun EmobilizeApp(viewModel: TasksViewModel, authViewModel: AuthViewModel) {
                     )
                 }
             }
+            if (viewModel.showSettings) {
+                Box(Modifier.zIndex(4f)) {
+                    SettingsScreen(
+                        categories = viewModel.categories,
+                        onCategory = viewModel::updateCategory,
+                        onClose = viewModel::dismissSettings,
+                    )
+                }
+            }
             if (viewModel.showEdit) {
                 Box(Modifier.zIndex(4f)) {
                     TaskFormSheet(
                         title = "Edit Task",
                         submitLabel = "Save Changes",
                         draft = viewModel.editDraft,
+                        categories = viewModel.categories,
                         canSubmit = viewModel.canSubmit(viewModel.editDraft),
                         saveColor = colors.menuColor(FabAction.Edit),
                         onDismiss = viewModel::dismissEdit,

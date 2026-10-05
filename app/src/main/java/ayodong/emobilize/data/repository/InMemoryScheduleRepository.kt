@@ -1,5 +1,6 @@
 package ayodong.emobilize.data.repository
 
+import ayodong.emobilize.domain.model.Category
 import ayodong.emobilize.domain.model.TimeBlock
 import ayodong.emobilize.domain.model.placeSchedule
 import ayodong.emobilize.domain.repository.ScheduleRepository
@@ -18,5 +19,13 @@ class InMemoryScheduleRepository : ScheduleRepository {
         stored = stored
             .mapValues { (_, list) -> list.filter { it.id != id } }
             .filterValues { it.isNotEmpty() }
+    }
+
+    override fun applyCategory(category: Category) {
+        stored = stored.mapValues { (_, list) ->
+            list.map { block ->
+                if (block.category.id == category.id) block.copy(category = category) else block
+            }
+        }
     }
 }
