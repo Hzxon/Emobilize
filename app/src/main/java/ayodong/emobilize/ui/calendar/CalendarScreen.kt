@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,51 +26,47 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import ayodong.emobilize.domain.model.CalView
+import ayodong.emobilize.domain.model.Category
 import ayodong.emobilize.domain.model.FabAction
 import ayodong.emobilize.domain.model.Task
 import ayodong.emobilize.domain.model.TimeBlock
 import ayodong.emobilize.domain.model.formatBlockTime
-import ayodong.emobilize.domain.model.formatHourLabel
+import ayodong.emobilize.domain.model.formatInputDate
+import ayodong.emobilize.domain.model.formatInputTime
+import ayodong.emobilize.domain.model.inputToHours
 import ayodong.emobilize.domain.model.monthCells
 import ayodong.emobilize.domain.model.parseDisplayTime
 import ayodong.emobilize.domain.model.taskOccursOn
 import ayodong.emobilize.domain.model.weekOf
+import ayodong.emobilize.ui.theme.AppMetrics
 import ayodong.emobilize.ui.theme.LocalPalette
 import ayodong.emobilize.ui.theme.ShadcnRadius
 import ayodong.emobilize.ui.theme.appStyle
 import ayodong.emobilize.ui.theme.at
 import ayodong.emobilize.ui.theme.categoryColor
-import ayodong.emobilize.ui.theme.inkOn
 import ayodong.emobilize.ui.theme.menuColor
 import java.time.LocalDate
-import java.time.LocalTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
-import kotlin.math.roundToInt
 
 private val monthTitle = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.US)
-private val HourHeight = 60.dp
-private val DayStart = 0
-private val DayEnd = 24
 
 @Composable
 fun CalendarScreen(
@@ -93,7 +89,6 @@ fun CalendarScreen(
     val activeDate = runCatching { LocalDate.parse(activeIso) }.getOrDefault(today)
     val visibleMonth = YearMonth.from(runCatching { LocalDate.parse(monthIso) }.getOrDefault(today))
     val view = runCatching { CalView.valueOf(viewName) }.getOrDefault(CalView.Week)
-    val nowHours = LocalTime.now().let { it.hour + it.minute / 60f }
     val canDelete = pending == FabAction.Delete && (selectedTaskId != null || selectedBlockId != null)
 
     Column(modifier.fillMaxSize()) {
@@ -119,7 +114,6 @@ fun CalendarScreen(
                     today = today,
                     tasks = tasks,
                     blocks = blocks,
-                    nowHours = nowHours,
                     pending = pending,
                     selectedTaskId = selectedTaskId,
                     selectedBlockId = selectedBlockId,
@@ -132,7 +126,6 @@ fun CalendarScreen(
                     today = today,
                     tasks = tasks,
                     blocks = blocks,
-                    nowHours = nowHours,
                     pending = pending,
                     selectedTaskId = selectedTaskId,
                     selectedBlockId = selectedBlockId,
@@ -145,7 +138,6 @@ fun CalendarScreen(
                     today = today,
                     tasks = tasks,
                     blocks = blocks,
-                    nowHours = nowHours,
                     pending = pending,
                     selectedTaskId = selectedTaskId,
                     selectedBlockId = selectedBlockId,
@@ -288,7 +280,6 @@ private fun MonthBody(
     today: LocalDate,
     tasks: List<Task>,
     blocks: Map<LocalDate, List<TimeBlock>>,
-    nowHours: Float,
     pending: FabAction?,
     selectedTaskId: Long?,
     selectedBlockId: Long?,
@@ -335,14 +326,11 @@ private fun MonthBody(
                 .height(1.dp)
                 .background(palette.primary.at(0x18)),
         )
-        DayTimeline(
+        DayAgenda(
             date = activeDate,
-            startHour = DayStart,
-            endHour = DayEnd,
             tasks = tasks,
             blocks = blocks[activeDate].orEmpty(),
             today = today,
-            nowHours = nowHours,
             pending = pending,
             selectedTaskId = selectedTaskId,
             selectedBlockId = selectedBlockId,
@@ -359,7 +347,6 @@ private fun WeekBody(
     today: LocalDate,
     tasks: List<Task>,
     blocks: Map<LocalDate, List<TimeBlock>>,
-    nowHours: Float,
     pending: FabAction?,
     selectedTaskId: Long?,
     selectedBlockId: Long?,
@@ -409,14 +396,11 @@ private fun WeekBody(
                 .height(1.dp)
                 .background(palette.primary.at(0x18)),
         )
-        DayTimeline(
+        DayAgenda(
             date = activeDate,
-            startHour = DayStart,
-            endHour = DayEnd,
             tasks = tasks,
             blocks = blocks[activeDate].orEmpty(),
             today = today,
-            nowHours = nowHours,
             pending = pending,
             selectedTaskId = selectedTaskId,
             selectedBlockId = selectedBlockId,
@@ -433,7 +417,6 @@ private fun DayBody(
     today: LocalDate,
     tasks: List<Task>,
     blocks: Map<LocalDate, List<TimeBlock>>,
-    nowHours: Float,
     pending: FabAction?,
     selectedTaskId: Long?,
     selectedBlockId: Long?,
@@ -473,14 +456,11 @@ private fun DayBody(
                 .height(1.dp)
                 .background(palette.primary.at(0x18)),
         )
-        DayTimeline(
+        DayAgenda(
             date = activeDate,
-            startHour = DayStart,
-            endHour = DayEnd,
             tasks = tasks,
             blocks = blocks[activeDate].orEmpty(),
             today = today,
-            nowHours = nowHours,
             pending = pending,
             selectedTaskId = selectedTaskId,
             selectedBlockId = selectedBlockId,
@@ -553,15 +533,23 @@ private fun DayNumber(
     }
 }
 
+private data class AgendaCard(
+    val title: String,
+    val kind: String,
+    val category: Category?,
+    val detail: String?,
+    val whenLabel: String?,
+    val sort: Float,
+    val selected: Boolean,
+    val onClick: (() -> Unit)?,
+)
+
 @Composable
-private fun DayTimeline(
+private fun DayAgenda(
     date: LocalDate,
-    startHour: Int,
-    endHour: Int,
     tasks: List<Task>,
     blocks: List<TimeBlock>,
     today: LocalDate,
-    nowHours: Float,
     pending: FabAction?,
     selectedTaskId: Long?,
     selectedBlockId: Long?,
@@ -570,172 +558,156 @@ private fun DayTimeline(
     modifier: Modifier = Modifier,
 ) {
     val palette = LocalPalette.current
-    val hours = endHour - startHour
-    val scroll = rememberScrollState()
-    val density = LocalDensity.current
-    val timedTasks = tasks.filter { task ->
-        !task.time.isNullOrBlank() && taskOccursOn(task, date, today)
-    }
-    LaunchedEffect(date, startHour) {
-        val target = ((nowHours - startHour - 2.5f) * with(density) { HourHeight.toPx() }).coerceAtLeast(0f)
-        scroll.scrollTo(target.roundToInt())
-    }
-    Box(
-        modifier
-            .fillMaxWidth()
-            .verticalScroll(scroll)
-            .padding(bottom = 56.dp),
-    ) {
-        Box(
-            Modifier
-                .padding(start = 54.dp, end = 14.dp)
-                .fillMaxWidth()
-                .height(HourHeight * hours),
-        ) {
-            repeat(hours) { index ->
-                val hour = startHour + index
-                Row(
-                    Modifier
-                        .offset(x = (-54).dp, y = HourHeight * index)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.Top,
-                ) {
-                    Text(
-                        formatHourLabel(hour),
-                        modifier = Modifier.width(46.dp).offset(y = (-7).dp),
-                        style = appStyle(10.5.sp, FontWeight.Medium),
-                        color = palette.textMuted,
-                        textAlign = androidx.compose.ui.text.style.TextAlign.End,
-                    )
-                    Box(
-                        Modifier
-                            .padding(start = 8.dp)
-                            .weight(1f)
-                            .height(1.dp)
-                            .background(palette.scheme.border),
-                    )
-                }
-                if (index < hours - 1) {
-                    Box(
-                        Modifier
-                            .offset(y = HourHeight * index + HourHeight / 2)
-                            .fillMaxWidth()
-                            .height(1.dp)
-                            .background(palette.scheme.border.copy(alpha = 0.45f)),
-                    )
-                }
-            }
-            if (date == today && nowHours in startHour.toFloat()..endHour.toFloat()) {
-                Row(
-                    Modifier
-                        .zIndex(2f)
-                        .offset(x = (-8).dp, y = HourHeight * (nowHours - startHour))
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Box(Modifier.size(9.dp).clip(CircleShape).background(palette.danger))
-                    Box(Modifier.weight(1f).height(1.5.dp).background(palette.danger.copy(alpha = 0.75f)))
-                }
-            }
-            blocks.forEach { block ->
-                val top = (block.start - startHour) * 60f
-                val height = ((block.end - block.start) * 60f - 4f).coerceAtLeast(22f)
-                BlockCard(
-                    block = block,
+    val choosing = pending == FabAction.Edit || pending == FabAction.Delete
+    val cards = buildList {
+        blocks.forEach { block ->
+            add(
+                AgendaCard(
+                    title = block.title,
+                    kind = "Regular Schedule",
+                    category = block.category,
+                    detail = null,
+                    whenLabel = "${formatBlockTime(block.start)} to ${formatBlockTime(block.end)}",
+                    sort = block.start,
                     selected = block.id == selectedBlockId,
-                    pending = pending,
-                    compact = height < 36f,
-                    modifier = Modifier
-                        .offset(x = 2.dp, y = top.dp + 2.dp)
-                        .fillMaxWidth()
-                        .height(height.dp)
-                        .clickable { onSelectBlock(block) },
-                )
-            }
-            timedTasks.forEach { task ->
-                val top = (parseDisplayTime(task.time!!) - startHour) * 60f - 12f
-                val picked = selectedTaskId == task.id && (pending == FabAction.Edit || pending == FabAction.Delete)
-                val menu = pending?.let { palette.menuColor(it) }
-                val color = task.category?.let { palette.categoryColor(it) } ?: palette.textMuted
-                val chip = RoundedCornerShape(6.dp)
-                Row(
-                    Modifier
-                        .zIndex(3f)
-                        .offset(y = top.dp)
-                        .fillMaxWidth()
-                        .height(22.dp)
-                        .clip(chip)
-                        .background(if (picked && menu != null) menu.copy(alpha = 0.12f) else color.at(0x18))
-                        .border(if (picked && menu != null) 1.5.dp else 0.dp, menu ?: Color.Transparent, chip)
-                        .clickable(enabled = pending == FabAction.Edit || pending == FabAction.Delete) {
-                            onSelectTask(task)
-                        },
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Box(Modifier.width(3.dp).fillMaxHeight().background(color))
-                    Text(
-                        task.name,
-                        modifier = Modifier.padding(start = 7.dp, end = 8.dp),
-                        style = appStyle(10.sp, FontWeight.Bold),
-                        color = color,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-            }
-            if (blocks.isEmpty() && timedTasks.isEmpty()) {
-                Text(
-                    "Nothing scheduled",
-                    modifier = Modifier.align(Alignment.Center),
-                    style = appStyle(13.sp, FontWeight.Medium),
-                    color = palette.primary.copy(alpha = 0.5f),
-                )
-            }
+                    onClick = { onSelectBlock(block) },
+                ),
+            )
+        }
+        tasks.filter { taskOccursOn(it, date, today) }.forEach { task ->
+            val picked = selectedTaskId == task.id && choosing
+            add(
+                AgendaCard(
+                    title = task.name,
+                    kind = task.eventType.label,
+                    category = task.category,
+                    detail = task.priority?.name,
+                    whenLabel = taskWhenLabel(task),
+                    sort = taskSort(task),
+                    selected = picked,
+                    onClick = if (choosing) {
+                        { onSelectTask(task) }
+                    } else {
+                        null
+                    },
+                ),
+            )
+        }
+    }.sortedBy { it.sort }
+    if (cards.isEmpty()) {
+        Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text(
+                "Nothing scheduled",
+                style = appStyle(13.sp, FontWeight.Medium),
+                color = palette.textMuted,
+            )
+        }
+        return
+    }
+    Column(
+        modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 18.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        cards.forEach { card ->
+            AgendaRow(card = card, pending = pending, dimmed = choosing && !card.selected)
         }
     }
 }
 
 @Composable
-private fun BlockCard(
-    block: TimeBlock,
-    selected: Boolean,
-    pending: FabAction?,
-    compact: Boolean,
-    modifier: Modifier,
-) {
+private fun AgendaRow(card: AgendaCard, pending: FabAction?, dimmed: Boolean) {
     val palette = LocalPalette.current
-    val color = palette.categoryColor(block.category)
-    val menu = if (selected) pending?.let { palette.menuColor(it) } else null
-    val shape = RoundedCornerShape(ShadcnRadius.lg)
-    val ink = if (selected && menu == null) palette.inkOn(color) else color
-    Row(
-        modifier
+    val shape = RoundedCornerShape(AppMetrics.cardRadius)
+    val accent = card.category?.let { palette.categoryColor(it) } ?: palette.scheme.border
+    val menu = if (card.selected) pending?.let { palette.menuColor(it) } else null
+    val click = card.onClick
+    val info = listOfNotNull(card.kind, card.category?.name, card.detail).joinToString(", ")
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .alpha(if (dimmed) 0.6f else 1f)
+            .heightIn(min = AppMetrics.cardMinHeight)
             .clip(shape)
-            .background(if (menu != null) menu.copy(alpha = 0.12f) else if (selected) color else color.copy(alpha = 0.16f))
-            .border(if (menu != null) 2.dp else 0.dp, menu ?: Color.Transparent, shape),
+            .background(if (menu != null) menu.copy(alpha = 0.12f) else palette.card)
+            .border(if (card.selected) 2.dp else 1.dp, menu ?: palette.scheme.border, shape)
+            .then(if (click != null) Modifier.clickable(onClick = click) else Modifier),
     ) {
-        Box(Modifier.width(3.dp).fillMaxHeight().background(color))
-        Column(
+        Row(
             Modifier
-                .weight(1f)
-                .padding(horizontal = 8.dp, vertical = if (compact) 0.dp else 6.dp),
-            verticalArrangement = Arrangement.Center,
+                .fillMaxWidth()
+                .heightIn(min = AppMetrics.cardMinHeight),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                block.title,
-                style = appStyle(12.sp, FontWeight.Bold),
-                color = ink,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            if (!compact) {
+            Column(
+                Modifier
+                    .weight(1f)
+                    .padding(horizontal = 12.dp, vertical = 14.dp),
+            ) {
                 Text(
-                    "${formatBlockTime(block.start)} – ${formatBlockTime(block.end)}",
-                    style = appStyle(10.5.sp, FontWeight.Medium),
-                    color = ink.copy(alpha = if (selected) 0.8f else 0.7f),
-                    maxLines = 1,
+                    card.title,
+                    style = appStyle(15.sp, FontWeight.SemiBold, lineHeight = 19.5.sp),
+                    color = palette.text,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
                 )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    info,
+                    style = appStyle(12.sp, FontWeight.Medium),
+                    color = palette.textMuted,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                if (card.whenLabel != null) {
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        card.whenLabel,
+                        style = appStyle(12.sp, FontWeight.Medium),
+                        color = palette.text,
+                        maxLines = 2,
+                    )
+                }
             }
         }
+        Box(Modifier.matchParentSize()) {
+            Box(
+                Modifier
+                    .width(4.dp)
+                    .fillMaxHeight()
+                    .background(accent),
+            )
+        }
     }
+}
+
+private fun taskWhenLabel(task: Task): String? {
+    val range = task.range
+    if (range != null) {
+        val start = formatInputDate(range.startDate)
+        val end = formatInputDate(range.endDate)
+        val startTime = formatInputTime(range.startTime)
+        val endTime = formatInputTime(range.endTime)
+        return if (start == end) "$startTime to $endTime" else "$start, $startTime to $end, $endTime"
+    }
+    val time = task.time
+    val end = task.eventEndTime
+    return when {
+        time != null && !end.isNullOrBlank() && task.deadline.isNotBlank() -> "${task.deadline}, $time to $end"
+        time != null && !end.isNullOrBlank() -> "$time to $end"
+        time != null && task.deadline.isNotBlank() -> "${task.deadline}, $time"
+        time != null -> time
+        task.deadline.isNotBlank() -> task.deadline
+        else -> null
+    }
+}
+
+private fun taskSort(task: Task): Float {
+    val range = task.range
+    if (range != null) return inputToHours(range.startTime)
+    val time = task.time
+    if (!time.isNullOrBlank()) return parseDisplayTime(time)
+    return 48f
 }

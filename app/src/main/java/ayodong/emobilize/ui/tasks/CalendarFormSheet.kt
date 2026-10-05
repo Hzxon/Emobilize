@@ -65,7 +65,7 @@ fun CalendarFormSheet(
     val shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
     val scrimSource = remember { MutableInteractionSource() }
     val sheetSource = remember { MutableInteractionSource() }
-    val types = if (lockType) listOf(draft.eventType) else EventType.entries
+    val types = if (lockType) listOf(draft.eventType) else EventType.entries.filter { it != EventType.Task }
     Box(
         Modifier
             .fillMaxSize()
