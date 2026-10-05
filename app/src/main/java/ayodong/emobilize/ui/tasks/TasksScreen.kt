@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -37,11 +36,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import ayodong.emobilize.model.FabAction
 import ayodong.emobilize.model.FilterKey
-import ayodong.emobilize.model.Priority
 import ayodong.emobilize.model.Task
 import ayodong.emobilize.model.TaskStatus
 import ayodong.emobilize.model.deadlineRank
@@ -50,19 +47,19 @@ import ayodong.emobilize.model.formatInputTime
 import ayodong.emobilize.model.isOverdue
 import ayodong.emobilize.ui.theme.AppMetrics
 import ayodong.emobilize.ui.theme.LocalPalette
+import ayodong.emobilize.ui.theme.ShadcnRadius
 import ayodong.emobilize.ui.theme.appStyle
 import ayodong.emobilize.ui.theme.at
-import ayodong.emobilize.ui.theme.inkOn
 import ayodong.emobilize.ui.theme.menuColor
 import ayodong.emobilize.ui.theme.categoryColor
 import ayodong.emobilize.ui.theme.priorityColor
 import java.time.LocalTime
 
 private val filters = listOf(
-    FilterKey.All to "ALL",
-    FilterKey.Today to "TODAY",
-    FilterKey.Tomorrow to "TOMORROW",
-    FilterKey.Later to "LATER",
+    FilterKey.All to "All",
+    FilterKey.Today to "Today",
+    FilterKey.Tomorrow to "Tomorrow",
+    FilterKey.Later to "Later",
 )
 
 @Composable
@@ -90,9 +87,9 @@ fun TasksScreen(
 
     Column(modifier.fillMaxSize()) {
         Text(
-            text = "MY TASKS",
-            modifier = Modifier.padding(start = AppMetrics.headerHorizontal, end = AppMetrics.headerHorizontal, top = 14.dp),
-            style = appStyle(54.sp, FontWeight.Normal, letterSpacing = 1.5.sp, lineHeight = 54.sp),
+            text = "My tasks",
+            modifier = Modifier.padding(start = AppMetrics.headerHorizontal, end = AppMetrics.headerHorizontal, top = 16.dp),
+            style = appStyle(30.sp, FontWeight.SemiBold, lineHeight = 36.sp),
             color = palette.text,
             maxLines = 1,
         )
@@ -100,41 +97,41 @@ fun TasksScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = AppMetrics.headerHorizontal, end = AppMetrics.headerHorizontal, top = 18.dp),
+                .padding(start = AppMetrics.headerHorizontal, end = AppMetrics.headerHorizontal, top = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            filters.forEach { (key, label) ->
-                val active = viewModel.filter == key
-                Column(
-                    modifier = Modifier
-                        .padding(end = 22.dp)
-                        .clickable { viewModel.selectFilter(key) }
-                        .padding(vertical = 4.dp),
-                ) {
-                    Text(
-                        text = label,
-                        style = appStyle(
-                            11.5.sp,
-                            if (active) FontWeight.Bold else FontWeight.Medium,
-                            letterSpacing = 0.07.em,
-                        ),
-                        color = if (active) palette.text else palette.textMuted,
-                    )
-                    Spacer(Modifier.height(5.dp))
+            Row(
+                Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(ShadcnRadius.lg))
+                    .background(palette.scheme.muted)
+                    .padding(3.dp),
+            ) {
+                filters.forEach { (key, label) ->
+                    val active = viewModel.filter == key
                     Box(
-                        Modifier
-                            .width(22.dp)
-                            .height(2.5.dp)
-                            .clip(CircleShape)
-                            .background(if (active) palette.primary else Color.Transparent),
-                    )
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(ShadcnRadius.md))
+                            .background(if (active) palette.scheme.background else Color.Transparent)
+                            .clickable { viewModel.selectFilter(key) }
+                            .padding(vertical = 6.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = label,
+                            style = appStyle(12.sp, FontWeight.Medium),
+                            color = if (active) palette.text else palette.textMuted,
+                            maxLines = 1,
+                        )
+                    }
                 }
             }
-            Spacer(Modifier.weight(1f))
+            Spacer(Modifier.width(12.dp))
             Text(
                 text = "$doneCount / ${visible.size}",
-                style = appStyle(12.sp, FontWeight.SemiBold),
-                color = palette.primary,
+                style = appStyle(14.sp, FontWeight.Medium),
+                color = palette.textMuted,
             )
         }
 
@@ -146,7 +143,20 @@ fun TasksScreen(
             )
         }
 
-        LazyColumn(
+        if (groups.isEmpty()) {
+            Box(
+                Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    "No tasks in this view.",
+                    style = appStyle(14.sp, FontWeight.Medium),
+                    color = palette.textMuted,
+                )
+            }
+        } else LazyColumn(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
@@ -188,8 +198,8 @@ fun TasksScreen(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = if (delete) "Delete Task  →" else "Edit Task  →",
-                    style = appStyle(13.sp, FontWeight.Bold, letterSpacing = 0.04.em),
+                    text = if (delete) "Delete task" else "Edit task",
+                    style = appStyle(14.sp, FontWeight.Medium),
                     color = color,
                 )
             }
@@ -197,8 +207,8 @@ fun TasksScreen(
         if (pending == FabAction.Update && selected != null) {
             Column(Modifier.padding(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, top = 8.dp, bottom = 12.dp)) {
                 Text(
-                    text = "SET STATUS",
-                    style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 0.08.em),
+                    text = "Set status",
+                    style = appStyle(14.sp, FontWeight.Medium),
                     color = palette.menuColor(FabAction.Update),
                 )
                 Spacer(Modifier.height(8.dp))
@@ -251,7 +261,7 @@ private fun StatusChoice(
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
-        Text(label, style = appStyle(13.sp, FontWeight.Bold, letterSpacing = 0.04.em), color = content)
+        Text(label, style = appStyle(14.sp, FontWeight.Medium), color = content)
     }
 }
 
@@ -306,16 +316,16 @@ private fun StatusHeader(status: TaskStatus) {
         TaskStatus.Done -> palette.statusDone
     }
     val label = when (status) {
-        TaskStatus.Todo -> "TO-DO"
-        TaskStatus.Progress -> "IN PROGRESS"
-        TaskStatus.Done -> "DONE"
+        TaskStatus.Todo -> "To-do"
+        TaskStatus.Progress -> "In progress"
+        TaskStatus.Done -> "Done"
     }
     Row(Modifier.padding(top = 2.dp), verticalAlignment = Alignment.CenterVertically) {
         Box(Modifier.size(8.dp).clip(CircleShape).background(color))
         Spacer(Modifier.width(8.dp))
-        Text(label, style = appStyle(10.5.sp, FontWeight.Bold, letterSpacing = 0.1.em), color = color)
+        Text(label, style = appStyle(14.sp, FontWeight.Medium), color = color)
         Spacer(Modifier.width(8.dp))
-        Box(Modifier.weight(1f).height(1.dp).background(color.at(0x25)))
+        Box(Modifier.weight(1f).height(1.dp).background(palette.scheme.border))
     }
 }
 
@@ -337,37 +347,16 @@ private fun TaskCard(
     }
     val borderColor = if (!isSelected || menu == null) palette.scheme.border else menu
     val accent = palette.categoryColor(task.category)
-    val glow = if (!isSelected || menu == null) Color.Transparent else menu.copy(alpha = 0.22f)
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .alpha(if (pending != null && !isSelected) 0.6f else 1f)
-            .then(
-                if (isSelected) {
-                    Modifier
-                        .clip(RoundedCornerShape(AppMetrics.cardRadius + 4.dp))
-                        .background(glow)
-                        .padding(3.dp)
-                } else {
-                    Modifier
-                },
-            ),
+            .heightIn(min = AppMetrics.cardMinHeight)
+            .clip(shape)
+            .background(background)
+            .border(if (isSelected) 2.dp else 1.dp, borderColor, shape)
+            .then(if (pending != null) Modifier.clickable(onClick = onClick) else Modifier),
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = AppMetrics.cardMinHeight)
-                .shadow(
-                    elevation = if (isSelected) 0.dp else if (palette.id == 2) 6.dp else 2.dp,
-                    shape = shape,
-                    ambientColor = palette.shadow,
-                    spotColor = palette.shadow,
-                )
-                .clip(shape)
-                .background(background)
-                .border(if (isSelected) 2.dp else 1.dp, borderColor, shape)
-                .then(if (pending != null) Modifier.clickable(onClick = onClick) else Modifier),
-        ) {
             Row(
                 modifier = Modifier
                     .align(Alignment.CenterStart)
@@ -389,64 +378,27 @@ private fun TaskCard(
                     overflow = TextOverflow.Ellipsis,
                 )
                 Spacer(Modifier.height(6.dp))
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(5.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Priority.entries.forEach { level ->
-                        val active = task.priority == level
-                        val color = palette.priorityColor(level)
-                        Row(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(20.dp))
-                                .background(if (active) color.at(0x20) else Color.Transparent)
-                                .border(
-                                    1.dp,
-                                    if (active) color.at(0x40) else Color.Transparent,
-                                    RoundedCornerShape(20.dp),
-                                )
-                                .padding(
-                                    start = if (active) 5.dp else 0.dp,
-                                    end = if (active) 7.dp else 0.dp,
-                                    top = 2.dp,
-                                    bottom = 2.dp,
-                                ),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Box(
-                                Modifier
-                                    .size(6.dp)
-                                    .clip(CircleShape)
-                                    .background(if (active) color else palette.textMuted),
-                            )
-                            if (active) {
-                                Spacer(Modifier.width(3.dp))
-                                Text(
-                                    level.name,
-                                    style = appStyle(10.sp, FontWeight.Bold, letterSpacing = 0.04.em),
-                                    color = color,
-                                )
-                            }
-                        }
-                    }
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    RoleBadge(task.category.name, accent)
+                    RoleBadge(task.priority.name, palette.priorityColor(task.priority))
                 }
             }
             TaskMeta(task, overdue)
             }
-            Box(Modifier.matchParentSize()) {
-                Box(Modifier.width(4.dp).fillMaxHeight().background(accent))
-            }
-            if (!isSelected && palette.cardHighlight.alpha > 0f) {
-                Box(
-                    Modifier
-                        .align(Alignment.TopCenter)
-                        .fillMaxWidth()
-                        .height(1.dp)
-                        .background(palette.cardHighlight),
-                )
-            }
-        }
     }
+}
+
+@Composable
+private fun RoleBadge(label: String, color: Color) {
+    Text(
+        text = label,
+        modifier = Modifier
+            .clip(RoundedCornerShape(ShadcnRadius.md))
+            .background(color.at(0x18))
+            .padding(horizontal = 8.dp, vertical = 2.dp),
+        style = appStyle(12.sp, FontWeight.Medium),
+        color = color,
+    )
 }
 
 @Composable
@@ -456,12 +408,12 @@ private fun TaskMeta(task: Task, overdue: Boolean) {
     val dateLabel = if (range != null) {
         val start = formatInputDate(range.startDate)
         val end = formatInputDate(range.endDate)
-        if (start == end) start else "$start → $end"
+        if (start == end) start else "$start to $end"
     } else {
         task.deadline
     }
     val timeLabel = when {
-        range != null -> "${formatInputTime(range.startTime)} → ${formatInputTime(range.endTime)}"
+        range != null -> "${formatInputTime(range.startTime)} to ${formatInputTime(range.endTime)}"
         task.time != null -> task.time
         else -> null
     }

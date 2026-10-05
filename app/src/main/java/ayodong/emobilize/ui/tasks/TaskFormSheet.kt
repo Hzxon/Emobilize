@@ -276,8 +276,8 @@ fun TaskFormSheet(
 @Composable
 internal fun SectionLabel(text: String) {
     Text(
-        text = text.uppercase(),
-        style = appStyle(10.5.sp, FontWeight.Bold, letterSpacing = 0.1.em),
+        text = text,
+        style = appStyle(14.sp, FontWeight.Medium),
         color = LocalPalette.current.textMuted,
     )
 }

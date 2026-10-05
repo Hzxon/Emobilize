@@ -46,10 +46,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.navigationBars
@@ -174,8 +170,8 @@ fun RadialMenu(
                         modifier = Modifier.size(18.dp),
                     )
                     Text(
-                        action.label.uppercase(),
-                        style = appStyle(7.5.sp, FontWeight.Bold, letterSpacing = 0.05.em),
+                        action.label,
+                        style = appStyle(10.sp, FontWeight.Medium),
                         color = if (active) palette.onDark else color,
                         textAlign = TextAlign.Center,
                         maxLines = 1,
@@ -184,27 +180,19 @@ fun RadialMenu(
             }
         }
 
-        val bob = rememberInfiniteTransition(label = "swipe")
-        val bobY by bob.animateFloat(
-            initialValue = 0f,
-            targetValue = -5f,
-            animationSpec = infiniteRepeatable(tween(750), RepeatMode.Reverse),
-            label = "bob",
-        )
-        if (shown < 0.2f && widthPx > 0f) {
+        if (shown < 0.05f && widthPx > 0f) {
             Icon(
                 Icons.Filled.KeyboardArrowUp,
                 contentDescription = null,
-                tint = palette.primaryDark,
+                tint = palette.textMuted,
                 modifier = Modifier
                     .offset {
                         IntOffset(
                             (centerX - 9.dp.toPx()).roundToInt(),
-                            (centerY - fabPx / 2f - 26.dp.toPx() + bobY.dp.toPx()).roundToInt(),
+                            (centerY - fabPx / 2f - 26.dp.toPx()).roundToInt(),
                         )
                     }
-                    .size(18.dp)
-                    .graphicsLayer { alpha = if (shown < 0.05f) 0.65f else 0f },
+                    .size(18.dp),
             )
         }
 

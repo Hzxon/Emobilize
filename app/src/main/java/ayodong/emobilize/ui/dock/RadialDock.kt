@@ -9,6 +9,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -104,7 +105,7 @@ fun BottomDock(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         DockTab(
-            label = "TASKS",
+            label = "Tasks",
             selected = tab == NavTab.Tasks,
             icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = null, modifier = Modifier.size(22.dp)) },
             onClick = { onTab(NavTab.Tasks) },
@@ -112,7 +113,7 @@ fun BottomDock(
         )
         Spacer(Modifier.width(AppMetrics.fabSize + 8.dp))
         DockTab(
-            label = "CALENDAR",
+            label = "Calendar",
             selected = tab == NavTab.Calendar,
             icon = { Icon(Icons.Filled.DateRange, contentDescription = null, modifier = Modifier.size(22.dp)) },
             onClick = { onTab(NavTab.Calendar) },
@@ -146,15 +147,8 @@ private fun DockTab(
         }
         Text(
             text = label,
-            style = appStyle(9.5.sp, FontWeight.Bold, letterSpacing = 0.1.em),
+            style = appStyle(12.sp, FontWeight.Medium),
             color = if (selected) palette.text else palette.textMuted,
-        )
-        Box(
-            Modifier
-                .width(18.dp)
-                .height(2.dp)
-                .clip(CircleShape)
-                .background(if (selected) palette.primary else Color.Transparent),
         )
     }
 }
@@ -162,92 +156,38 @@ private fun DockTab(
 @Composable
 internal fun FabFace(progress: Float, showCancel: Boolean) {
     val palette = LocalPalette.current
-    val float = rememberInfiniteTransition(label = "cube")
-    val lift by float.animateFloat(
-        initialValue = 0f,
-        targetValue = -2f,
-        animationSpec = infiniteRepeatable(tween(1300), RepeatMode.Reverse),
-        label = "lift",
-    )
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Box(
-            Modifier
-                .fillMaxSize()
-                .graphicsLayer { rotationZ = -90f }
-                .background(Brush.sweepGradient(palette.ring), CircleShape),
-        )
         Box(
             Modifier
                 .size(72.dp)
                 .clip(CircleShape)
-                .background(
-                    Brush.radialGradient(
-                        colors = palette.cubeInner,
-                        center = Offset(40f, 40f),
-                        radius = 90f,
-                    ),
-                ),
+                .background(palette.scheme.primary)
+                .border(1.dp, palette.scheme.border, CircleShape),
             contentAlignment = Alignment.Center,
         ) {
-            if (palette.cubeGlow.alpha > 0f) {
-                Box(
-                    Modifier
-                        .size(46.dp)
-                        .background(
-                            Brush.radialGradient(listOf(palette.cubeGlow, Color.Transparent)),
-                            CircleShape,
-                        ),
+            if (showCancel) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(
+                        Icons.Filled.Close,
+                        contentDescription = "Cancel",
+                        tint = palette.scheme.primaryForeground,
+                        modifier = Modifier.size(22.dp),
+                    )
+                    Text(
+                        "Cancel",
+                        style = appStyle(11.sp, FontWeight.Medium),
+                        color = palette.scheme.primaryForeground,
+                    )
+                }
+            } else {
+                Icon(
+                    Icons.Filled.Add,
+                    contentDescription = "Open menu",
+                    tint = palette.scheme.primaryForeground,
+                    modifier = Modifier.size(28.dp),
                 )
             }
-            HoloCube(
-                modifier = Modifier
-                    .size(42.dp, 46.dp)
-                    .graphicsLayer {
-                        translationY = lift.dp.toPx()
-                        alpha = if (showCancel) 0f else 1f
-                    },
-            )
-            Column(
-                Modifier.graphicsLayer { alpha = if (showCancel) 1f else 0f },
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(2.dp),
-            ) {
-                Icon(Icons.Filled.Close, contentDescription = null, tint = palette.text, modifier = Modifier.size(24.dp))
-                Text("BATAL", style = appStyle(7.sp, FontWeight.Bold, letterSpacing = 0.08.em), color = palette.text)
-            }
         }
-    }
-}
-
-@Composable
-fun HoloCube(modifier: Modifier = Modifier) {
-    val palette = LocalPalette.current
-    Canvas(modifier) {
-        fun at(x: Float, y: Float) = Offset(x / 42f * size.width, y / 46f * size.height)
-        fun poly(a: Offset, b: Offset, c: Offset, d: Offset) = Path().apply {
-            moveTo(a.x, a.y)
-            lineTo(b.x, b.y)
-            lineTo(c.x, c.y)
-            lineTo(d.x, d.y)
-            close()
-        }
-        val top = poly(at(21f, 4f), at(39f, 14f), at(21f, 24f), at(3f, 14f))
-        val left = poly(at(3f, 14f), at(21f, 24f), at(21f, 42f), at(3f, 32f))
-        val right = poly(at(21f, 24f), at(39f, 14f), at(39f, 32f), at(21f, 42f))
-        drawPath(top, Brush.linearGradient(palette.cubeTop))
-        drawPath(left, Brush.linearGradient(palette.cubeLeft))
-        drawPath(right, Brush.linearGradient(palette.cubeRight))
-        val neon = palette.id == 2
-        drawPath(top, palette.cubeShine.copy(alpha = if (neon) 0.55f else 0.28f))
-        val edgeWidth = if (neon) 1.3.dp.toPx() else 0.8.dp.toPx()
-        val edge = Stroke(width = edgeWidth)
-        drawPath(top, palette.cubeEdge.copy(alpha = if (neon) 0.95f else 0.33f), style = edge)
-        drawLine(
-            palette.cubeEdge.copy(alpha = if (neon) 0.8f else 0.25f),
-            at(21f, 24f),
-            at(21f, 42f),
-            strokeWidth = edgeWidth,
-        )
     }
 }
 
@@ -257,12 +197,14 @@ fun ThemeOrb(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val swatch = if (themeId == 1) NeutralDark.ring else listOf(NeutralLight.primary, NeutralLight.primary)
+    val palette = LocalPalette.current
+    val next = if (themeId == 1) NeutralDark else NeutralLight
     Box(
         modifier
             .size(26.dp)
             .clip(CircleShape)
-            .background(Brush.sweepGradient(swatch))
+            .background(next.scheme.background)
+            .border(1.dp, palette.scheme.border, CircleShape)
             .clickable(onClick = onClick),
     )
 }

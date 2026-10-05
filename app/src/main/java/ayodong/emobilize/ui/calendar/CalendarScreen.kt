@@ -169,7 +169,7 @@ fun CalendarScreen(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    "Delete Calendar Item  →",
+                    "Delete calendar item",
                     style = appStyle(13.sp, FontWeight.Bold, letterSpacing = 0.04.em),
                     color = palette.danger,
                 )
@@ -190,25 +190,25 @@ private fun CalendarHeader(
     Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 14.dp, bottom = 10.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             CircleNav(onClick = onPrev) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Previous month", tint = palette.primary)
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Previous month", tint = palette.text)
             }
             Text(
                 text = month.atDay(1).format(monthTitle),
                 modifier = Modifier.weight(1f),
-                style = appStyle(20.sp, FontWeight.Bold, letterSpacing = 0.5.sp),
+                style = appStyle(24.sp, FontWeight.SemiBold, lineHeight = 32.sp),
                 color = palette.text,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
             )
             CircleNav(onClick = onNext) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "Next month", tint = palette.primary)
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "Next month", tint = palette.text)
             }
         }
         Spacer(Modifier.height(12.dp))
         Row(
             Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(10.dp))
-                .background(palette.primary.at(0x12))
+                .clip(RoundedCornerShape(ShadcnRadius.lg))
+                .background(palette.scheme.muted)
                 .padding(3.dp),
             horizontalArrangement = Arrangement.spacedBy(2.dp),
         ) {
@@ -218,14 +218,14 @@ private fun CalendarHeader(
                     Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(ShadcnRadius.lg))
-                        .background(if (selected) palette.card else Color.Transparent)
+                        .background(if (selected) palette.scheme.background else Color.Transparent)
                         .clickable { onView(item) }
                         .padding(vertical = 6.dp),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
                         text = item.name.lowercase().replaceFirstChar { it.titlecase(Locale.US) },
-                        style = appStyle(11.5.sp, FontWeight.Bold, letterSpacing = 0.04.sp),
+                        style = appStyle(14.sp, FontWeight.Medium),
                         color = if (selected) palette.text else palette.textMuted,
                     )
                 }
@@ -241,8 +241,8 @@ private fun CircleNav(onClick: () -> Unit, icon: @Composable () -> Unit) {
         Modifier
             .size(32.dp)
             .clip(CircleShape)
-            .background(palette.primary.at(0x0E))
-            .border(1.5.dp, palette.primary.at(0x40), CircleShape)
+            .background(palette.scheme.secondary)
+            .border(1.dp, palette.scheme.border, CircleShape)
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
