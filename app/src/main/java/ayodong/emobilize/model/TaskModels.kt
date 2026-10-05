@@ -42,11 +42,11 @@ data class DateRange(
 data class Task(
     val id: Long,
     val name: String,
-    val category: Category,
+    val category: Category?,
     val deadline: String,
     val time: String? = null,
     val filterKey: FilterKey,
-    val priority: Priority = Priority.Medium,
+    val priority: Priority? = null,
     val range: DateRange? = null,
     val eventType: EventType = EventType.Task,
     val eventEndTime: String? = null,
@@ -126,6 +126,7 @@ fun rangeIsValid(startDate: String, startTime: String, endDate: String, endTime:
 }
 
 fun deadlineRank(task: Task, today: LocalDate = LocalDate.now()): Int {
+    if (task.range == null && task.deadline.isBlank()) return Int.MAX_VALUE
     val range = task.range
     if (range != null) {
         val end = runCatching { LocalDate.parse(range.endDate) }.getOrNull() ?: return Int.MAX_VALUE

@@ -27,6 +27,7 @@ import ayodong.emobilize.ui.calendar.CalendarScreen
 import ayodong.emobilize.ui.dock.BottomDock
 import ayodong.emobilize.ui.dock.RadialMenu
 import ayodong.emobilize.ui.dock.ThemeOrb
+import ayodong.emobilize.ui.tasks.AddTaskCard
 import ayodong.emobilize.ui.tasks.CalendarFormSheet
 import ayodong.emobilize.ui.tasks.TaskFormSheet
 import ayodong.emobilize.ui.tasks.TasksScreen
@@ -163,14 +164,9 @@ fun EmobilizeApp(viewModel: TasksViewModel = viewModel()) {
                     .padding(top = 6.dp, end = 18.dp),
             )
             if (viewModel.showAdd) {
-                val addColor = colors.menuColor(FabAction.Add)
                 Box(Modifier.zIndex(4f)) {
-                    TaskFormSheet(
-                        title = "New Task",
-                        submitLabel = "Add Task",
+                    AddTaskCard(
                         draft = viewModel.addDraft,
-                        canSubmit = viewModel.canSubmit(viewModel.addDraft),
-                        saveColor = addColor,
                         onDismiss = viewModel::dismissAdd,
                         onSubmit = viewModel::submitAdd,
                     )

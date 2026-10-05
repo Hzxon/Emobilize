@@ -656,7 +656,7 @@ private fun DayTimeline(
                 val top = (parseDisplayTime(task.time!!) - startHour) * 60f - 12f
                 val picked = selectedTaskId == task.id && (pending == FabAction.Edit || pending == FabAction.Delete)
                 val menu = pending?.let { palette.menuColor(it) }
-                val color = palette.categoryColor(task.category)
+                val color = task.category?.let { palette.categoryColor(it) } ?: palette.textMuted
                 val chip = RoundedCornerShape(6.dp)
                 Row(
                     Modifier

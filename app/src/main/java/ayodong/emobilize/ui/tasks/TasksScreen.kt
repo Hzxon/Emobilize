@@ -347,7 +347,7 @@ private fun TaskCard(
         else -> menu.copy(alpha = 0.12f)
     }
     val borderColor = if (!isSelected || menu == null) palette.scheme.border else menu
-    val accent = palette.categoryColor(task.category)
+    val accent = task.category?.let { palette.categoryColor(it) }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -378,18 +378,24 @@ private fun TaskCard(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
-                Spacer(Modifier.height(6.dp))
-                RoleBadge(task.priority.name, palette.priorityColor(task.priority))
+                task.priority?.let { level ->
+                    Spacer(Modifier.height(6.dp))
+                    RoleBadge(level.name, palette.priorityColor(level))
+                }
             }
-            TaskMeta(task, overdue)
+            if (task.range != null || task.deadline.isNotBlank()) {
+                TaskMeta(task, overdue)
             }
-        Box(Modifier.matchParentSize()) {
-            Box(
-                Modifier
-                    .width(4.dp)
-                    .fillMaxHeight()
-                    .background(accent),
-            )
+            }
+        if (accent != null) {
+            Box(Modifier.matchParentSize()) {
+                Box(
+                    Modifier
+                        .width(4.dp)
+                        .fillMaxHeight()
+                        .background(accent),
+                )
+            }
         }
     }
 }

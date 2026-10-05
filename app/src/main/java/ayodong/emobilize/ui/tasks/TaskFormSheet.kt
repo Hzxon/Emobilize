@@ -184,7 +184,7 @@ fun TaskFormSheet(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     ScheduleMode.entries.forEach { mode ->
-                        val active = draft.scheduleMode == mode
+                        val active = draft.includeSchedule && draft.scheduleMode == mode
                         val label = if (mode == ScheduleMode.Deadline) "Deadline" else "Time range"
                         Box(
                             modifier = Modifier
@@ -197,7 +197,10 @@ fun TaskFormSheet(
                                     if (active) palette.scheme.primary else palette.scheme.border,
                                     RoundedCornerShape(ShadcnRadius.md),
                                 )
-                                .clickable { draft.scheduleMode = mode },
+                                .clickable {
+                                    draft.includeSchedule = true
+                                    draft.scheduleMode = mode
+                                },
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
@@ -208,7 +211,7 @@ fun TaskFormSheet(
                         }
                     }
                 }
-                if (draft.scheduleMode == ScheduleMode.Deadline) {
+                if (draft.includeSchedule && draft.scheduleMode == ScheduleMode.Deadline) {
                     Row(
                         modifier = Modifier.padding(top = 8.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -231,7 +234,7 @@ fun TaskFormSheet(
                         style = appStyle(10.sp),
                         color = palette.textMuted,
                     )
-                } else {
+                } else if (draft.includeSchedule) {
                     RangeRow("FROM", draft.startDate, draft.startTime, minDate = null, rangeValid = true) { date, time ->
                         draft.startDate = date
                         draft.startTime = time

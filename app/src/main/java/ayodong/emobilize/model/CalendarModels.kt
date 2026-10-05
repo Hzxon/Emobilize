@@ -28,6 +28,7 @@ fun monthCells(month: YearMonth): List<LocalDate?> {
 }
 
 fun taskDate(task: Task, today: LocalDate = LocalDate.now()): LocalDate? {
+    if (task.deadline.isBlank()) return null
     return runCatching { LocalDate.parse(deadlineToInputDate(task.deadline, today)) }.getOrNull()
 }
 

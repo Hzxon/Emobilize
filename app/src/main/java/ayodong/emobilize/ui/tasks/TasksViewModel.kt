@@ -29,8 +29,9 @@ import java.time.LocalDate
 
 class TaskDraft {
     var name by mutableStateOf("")
-    var category by mutableStateOf(Category.Work)
-    var priority by mutableStateOf(Priority.Medium)
+    var category by mutableStateOf<Category?>(null)
+    var priority by mutableStateOf<Priority?>(null)
+    var includeSchedule by mutableStateOf(false)
     var scheduleMode by mutableStateOf(ScheduleMode.Deadline)
     var date by mutableStateOf("")
     var time by mutableStateOf("")
@@ -92,6 +93,7 @@ class TasksViewModel : ViewModel() {
         resetAddDraft(EventType.RegularSchedule)
         addDraft.name = block.title
         addDraft.category = block.category
+        addDraft.includeSchedule = true
         addDraft.scheduleMode = ScheduleMode.Range
         addDraft.date = iso
         addDraft.time = hoursToInput(block.start)
@@ -122,6 +124,7 @@ class TasksViewModel : ViewModel() {
         addDraft.name = task.name
         addDraft.category = task.category
         addDraft.priority = task.priority
+        addDraft.includeSchedule = true
         addDraft.scheduleMode = if (task.range != null) ScheduleMode.Range else ScheduleMode.Deadline
         addDraft.date = date
         addDraft.time = displayTimeToInput(task.time)
@@ -182,8 +185,9 @@ class TasksViewModel : ViewModel() {
                     editDraft.name = task.name
                     editDraft.category = task.category
                     editDraft.priority = task.priority
+                    editDraft.includeSchedule = task.range != null || task.deadline.isNotBlank()
                     editDraft.scheduleMode = if (task.range != null) ScheduleMode.Range else ScheduleMode.Deadline
-                    editDraft.date = date
+                    editDraft.date = if (task.deadline.isBlank()) "" else date
                     editDraft.time = displayTimeToInput(task.time)
                     editDraft.startDate = task.range?.startDate ?: date
                     editDraft.startTime = task.range?.startTime ?: "09:00"
@@ -219,6 +223,7 @@ class TasksViewModel : ViewModel() {
 
     fun canSubmit(draft: TaskDraft): Boolean {
         if (draft.name.isBlank()) return false
+        if (!draft.includeSchedule) return true
         return if (draft.scheduleMode == ScheduleMode.Deadline) {
             draft.date.isNotBlank()
         } else {
@@ -245,7 +250,7 @@ class TasksViewModel : ViewModel() {
                     title = addDraft.name.trim(),
                     start = inputToHours(addDraft.startTime),
                     end = inputToHours(addDraft.endTime),
-                    category = addDraft.category,
+                    category = addDraft.category ?: Category.Work,
                 ),
                 date = date,
             )
@@ -260,7 +265,8 @@ class TasksViewModel : ViewModel() {
     }
 
     fun submitAdd() {
-        if (!canSubmit(addDraft)) return
+        if (addDraft.name.isBlank()) return
+        if (addDraft.includeSchedule && addDraft.scheduleMode == ScheduleMode.Range && !addDraft.rangeValid()) return
         tasks = tasks + draftToTask(addDraft, System.currentTimeMillis())
         showAdd = false
     }
@@ -286,11 +292,13 @@ class TasksViewModel : ViewModel() {
 
     private fun resetAddDraft(type: EventType) {
         val today = isoDate(LocalDate.now())
+        val taskOnly = type == EventType.Task
         addDraft.name = ""
         addDraft.time = ""
-        addDraft.category = Category.Work
-        addDraft.priority = Priority.Medium
-        addDraft.date = today
+        addDraft.category = if (taskOnly) null else Category.Work
+        addDraft.priority = if (taskOnly) null else Priority.Medium
+        addDraft.includeSchedule = !taskOnly
+        addDraft.date = if (taskOnly) "" else today
         addDraft.scheduleMode = ScheduleMode.Deadline
         addDraft.startDate = today
         addDraft.startTime = "09:00"
@@ -306,16 +314,25 @@ class TasksViewModel : ViewModel() {
     }
 
     private fun draftToTask(draft: TaskDraft, id: Long): Task {
-        val isRange = draft.scheduleMode == ScheduleMode.Range
-        val scheduleDate = if (isRange) draft.endDate else draft.date
-        val scheduleTime = if (isRange) draft.endTime else draft.time
+        val isRange = draft.includeSchedule && draft.scheduleMode == ScheduleMode.Range && draft.rangeValid()
+        val hasDeadline = draft.includeSchedule && draft.scheduleMode == ScheduleMode.Deadline && draft.date.isNotBlank()
+        val scheduleDate = when {
+            isRange -> draft.endDate
+            hasDeadline -> draft.date
+            else -> ""
+        }
+        val scheduleTime = when {
+            isRange -> draft.endTime
+            hasDeadline -> draft.time
+            else -> ""
+        }
         return Task(
             id = id,
             name = draft.name.trim(),
             category = draft.category,
-            deadline = formatInputDate(scheduleDate),
+            deadline = if (scheduleDate.isBlank()) "" else formatInputDate(scheduleDate),
             time = scheduleTime.takeIf { it.isNotBlank() }?.let(::formatInputTime),
-            filterKey = filterKeyFor(scheduleDate),
+            filterKey = if (scheduleDate.isBlank()) FilterKey.All else filterKeyFor(scheduleDate),
             priority = draft.priority,
             range = if (isRange) {
                 DateRange(draft.startDate, draft.startTime, draft.endDate, draft.endTime)
