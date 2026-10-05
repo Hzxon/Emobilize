@@ -114,7 +114,7 @@ private fun paletteFrom(id: Int, scheme: ShadcnColors, dark: Boolean): AppPalett
         catUniversity = scheme.chart3,
         prioLow = scheme.chart2,
         prioMedium = Color(0xFFEAB308),
-        prioHigh = scheme.destructive,
+        prioHigh = Color(0xFFFF6B6B),
         actionAdd = scheme.primary,
         actionUpdate = scheme.chart3,
         actionEdit = scheme.chart4,

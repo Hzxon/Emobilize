@@ -32,7 +32,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
@@ -155,36 +154,21 @@ private fun DockTab(
 
 @Composable
 internal fun FabFace(progress: Float, showCancel: Boolean) {
-    val palette = LocalPalette.current
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Box(
             Modifier
                 .size(72.dp)
                 .clip(CircleShape)
-                .background(palette.scheme.primary)
-                .border(1.dp, palette.scheme.border, CircleShape),
+                .background(Color.Black)
+                .border(2.dp, Color.White, CircleShape),
             contentAlignment = Alignment.Center,
         ) {
             if (showCancel) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
-                        Icons.Filled.Close,
-                        contentDescription = "Cancel",
-                        tint = palette.scheme.primaryForeground,
-                        modifier = Modifier.size(22.dp),
-                    )
-                    Text(
-                        "Cancel",
-                        style = appStyle(11.sp, FontWeight.Medium),
-                        color = palette.scheme.primaryForeground,
-                    )
-                }
-            } else {
                 Icon(
-                    Icons.Filled.Add,
-                    contentDescription = "Open menu",
-                    tint = palette.scheme.primaryForeground,
-                    modifier = Modifier.size(28.dp),
+                    Icons.Filled.Close,
+                    contentDescription = "Cancel",
+                    tint = Color.White,
+                    modifier = Modifier.size(22.dp),
                 )
             }
         }

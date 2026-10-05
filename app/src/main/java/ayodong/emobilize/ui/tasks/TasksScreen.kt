@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -378,13 +379,18 @@ private fun TaskCard(
                     overflow = TextOverflow.Ellipsis,
                 )
                 Spacer(Modifier.height(6.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    RoleBadge(task.category.name, accent)
-                    RoleBadge(task.priority.name, palette.priorityColor(task.priority))
-                }
+                RoleBadge(task.priority.name, palette.priorityColor(task.priority))
             }
             TaskMeta(task, overdue)
             }
+        Box(Modifier.matchParentSize()) {
+            Box(
+                Modifier
+                    .width(4.dp)
+                    .fillMaxHeight()
+                    .background(accent),
+            )
+        }
     }
 }
 
@@ -408,12 +414,12 @@ private fun TaskMeta(task: Task, overdue: Boolean) {
     val dateLabel = if (range != null) {
         val start = formatInputDate(range.startDate)
         val end = formatInputDate(range.endDate)
-        if (start == end) start else "$start to $end"
+        if (start == end) start else "$start -> $end"
     } else {
         task.deadline
     }
     val timeLabel = when {
-        range != null -> "${formatInputTime(range.startTime)} to ${formatInputTime(range.endTime)}"
+        range != null -> "${formatInputTime(range.startTime)} -> ${formatInputTime(range.endTime)}"
         task.time != null -> task.time
         else -> null
     }
@@ -431,7 +437,7 @@ private fun TaskMeta(task: Task, overdue: Boolean) {
             softWrap = false,
         )
         if (timeLabel != null) {
-            val timeColor = if (overdue) palette.danger else palette.primary
+            val timeColor = if (overdue) palette.prioHigh else palette.primary
             Row(verticalAlignment = Alignment.CenterVertically) {
                 ClockIcon(timeColor)
                 Spacer(Modifier.width(3.dp))
