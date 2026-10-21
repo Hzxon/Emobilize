@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>Emobilize — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 569 nodes, 1624 edges, 31 communities. Commit: 42c9a9c</p>
+<p class="subtitle">Generated from graphify knowledge graph: 614 nodes, 1742 edges, 33 communities. Commit: 9663e1c</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -69,6 +69,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
     <a href="#tests-fixtures">Tests &amp; Fixtures</a>
     <a href="#radialdock-kt">RadialDock.kt</a>
     <a href="#radialmenu-kt">RadialMenu.kt</a>
+    <a href="#designmd-neutral-warna">Designmd Neutral Warna</a>
     <a href="#gradlew">gradlew</a>
     <a href="#offset">Offset</a>
     <a href="#settings-gradle-kts">settings.gradle.kts</a>
@@ -81,7 +82,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>501 nodes</small>")
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>528 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
     BUILD_GRAPH_321CBB04("Graph Build<br/><small>2 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
@@ -91,6 +92,8 @@ flowchart LR
     class RADIALDOCK_KT_C0672986 module;
     RADIALMENU_KT_D2FD5F33("RadialMenu.kt<br/><small>27 nodes</small>")
     class RADIALMENU_KT_D2FD5F33 module;
+    DESIGNMD_NEUTRAL_WARNA_7B6DFC61("Designmd Neutral Warna<br/><small>18 nodes</small>")
+    class DESIGNMD_NEUTRAL_WARNA_7B6DFC61 module;
     GRADLEW_5BBFA66E("gradlew<br/><small>4 nodes</small>")
     class GRADLEW_5BBFA66E module;
     OFFSET_53A610E9("Offset<br/><small>2 nodes</small>")
@@ -100,10 +103,10 @@ flowchart LR
     RADIALDOCK_KT_C0672986 -->|imports x41| EXTRACT_PIPELINE_5F350230
     RADIALMENU_KT_D2FD5F33 -->|imports x29| EXTRACT_PIPELINE_5F350230
     RADIALDOCK_KT_C0672986 -->|imports x20| RADIALMENU_KT_D2FD5F33
+    EXTRACT_PIPELINE_5F350230 -->|imports x13| RADIALMENU_KT_D2FD5F33
     RADIALMENU_KT_D2FD5F33 -->|imports x13| RADIALDOCK_KT_C0672986
-    EXTRACT_PIPELINE_5F350230 -->|imports x10| RADIALMENU_KT_D2FD5F33
-    EXTRACT_PIPELINE_5F350230 -->|imports x9| RADIALDOCK_KT_C0672986
-    EXTRACT_PIPELINE_5F350230 -->|imports x3| OFFSET_53A610E9
+    EXTRACT_PIPELINE_5F350230 -->|imports x10| RADIALDOCK_KT_C0672986
+    EXTRACT_PIPELINE_5F350230 -->|imports x4| OFFSET_53A610E9
     RADIALMENU_KT_D2FD5F33 -->|imports x2| OFFSET_53A610E9
     RADIALDOCK_KT_C0672986 -->|imports| OFFSET_53A610E9
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
@@ -122,36 +125,36 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>501</td><td><code>0, 1, 2, 3, 4, 7, 8, 10, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 27</code></td></tr><tr><td>Graph Build</td><td>2</td><td><code>28, 29</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>4</td><td><code>24</code></td></tr><tr><td>RadialDock.kt</td><td>28</td><td><code>5</code></td></tr><tr><td>RadialMenu.kt</td><td>27</td><td><code>6</code></td></tr><tr><td>gradlew</td><td>4</td><td><code>25</code></td></tr><tr><td>Offset</td><td>2</td><td><code>26</code></td></tr><tr><td>settings.gradle.kts</td><td>1</td><td><code>30</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>528</td><td><code>0, 1, 3, 2, 12, 4, 9, 11, 10, 7, 8, 20, 13, 14, 22, 17, 18, 31, 19, 21, 16, 32, 23, 27</code></td></tr><tr><td>Graph Build</td><td>2</td><td><code>28, 29</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>4</td><td><code>24</code></td></tr><tr><td>RadialDock.kt</td><td>28</td><td><code>5</code></td></tr><tr><td>RadialMenu.kt</td><td>27</td><td><code>6</code></td></tr><tr><td>Designmd Neutral Warna</td><td>18</td><td><code>15</code></td></tr><tr><td>gradlew</td><td>4</td><td><code>25</code></td></tr><tr><td>Offset</td><td>2</td><td><code>26</code></td></tr><tr><td>settings.gradle.kts</td><td>1</td><td><code>30</code></td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Core Flow</h4>
-    <div class="arrow-chain">Graph Build -&gt; Extraction Pipeline -&gt; RadialMenu.kt -&gt; RadialDock.kt -&gt; Offset -&gt; Tests &amp; Fixtures -&gt; gradlew</div>
+    <div class="arrow-chain">Graph Build -&gt; Extraction Pipeline -&gt; RadialMenu.kt -&gt; RadialDock.kt -&gt; Offset -&gt; Tests &amp; Fixtures -&gt; Designmd Neutral Warna</div>
   </div>
 </div>
 <div class="grid">
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>569 nodes · 1624 edges · 31 communities (17 shown, 14 thin omitted)</li>
-      <li>Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 13 edges (avg confidence: 0.85)</li>
+      <li>614 nodes · 1742 edges · 33 communities (19 shown, 14 thin omitted)</li>
+      <li>Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 45 edges (avg confidence: 0.92)</li>
       <li>Token cost: 0 input · 0 output</li>
-      <li>1. `TasksViewModel` - 54 edges</li>
-      <li>2. `appStyle()` - 54 edges</li>
-      <li>3. `FabAction` - 25 edges</li>
+      <li>1. `appStyle()` - 57 edges</li>
+      <li>2. `TasksViewModel` - 55 edges</li>
+      <li>3. `AppContainer` - 25 edges</li>
     </ul>
   </div>
 </div>
 <hr>
 <!-- ====== 2. Extraction Pipeline ====== -->
 <h2 id="extract-pipeline">2. Extraction Pipeline</h2>
-<p>Extraction Pipeline groups implementation around ayodong, app, emobilize, domain, mostly in domain/model/Task.kt, ui/tasks/TasksViewModel.kt, domain/repository/Repositories.kt. This section covers 501 nodes and 1433 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Extraction Pipeline groups implementation around ayodong, emobilize, app, domain, mostly in domain/model/Task.kt, ui/tasks/TasksViewModel.kt, domain/repository/Repositories.kt. This section covers 528 nodes and 1529 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Extraction Pipeline (501 nodes, 1433 edges)
+    %% Section: Extraction Pipeline (528 nodes, 1529 edges)
     subgraph extract_pipeline_data_repository_PreferencesAppS_ff62683d["data/repository/PreferencesAppSettingsRepository.kt"]
         app_src_main_java_ayodong_emobilize_data_reposit_954b24b8("PreferencesAppSettingsRepository<br/><small>data/repository/PreferencesAppSettingsRepository.kt</small>")
         app_src_main_java_ayodong_emobilize_data_reposit_efd11740("get()<br/><small>data/repository/PreferencesAppSettingsRepository.kt</small>")
@@ -163,28 +166,28 @@ flowchart LR
         app_src_main_java_ayodong_emobilize_domain_repos_40455cf8("get()<br/><small>domain/repository/Repositories.kt</small>")
         app_src_main_java_ayodong_emobilize_domain_repos_9e5459eb("update()<br/><small>domain/repository/Repositories.kt</small>")
     end
-    subgraph extract_pipeline_ui_tasks_TasksViewModel_kt_106a1540["ui/tasks/TasksViewModel.kt"]
-        app_src_main_java_ayodong_emobilize_ui_tasks_tas_84cd9f16("TaskDraft<br/><small>ui/tasks/TasksViewModel.kt</small>")
-        app_src_main_java_ayodong_emobilize_ui_tasks_tas_d1efa9f8("rangeValid()<br/><small>ui/tasks/TasksViewModel.kt</small>")
+    subgraph extract_pipeline_domain_usecase_AppSettingsUseCa_cd50be95["domain/usecase/AppSettingsUseCases.kt"]
+        app_src_main_java_ayodong_emobilize_domain_useca_ddb5b5f0("GetAppSettingsUseCase<br/><small>domain/usecase/AppSettingsUseCases.kt</small>")
+        app_src_main_java_ayodong_emobilize_domain_useca_50529360("invoke()<br/><small>domain/usecase/AppSettingsUseCases.kt</small>")
+        app_src_main_java_ayodong_emobilize_domain_useca_e930c49c("UpdateAppSettingsUseCase<br/><small>domain/usecase/AppSettingsUseCases.kt</small>")
     end
     subgraph extract_pipeline_ui_theme_Type_kt_b419feb5["ui/theme/Type.kt"]
         app_src_main_java_ayodong_emobilize_ui_theme_typ_77c95f84("ShadcnType<br/><small>ui/theme/Type.kt</small>")
         app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba("appStyle()<br/><small>ui/theme/Type.kt</small>")
     end
-    app_src_main_java_ayodong_emobilize_domain_useca_ddb5b5f0("GetAppSettingsUseCase<br/><small>domain/usecase/AppSettingsUseCases.kt</small>")
     app_src_main_java_ayodong_emobilize_ui_calendar_5b62d631("CalendarScreen.kt")
     app_src_main_java_ayodong_emobilize_ui_settings_91f36e04("SettingsScreen.kt")
     app_src_main_java_ayodong_emobilize_ui_tasks_add_69273fbc("AddTaskCard.kt")
     app_src_main_java_ayodong_emobilize_ui_tasks_cal_bbb98e95("CalendarFormSheet.kt")
     app_src_main_java_ayodong_emobilize_ui_tasks_tas_c2801c55("TaskFormSheet.kt")
     app_src_main_java_ayodong_emobilize_ui_tasks_tas_55587ba0("TasksScreen.kt")
-    app_src_main_java_ayodong_emobilize_ui_tasks_tas_84cd9f16 -->|method| app_src_main_java_ayodong_emobilize_ui_tasks_tas_d1efa9f8
     app_src_main_java_ayodong_emobilize_ui_theme_typ_77c95f84 -->|calls| app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba
     app_src_main_java_ayodong_emobilize_data_reposit_954b24b8 -->|method| app_src_main_java_ayodong_emobilize_data_reposit_efd11740
     app_src_main_java_ayodong_emobilize_data_reposit_954b24b8 -->|method| app_src_main_java_ayodong_emobilize_data_reposit_b37362cc
     app_src_main_java_ayodong_emobilize_data_reposit_954b24b8 -->|method| app_src_main_java_ayodong_emobilize_data_reposit_819d8fc0
     app_src_main_java_ayodong_emobilize_domain_repos_3f05dbf6 -->|method| app_src_main_java_ayodong_emobilize_domain_repos_40455cf8
     app_src_main_java_ayodong_emobilize_domain_repos_3f05dbf6 -->|method| app_src_main_java_ayodong_emobilize_domain_repos_9e5459eb
+    app_src_main_java_ayodong_emobilize_domain_useca_ddb5b5f0 -->|method| app_src_main_java_ayodong_emobilize_domain_useca_50529360
     app_src_main_java_ayodong_emobilize_data_reposit_efd11740 -->|calls| app_src_main_java_ayodong_emobilize_data_reposit_819d8fc0
     app_src_main_java_ayodong_emobilize_ui_calendar_5b62d631 -->|imports| app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba
     app_src_main_java_ayodong_emobilize_ui_settings_91f36e04 -->|imports| app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba
@@ -192,7 +195,7 @@ flowchart LR
     app_src_main_java_ayodong_emobilize_ui_tasks_cal_bbb98e95 -->|imports| app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba
     app_src_main_java_ayodong_emobilize_ui_tasks_tas_c2801c55 -->|imports| app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba
     app_src_main_java_ayodong_emobilize_ui_tasks_tas_55587ba0 -->|imports| app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba
-    %% Omitted for readability: 483 nodes, 0 edges
+    %% Omitted for readability: 510 nodes, 0 edges
     class app_src_main_java_ayodong_emobilize_data_reposit_954b24b8 klass;
     class app_src_main_java_ayodong_emobilize_data_reposit_efd11740 function;
     class app_src_main_java_ayodong_emobilize_data_reposit_b37362cc function;
@@ -200,11 +203,11 @@ flowchart LR
     class app_src_main_java_ayodong_emobilize_domain_repos_3f05dbf6 klass;
     class app_src_main_java_ayodong_emobilize_domain_repos_40455cf8 function;
     class app_src_main_java_ayodong_emobilize_domain_repos_9e5459eb function;
-    class app_src_main_java_ayodong_emobilize_ui_tasks_tas_84cd9f16 klass;
-    class app_src_main_java_ayodong_emobilize_ui_tasks_tas_d1efa9f8 function;
+    class app_src_main_java_ayodong_emobilize_domain_useca_ddb5b5f0 klass;
+    class app_src_main_java_ayodong_emobilize_domain_useca_50529360 function;
+    class app_src_main_java_ayodong_emobilize_domain_useca_e930c49c klass;
     class app_src_main_java_ayodong_emobilize_ui_theme_typ_77c95f84 klass;
     class app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba function;
-    class app_src_main_java_ayodong_emobilize_domain_useca_ddb5b5f0 klass;
     class app_src_main_java_ayodong_emobilize_ui_calendar_5b62d631 klass;
     class app_src_main_java_ayodong_emobilize_ui_settings_91f36e04 klass;
     class app_src_main_java_ayodong_emobilize_ui_tasks_add_69273fbc klass;
@@ -234,14 +237,30 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
+  <td><code>ScheduleMode</code><br><small style="color:var(--muted)">domain/model/Task.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br><code>TaskFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/TaskFormSheet.kt</small><br>+1 more</td>
+  <td>No direct outbound edge</td>
+  <td>ScheduleMode node in domain/model/Task.kt.</td>
+</tr>
+<tr>
+  <td>2</td>
   <td><code>ShadcnRadius</code><br><small style="color:var(--muted)">ui/theme/Shadcn.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+4 more</td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+5 more</td>
   <td>No direct outbound edge</td>
   <td>ShadcnRadius node in ui/theme/Shadcn.kt.</td>
 </tr>
 <tr>
-  <td>2</td>
+  <td>3</td>
+  <td><code>ExpandableReminderCard()</code><br><small style="color:var(--muted)">ui/notifications/ExpandableReminderCard.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small></td>
+  <td>ExpandableReminderCard() node in ui/notifications/ExpandableReminderCard.kt.</td>
+</tr>
+<tr>
+  <td>4</td>
   <td><code>at()</code><br><small style="color:var(--muted)">ui/theme/Palette.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br><code>CalendarScreen.kt</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br>+2 more</td>
@@ -249,36 +268,20 @@ flowchart LR
   <td>at() node in ui/theme/Palette.kt.</td>
 </tr>
 <tr>
-  <td>3</td>
-  <td><code>categoryColor()</code><br><small style="color:var(--muted)">ui/theme/Palette.kt</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br><code>CalendarScreen.kt</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br>+2 more</td>
-  <td>No direct outbound edge</td>
-  <td>categoryColor() node in ui/theme/Palette.kt.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>inkOn()</code><br><small style="color:var(--muted)">ui/theme/Palette.kt</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br><code>TaskFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/TaskFormSheet.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>inkOn() node in ui/theme/Palette.kt.</td>
-</tr>
-<tr>
   <td>5</td>
-  <td><code>menuColor()</code><br><small style="color:var(--muted)">ui/theme/Palette.kt</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>CalendarScreen.kt</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br><code>EmobilizeApp.kt</code><br><small style="color:var(--muted)">emobilize/ui/EmobilizeApp.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small><br>+1 more</td>
+  <td><code>Deadline</code><br><small style="color:var(--muted)">domain/model/Task.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>menuColor() node in ui/theme/Palette.kt.</td>
+  <td>Deadline node in domain/model/Task.kt.</td>
 </tr>
 <tr>
   <td>6</td>
-  <td><code>priorityColor()</code><br><small style="color:var(--muted)">ui/theme/Palette.kt</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br><code>TaskFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/TaskFormSheet.kt</small><br>+1 more</td>
+  <td><code>Range</code><br><small style="color:var(--muted)">domain/model/Task.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>priorityColor() node in ui/theme/Palette.kt.</td>
+  <td>Range node in domain/model/Task.kt.</td>
 </tr>
 <tr>
   <td>7</td>
@@ -306,6 +309,38 @@ flowchart LR
 </tr>
 <tr>
   <td>10</td>
+  <td><code>ExpandableReminderCard.kt</code><br><small style="color:var(--muted)">ui/notifications/ExpandableReminderCard.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>alignment</code><br><code>animatecontentsize</code><br><code>animatefloatasstate</code><br>+45 more</td>
+  <td>ExpandableReminderCard.kt node in ui/notifications/ExpandableReminderCard.kt.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>Composable</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>ExpandableReminderCard.kt</code><br><small style="color:var(--muted)">ui/notifications/ExpandableReminderCard.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>Composable node in project.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>Modifier</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>ExpandableReminderCard.kt</code><br><small style="color:var(--muted)">ui/notifications/ExpandableReminderCard.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>Modifier node in project.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>Task</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>ExpandableReminderCard.kt</code><br><small style="color:var(--muted)">ui/notifications/ExpandableReminderCard.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>Task node in project.</td>
+</tr>
+<tr>
+  <td>14</td>
   <td><code>SettingsScreen.kt</code><br><small style="color:var(--muted)">ui/settings/SettingsScreen.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -313,15 +348,15 @@ flowchart LR
   <td>SettingsScreen.kt node in ui/settings/SettingsScreen.kt.</td>
 </tr>
 <tr>
-  <td>11</td>
+  <td>15</td>
   <td><code>SplashScreen.kt</code><br><small style="color:var(--muted)">ui/splash/SplashScreen.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>alignment</code><br><code>animatable</code><br><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small><br>+25 more</td>
+  <td><code>alignment</code><br><code>animatable</code><br><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small><br>+26 more</td>
   <td>SplashScreen.kt node in ui/splash/SplashScreen.kt.</td>
 </tr>
 <tr>
-  <td>12</td>
+  <td>16</td>
   <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -329,7 +364,7 @@ flowchart LR
   <td>AddTaskCard.kt node in ui/tasks/AddTaskCard.kt.</td>
 </tr>
 <tr>
-  <td>13</td>
+  <td>17</td>
   <td><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -337,7 +372,7 @@ flowchart LR
   <td>CalendarFormSheet.kt node in ui/tasks/CalendarFormSheet.kt.</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>18</td>
   <td><code>TaskFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/TaskFormSheet.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -345,7 +380,7 @@ flowchart LR
   <td>TaskFormSheet.kt node in ui/tasks/TaskFormSheet.kt.</td>
 </tr>
 <tr>
-  <td>15</td>
+  <td>19</td>
   <td><code>TasksScreen.kt</code><br><small style="color:var(--muted)">ui/tasks/TasksScreen.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -353,39 +388,15 @@ flowchart LR
   <td>TasksScreen.kt node in ui/tasks/TasksScreen.kt.</td>
 </tr>
 <tr>
-  <td>16</td>
-  <td><code>Palette.kt</code><br><small style="color:var(--muted)">ui/theme/Palette.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>Color</code><br><code>FabAction</code><br><small style="color:var(--muted)">domain/model/Task.kt</small><br><code>staticcompositionlocalof</code></td>
-  <td>Palette.kt node in ui/theme/Palette.kt.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>Color</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>Palette.kt</code><br><small style="color:var(--muted)">ui/theme/Palette.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>Color node in project.</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>ayodong</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>ayodong node in project.</td>
-</tr>
-<tr>
-  <td>19</td>
+  <td>20</td>
   <td><code>FontWeight</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+8 more</td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+9 more</td>
   <td>No direct outbound edge</td>
   <td>FontWeight node in project.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>21</td>
   <td><code>alertdialog</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>SettingsScreen.kt</code><br><small style="color:var(--muted)">ui/settings/SettingsScreen.kt</small></td>
@@ -393,15 +404,15 @@ flowchart LR
   <td>alertdialog node in project.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>22</td>
   <td><code>alignment</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+8 more</td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+9 more</td>
   <td>No direct outbound edge</td>
   <td>alignment node in project.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>23</td>
   <td><code>alpha</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>CalendarScreen.kt</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br><code>TasksScreen.kt</code><br><small style="color:var(--muted)">ui/tasks/TasksScreen.kt</small></td>
@@ -409,7 +420,15 @@ flowchart LR
   <td>alpha node in project.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>24</td>
+  <td><code>animatecontentsize</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ExpandableReminderCard.kt</code><br><small style="color:var(--muted)">ui/notifications/ExpandableReminderCard.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>animatecontentsize node in project.</td>
+</tr>
+<tr>
+  <td>25</td>
   <td><code>appfont</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+2 more</td>
@@ -417,15 +436,15 @@ flowchart LR
   <td>appfont node in project.</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>26</td>
   <td><code>arrangement</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br><code>CalendarScreen.kt</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br>+5 more</td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br><code>CalendarScreen.kt</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br>+6 more</td>
   <td>No direct outbound edge</td>
   <td>arrangement node in project.</td>
 </tr>
 <tr>
-  <td>25</td>
+  <td>27</td>
   <td><code>arrowback</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>SettingsScreen.kt</code><br><small style="color:var(--muted)">ui/settings/SettingsScreen.kt</small></td>
@@ -433,15 +452,15 @@ flowchart LR
   <td>arrowback node in project.</td>
 </tr>
 <tr>
-  <td>26</td>
+  <td>28</td>
   <td><code>background</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+8 more</td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+9 more</td>
   <td>No direct outbound edge</td>
   <td>background node in project.</td>
 </tr>
 <tr>
-  <td>27</td>
+  <td>29</td>
   <td><code>backhandler</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>EmobilizeApp.kt</code><br><small style="color:var(--muted)">emobilize/ui/EmobilizeApp.kt</small><br>+1 more</td>
@@ -449,28 +468,12 @@ flowchart LR
   <td>backhandler node in project.</td>
 </tr>
 <tr>
-  <td>28</td>
+  <td>30</td>
   <td><code>basictextfield</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+2 more</td>
   <td>No direct outbound edge</td>
   <td>basictextfield node in project.</td>
-</tr>
-<tr>
-  <td>29</td>
-  <td><code>border</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+6 more</td>
-  <td>No direct outbound edge</td>
-  <td>border node in project.</td>
-</tr>
-<tr>
-  <td>30</td>
-  <td><code>box</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+8 more</td>
-  <td>No direct outbound edge</td>
-  <td>box node in project.</td>
 </tr>
 </table>
 
@@ -482,16 +485,16 @@ flowchart LR
       <tr><td><code>domain/model/Task.kt</code></td><td>44 nodes</td></tr>
 <tr><td><code>ui/tasks/TasksViewModel.kt</code></td><td>38 nodes</td></tr>
 <tr><td><code>domain/repository/Repositories.kt</code></td><td>20 nodes</td></tr>
+<tr><td><code>CONTEXT.md</code></td><td>16 nodes</td></tr>
 <tr><td><code>domain/model/Calendar.kt</code></td><td>16 nodes</td></tr>
 <tr><td><code>ui/calendar/CalendarScreen.kt</code></td><td>15 nodes</td></tr>
 <tr><td><code>ui/tasks/AddTaskCard.kt</code></td><td>13 nodes</td></tr>
 <tr><td><code>domain/model/Account.kt</code></td><td>11 nodes</td></tr>
-<tr><td><code>domain/usecase/TaskUseCases.kt</code></td><td>11 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: imports x623, references x287, calls x228, contains x147. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: imports x667, references x322, calls x229, contains x163. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -926,7 +929,7 @@ flowchart LR
   <td>24</td>
   <td><code>rotate</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
+  <td><code>ExpandableReminderCard.kt</code><br><small style="color:var(--muted)">ui/notifications/ExpandableReminderCard.kt</small><br><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
   <td>No direct outbound edge</td>
   <td>rotate node in project.</td>
 </tr>
@@ -1076,7 +1079,7 @@ flowchart LR
   <td>2</td>
   <td><code>animatefloatasstate</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td><code>ExpandableReminderCard.kt</code><br><small style="color:var(--muted)">ui/notifications/ExpandableReminderCard.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
   <td>No direct outbound edge</td>
   <td>animatefloatasstate node in project.</td>
 </tr>
@@ -1116,7 +1119,7 @@ flowchart LR
   <td>7</td>
   <td><code>canvas</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small><br>+1 more</td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>ExpandableReminderCard.kt</code><br><small style="color:var(--muted)">ui/notifications/ExpandableReminderCard.kt</small><br><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br>+2 more</td>
   <td>No direct outbound edge</td>
   <td>canvas node in project.</td>
 </tr>
@@ -1252,7 +1255,7 @@ flowchart LR
   <td>24</td>
   <td><code>stroke</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small><br>+1 more</td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>ExpandableReminderCard.kt</code><br><small style="color:var(--muted)">ui/notifications/ExpandableReminderCard.kt</small><br><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br>+2 more</td>
   <td>No direct outbound edge</td>
   <td>stroke node in project.</td>
 </tr>
@@ -1297,8 +1300,251 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 7. gradlew ====== -->
-<h2 id="gradlew">7. gradlew</h2>
+<!-- ====== 7. Designmd Neutral Warna ====== -->
+<h2 id="designmd-neutral-warna">7. Designmd Neutral Warna</h2>
+<p>Designmd Neutral Warna groups implementation around designmd, neutral, warna, chip, mostly in DESIGN.md. This section covers 18 nodes and 17 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Designmd Neutral Warna (18 nodes, 17 edges)
+    design_komponen_0bf16213("Komponen<br/><small>DESIGN.md</small>")
+    design_emobilize_design_system_97fdf9d4("Emobilize Design System<br/><small>DESIGN.md</small>")
+    design_warna_3be4179e("Warna<br/><small>DESIGN.md</small>")
+    design_056f1182("DESIGN.md")
+    design_tipografi_a363c6b1("Tipografi<br/><small>DESIGN.md</small>")
+    design_radius_eeecad00("Radius<br/><small>DESIGN.md</small>")
+    design_chip_b509c48f("Chip<br/><small>DESIGN.md</small>")
+    design_dock_0e1815c4("Dock<br/><small>DESIGN.md</small>")
+    design_input_b8a15f1b("Input<br/><small>DESIGN.md</small>")
+    design_jarak_07fca997("Jarak<br/><small>DESIGN.md</small>")
+    design_kartu_tugas_dfb875b8("Kartu tugas<br/><small>DESIGN.md</small>")
+    design_lapisan_70c25e97("Lapisan<br/><small>DESIGN.md</small>")
+    design_neutral_dark_396c459e("Neutral Dark<br/><small>DESIGN.md</small>")
+    design_neutral_light_63c6556d("Neutral Light<br/><small>DESIGN.md</small>")
+    design_sheet_9965bbda("Sheet<br/><small>DESIGN.md</small>")
+    design_toggle_68c2812d("Toggle<br/><small>DESIGN.md</small>")
+    design_tombol_utama_41ca6753("Tombol utama<br/><small>DESIGN.md</small>")
+    design_warna_produk_67341d58("Warna produk<br/><small>DESIGN.md</small>")
+    design_056f1182 -->|contains| design_emobilize_design_system_97fdf9d4
+    design_emobilize_design_system_97fdf9d4 -->|contains| design_tipografi_a363c6b1
+    design_emobilize_design_system_97fdf9d4 -->|contains| design_radius_eeecad00
+    design_emobilize_design_system_97fdf9d4 -->|contains| design_jarak_07fca997
+    design_emobilize_design_system_97fdf9d4 -->|contains| design_komponen_0bf16213
+    design_emobilize_design_system_97fdf9d4 -->|contains| design_warna_3be4179e
+    design_emobilize_design_system_97fdf9d4 -->|contains| design_warna_produk_67341d58
+    design_komponen_0bf16213 -->|contains| design_kartu_tugas_dfb875b8
+    design_komponen_0bf16213 -->|contains| design_sheet_9965bbda
+    design_komponen_0bf16213 -->|contains| design_input_b8a15f1b
+    design_komponen_0bf16213 -->|contains| design_toggle_68c2812d
+    design_komponen_0bf16213 -->|contains| design_chip_b509c48f
+    design_komponen_0bf16213 -->|contains| design_tombol_utama_41ca6753
+    design_komponen_0bf16213 -->|contains| design_dock_0e1815c4
+    design_warna_3be4179e -->|contains| design_neutral_light_63c6556d
+    design_warna_3be4179e -->|contains| design_neutral_dark_396c459e
+    design_warna_3be4179e -->|contains| design_lapisan_70c25e97
+    class design_komponen_0bf16213 concept;
+    class design_emobilize_design_system_97fdf9d4 concept;
+    class design_warna_3be4179e concept;
+    class design_056f1182 concept;
+    class design_tipografi_a363c6b1 concept;
+    class design_radius_eeecad00 concept;
+    class design_chip_b509c48f concept;
+    class design_dock_0e1815c4 concept;
+    class design_input_b8a15f1b concept;
+    class design_jarak_07fca997 concept;
+    class design_kartu_tugas_dfb875b8 concept;
+    class design_lapisan_70c25e97 concept;
+    class design_neutral_dark_396c459e concept;
+    class design_neutral_light_63c6556d concept;
+    class design_sheet_9965bbda concept;
+    class design_toggle_68c2812d concept;
+    class design_tombol_utama_41ca6753 concept;
+    class design_warna_produk_67341d58 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>DESIGN.md</code><br><small style="color:var(--muted)">DESIGN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing DESIGN.md.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Chip</code><br><small style="color:var(--muted)">DESIGN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Chip.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>Dock</code><br><small style="color:var(--muted)">DESIGN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Dock.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Emobilize Design System</code><br><small style="color:var(--muted)">DESIGN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Emobilize Design System.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>Input</code><br><small style="color:var(--muted)">DESIGN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Input.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>Jarak</code><br><small style="color:var(--muted)">DESIGN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Jarak.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>Kartu tugas</code><br><small style="color:var(--muted)">DESIGN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Kartu tugas.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>Komponen</code><br><small style="color:var(--muted)">DESIGN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Komponen.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>Lapisan</code><br><small style="color:var(--muted)">DESIGN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Lapisan.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>Neutral Dark</code><br><small style="color:var(--muted)">DESIGN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Neutral Dark.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>Neutral Light</code><br><small style="color:var(--muted)">DESIGN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Neutral Light.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>Radius</code><br><small style="color:var(--muted)">DESIGN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Radius.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>Sheet</code><br><small style="color:var(--muted)">DESIGN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Sheet.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>Tipografi</code><br><small style="color:var(--muted)">DESIGN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Tipografi.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>Toggle</code><br><small style="color:var(--muted)">DESIGN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Toggle.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>Tombol utama</code><br><small style="color:var(--muted)">DESIGN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Tombol utama.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>Warna</code><br><small style="color:var(--muted)">DESIGN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Warna.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>Warna produk</code><br><small style="color:var(--muted)">DESIGN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Warna produk.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>DESIGN.md</code></td><td>18 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x17. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 8. gradlew ====== -->
+<h2 id="gradlew">8. gradlew</h2>
 <p>gradlew groups implementation around gradlew, script, die, warn, mostly in gradlew. This section covers 4 nodes and 5 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -1385,8 +1631,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 8. Offset ====== -->
-<h2 id="offset">8. Offset</h2>
+<!-- ====== 9. Offset ====== -->
+<h2 id="offset">9. Offset</h2>
 <p>Offset groups implementation around sectorpath, app, ayodong, emobilize, mostly in ui/dock/RadialMenu.kt. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -1431,7 +1677,7 @@ flowchart LR
   <td>2</td>
   <td><code>Offset</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small><br>+1 more</td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>ExpandableReminderCard.kt</code><br><small style="color:var(--muted)">ui/notifications/ExpandableReminderCard.kt</small><br><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br>+2 more</td>
   <td>No direct outbound edge</td>
   <td>Offset node in project.</td>
 </tr>
@@ -1452,8 +1698,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 9. settings.gradle.kts ====== -->
-<h2 id="settings-gradle-kts">9. settings.gradle.kts</h2>
+<!-- ====== 10. settings.gradle.kts ====== -->
+<h2 id="settings-gradle-kts">10. settings.gradle.kts</h2>
 <p>settings.gradle.kts groups implementation around settingsgradlekts, mostly in settings.gradle.kts. This section covers 1 nodes and 0 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -1514,18 +1760,18 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>569</td></tr>
-      <tr><td>Edges</td><td>1624</td></tr>
+      <tr><td>Nodes</td><td>614</td></tr>
+      <tr><td>Edges</td><td>1742</td></tr>
       <tr><td>Hyperedges</td><td>0</td></tr>
-      <tr><td>Communities</td><td>31</td></tr>
-      <tr><td>Documented Sections</td><td>8</td></tr>
+      <tr><td>Communities</td><td>33</td></tr>
+      <tr><td>Documented Sections</td><td>9</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>1611</td></tr>
-      <tr><td>INFERRED</td><td>13</td></tr>
+      <tr><td>EXTRACTED</td><td>1697</td></tr>
+      <tr><td>INFERRED</td><td>45</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
   </div>
@@ -1533,7 +1779,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>Emobilize — Architecture Documentation</p>
-  <p>Generated: 2026-10-16 17:28 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-10-21 15:27 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->
