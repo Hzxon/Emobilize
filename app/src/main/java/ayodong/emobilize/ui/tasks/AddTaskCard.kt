@@ -28,6 +28,8 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Notifications
+import ayodong.emobilize.domain.model.ReminderOption
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -66,7 +68,7 @@ import ayodong.emobilize.ui.theme.categoryColor
 import ayodong.emobilize.ui.theme.inkOn
 import ayodong.emobilize.ui.theme.priorityColor
 
-private enum class AddOption { Category, Priority, Schedule }
+private enum class AddOption { Category, Priority, Schedule, Reminder }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -154,6 +156,7 @@ fun AddTaskCard(
                     AddOption.Category -> CategoryOptions(draft, categories)
                     AddOption.Priority -> PriorityOptions(draft)
                     AddOption.Schedule -> ScheduleOptions(draft)
+                    AddOption.Reminder -> ReminderOptions(draft)
                     null -> Unit
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -175,6 +178,13 @@ fun AddTaskCard(
                         onClick = { option = if (option == AddOption.Schedule) null else AddOption.Schedule },
                     ) { color ->
                         Icon(Icons.Filled.DateRange, contentDescription = null, tint = color, modifier = Modifier.size(22.dp))
+                    }
+                    OptionButton(
+                        label = "Reminder",
+                        tint = if (draft.reminder != ReminderOption.None || option == AddOption.Reminder) palette.text else palette.textMuted,
+                        onClick = { option = if (option == AddOption.Reminder) null else AddOption.Reminder },
+                    ) { color ->
+                        Icon(Icons.Filled.Notifications, contentDescription = null, tint = color, modifier = Modifier.size(22.dp))
                     }
                     Spacer(Modifier.weight(1f))
                     Text(
@@ -373,6 +383,43 @@ private fun PriorityMark(color: Color) {
                 size = Size(bar, size.height - top),
                 cornerRadius = CornerRadius(bar / 2f, bar / 2f),
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ReminderOptions(draft: TaskDraft) {
+    val palette = LocalPalette.current
+    FlowRow(
+        modifier = Modifier.padding(bottom = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        ReminderOption.entries.forEach { option ->
+            val selected = draft.reminder == option
+            val bg = if (selected) palette.scheme.primary else palette.scheme.secondary
+            val contentColor = if (selected) palette.scheme.primaryForeground else palette.text
+            val borderModifier = if (selected) {
+                Modifier
+            } else {
+                Modifier.border(1.dp, palette.scheme.border, RoundedCornerShape(ShadcnRadius.md))
+            }
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(ShadcnRadius.md))
+                    .then(borderModifier)
+                    .background(bg)
+                    .clickable { draft.reminder = option }
+                    .padding(horizontal = 12.dp, vertical = 7.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = option.label,
+                    style = appStyle(11.5.sp, if (selected) FontWeight.Bold else FontWeight.Medium),
+                    color = contentColor,
+                )
+            }
         }
     }
 }

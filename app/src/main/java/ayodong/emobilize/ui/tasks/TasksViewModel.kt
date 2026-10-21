@@ -11,6 +11,7 @@ import ayodong.emobilize.domain.model.EventType
 import ayodong.emobilize.domain.model.FabAction
 import ayodong.emobilize.domain.model.FilterKey
 import ayodong.emobilize.domain.model.Priority
+import ayodong.emobilize.domain.model.ReminderOption
 import ayodong.emobilize.domain.model.ScheduleMode
 import ayodong.emobilize.domain.model.Task
 import ayodong.emobilize.domain.model.TaskStatus
@@ -43,6 +44,7 @@ class TaskDraft {
     var name by mutableStateOf("")
     var category by mutableStateOf<Category?>(null)
     var priority by mutableStateOf<Priority?>(null)
+    var reminder by mutableStateOf(ReminderOption.None)
     var includeSchedule by mutableStateOf(false)
     var scheduleMode by mutableStateOf(ScheduleMode.Deadline)
     var date by mutableStateOf("")
@@ -242,6 +244,7 @@ class TasksViewModel(
                     editDraft.endTime = task.range?.endTime ?: displayTimeToInput(task.time).ifBlank { "17:00" }
                     editDraft.eventType = task.eventType
                     editDraft.eventEndTime = task.eventEndTime
+                    editDraft.reminder = task.reminder
                     editingId = task.id
                     showEdit = true
                 }
@@ -385,6 +388,7 @@ class TasksViewModel(
         addDraft.endTime = "10:00"
         addDraft.eventType = type
         addDraft.eventEndTime = null
+        addDraft.reminder = ReminderOption.None
     }
 
     fun dismissEdit() {
@@ -431,6 +435,7 @@ class TasksViewModel(
             },
             eventType = draft.eventType,
             eventEndTime = draft.eventEndTime,
+            reminder = draft.reminder,
         )
     }
 

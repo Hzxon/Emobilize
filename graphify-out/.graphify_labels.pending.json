@@ -1,9 +1,12 @@
 {
-  "12": "TimeBlock",
-  "15": "Komponen",
-  "16": ".draftToTask",
-  "20": "AddTaskCard",
-  "22": "TaskDraft",
-  "31": "MainActivity.kt",
-  "32": "FilterKey"
+  "0": "AddTaskCard.kt",
+  "7": "SplashScreen.kt",
+  "8": "RadialDock.kt",
+  "17": "CalendarScreen.kt",
+  "19": "Halaman Emobilize",
+  "21": "EventType",
+  "23": "ReminderOption",
+  "24": "Tasks",
+  "28": "Priority",
+  "29": "TasksScreen.kt"
 }

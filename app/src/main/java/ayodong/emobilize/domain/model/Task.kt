@@ -40,6 +40,14 @@ enum class EventType(val label: String) {
     RegularSchedule("Regular Schedule"),
 }
 
+enum class ReminderOption(val label: String) {
+    None("None"),
+    AtDeadline("At deadline"),
+    TenMinutesBefore("10 minutes before"),
+    OneHourBefore("1 hour before"),
+    OneDayBefore("1 day before"),
+}
+
 enum class Priority { Low, Medium, High }
 
 enum class TaskStatus { Todo, Progress, Done }
@@ -69,6 +77,7 @@ data class Task(
     val range: DateRange? = null,
     val eventType: EventType = EventType.Task,
     val eventEndTime: String? = null,
+    val reminder: ReminderOption = ReminderOption.None,
 )
 
 private val monthDay: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d", Locale.US)

@@ -60,19 +60,19 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>Emobilize — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 614 nodes, 1742 edges, 33 communities. Commit: 9663e1c</p>
+<p class="subtitle">Generated from graphify knowledge graph: 761 nodes, 1989 edges, 33 communities. Commit: 13f6e2e</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
     <a href="#extract-pipeline">Extraction Pipeline</a>
     <a href="#build-graph">Graph Build</a>
+    <a href="#cli-skills">CLI &amp; Skill Installers</a>
     <a href="#tests-fixtures">Tests &amp; Fixtures</a>
-    <a href="#radialdock-kt">RadialDock.kt</a>
-    <a href="#radialmenu-kt">RadialMenu.kt</a>
-    <a href="#designmd-neutral-warna">Designmd Neutral Warna</a>
-    <a href="#gradlew">gradlew</a>
-    <a href="#offset">Offset</a>
-    <a href="#settings-gradle-kts">settings.gradle.kts</a>
+    <a href="#app-ui-architecture">App UI Architecture</a>
+    <a href="#splashscreenkt-app-ayodong">Splashscreenkt App Ayodong</a>
+    <a href="#halamanmd-aksi-dari">Halamanmd Aksi Dari</a>
+    <a href="#gradle-wrapper-script">Gradle Wrapper Script</a>
+    <a href="#gradle-settings">Gradle Settings</a>
 </div>
 
 <!-- ====== Architecture Overview ====== -->
@@ -82,33 +82,29 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>528 nodes</small>")
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>610 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
     BUILD_GRAPH_321CBB04("Graph Build<br/><small>2 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
+    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>62 nodes</small>")
+    class CLI_SKILLS_9964CBB8 module;
     TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>4 nodes</small>")
     class TESTS_FIXTURES_B84B1DCC module;
-    RADIALDOCK_KT_C0672986("RadialDock.kt<br/><small>28 nodes</small>")
-    class RADIALDOCK_KT_C0672986 module;
-    RADIALMENU_KT_D2FD5F33("RadialMenu.kt<br/><small>27 nodes</small>")
-    class RADIALMENU_KT_D2FD5F33 module;
-    DESIGNMD_NEUTRAL_WARNA_7B6DFC61("Designmd Neutral Warna<br/><small>18 nodes</small>")
-    class DESIGNMD_NEUTRAL_WARNA_7B6DFC61 module;
-    GRADLEW_5BBFA66E("gradlew<br/><small>4 nodes</small>")
-    class GRADLEW_5BBFA66E module;
-    OFFSET_53A610E9("Offset<br/><small>2 nodes</small>")
-    class OFFSET_53A610E9 module;
-    SETTINGS_GRADLE_KTS_DCEA4F96("settings.gradle.kts<br/><small>1 nodes</small>")
-    class SETTINGS_GRADLE_KTS_DCEA4F96 module;
-    RADIALDOCK_KT_C0672986 -->|imports x41| EXTRACT_PIPELINE_5F350230
-    RADIALMENU_KT_D2FD5F33 -->|imports x29| EXTRACT_PIPELINE_5F350230
-    RADIALDOCK_KT_C0672986 -->|imports x20| RADIALMENU_KT_D2FD5F33
-    EXTRACT_PIPELINE_5F350230 -->|imports x13| RADIALMENU_KT_D2FD5F33
-    RADIALMENU_KT_D2FD5F33 -->|imports x13| RADIALDOCK_KT_C0672986
-    EXTRACT_PIPELINE_5F350230 -->|imports x10| RADIALDOCK_KT_C0672986
-    EXTRACT_PIPELINE_5F350230 -->|imports x4| OFFSET_53A610E9
-    RADIALMENU_KT_D2FD5F33 -->|imports x2| OFFSET_53A610E9
-    RADIALDOCK_KT_C0672986 -->|imports| OFFSET_53A610E9
+    APP_UI_ARCHITECTURE_211AD979("App UI Architecture<br/><small>61 nodes</small>")
+    class APP_UI_ARCHITECTURE_211AD979 module;
+    SPLASHSCREENKT_APP_AYODONG_4BE2BAA7("Splashscreenkt App Ayodong<br/><small>12 nodes</small>")
+    class SPLASHSCREENKT_APP_AYODONG_4BE2BAA7 module;
+    HALAMANMD_AKSI_DARI_43571F09("Halamanmd Aksi Dari<br/><small>5 nodes</small>")
+    class HALAMANMD_AKSI_DARI_43571F09 module;
+    GRADLE_WRAPPER_SCRIPT_671F6048("Gradle Wrapper Script<br/><small>4 nodes</small>")
+    class GRADLE_WRAPPER_SCRIPT_671F6048 module;
+    GRADLE_SETTINGS_94F56AA8("Gradle Settings<br/><small>1 nodes</small>")
+    class GRADLE_SETTINGS_94F56AA8 module;
+    EXTRACT_PIPELINE_5F350230 -->|imports x52| SPLASHSCREENKT_APP_AYODONG_4BE2BAA7
+    SPLASHSCREENKT_APP_AYODONG_4BE2BAA7 -->|imports x19| EXTRACT_PIPELINE_5F350230
+    HALAMANMD_AKSI_DARI_43571F09 -->|references x5| EXTRACT_PIPELINE_5F350230
+    EXTRACT_PIPELINE_5F350230 -->|contains| HALAMANMD_AKSI_DARI_43571F09
+    CLI_SKILLS_9964CBB8 -->|cites| APP_UI_ARCHITECTURE_211AD979
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -125,93 +121,92 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>528</td><td><code>0, 1, 3, 2, 12, 4, 9, 11, 10, 7, 8, 20, 13, 14, 22, 17, 18, 31, 19, 21, 16, 32, 23, 27</code></td></tr><tr><td>Graph Build</td><td>2</td><td><code>28, 29</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>4</td><td><code>24</code></td></tr><tr><td>RadialDock.kt</td><td>28</td><td><code>5</code></td></tr><tr><td>RadialMenu.kt</td><td>27</td><td><code>6</code></td></tr><tr><td>Designmd Neutral Warna</td><td>18</td><td><code>15</code></td></tr><tr><td>gradlew</td><td>4</td><td><code>25</code></td></tr><tr><td>Offset</td><td>2</td><td><code>26</code></td></tr><tr><td>settings.gradle.kts</td><td>1</td><td><code>30</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>610</td><td><code>1, 3, 0, 4, 8, 19, 17, 29, 11, 6, 10, 12, 14, 9, 13, 21, 15, 18, 22, 20, 23, 25, 28</code></td></tr><tr><td>Graph Build</td><td>2</td><td><code>30, 31</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>62</td><td><code>5, 16</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>4</td><td><code>26</code></td></tr><tr><td>App UI Architecture</td><td>61</td><td><code>2</code></td></tr><tr><td>Splashscreenkt App Ayodong</td><td>12</td><td><code>7</code></td></tr><tr><td>Halamanmd Aksi Dari</td><td>5</td><td><code>24</code></td></tr><tr><td>Gradle Wrapper Script</td><td>4</td><td><code>27</code></td></tr><tr><td>Gradle Settings</td><td>1</td><td><code>32</code></td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Core Flow</h4>
-    <div class="arrow-chain">Graph Build -&gt; Extraction Pipeline -&gt; RadialMenu.kt -&gt; RadialDock.kt -&gt; Offset -&gt; Tests &amp; Fixtures -&gt; Designmd Neutral Warna</div>
+    <div class="arrow-chain">Graph Build -&gt; Extraction Pipeline -&gt; Splashscreenkt App Ayodong -&gt; CLI &amp; Skill Installers -&gt; App UI Architecture -&gt; Tests &amp; Fixtures -&gt; Halamanmd Aksi Dari</div>
   </div>
 </div>
 <div class="grid">
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>614 nodes · 1742 edges · 33 communities (19 shown, 14 thin omitted)</li>
-      <li>Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 45 edges (avg confidence: 0.92)</li>
+      <li>761 nodes · 1989 edges · 33 communities (22 shown, 11 thin omitted)</li>
+      <li>Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 116 edges (avg confidence: 0.92)</li>
       <li>Token cost: 0 input · 0 output</li>
-      <li>1. `appStyle()` - 57 edges</li>
-      <li>2. `TasksViewModel` - 55 edges</li>
-      <li>3. `AppContainer` - 25 edges</li>
+      <li>1. `appStyle()` - 58 edges</li>
+      <li>2. `TasksViewModel` - 56 edges</li>
+      <li>3. `TimeBlock` - 27 edges</li>
     </ul>
   </div>
 </div>
 <hr>
 <!-- ====== 2. Extraction Pipeline ====== -->
 <h2 id="extract-pipeline">2. Extraction Pipeline</h2>
-<p>Extraction Pipeline groups implementation around ayodong, emobilize, app, domain, mostly in domain/model/Task.kt, ui/tasks/TasksViewModel.kt, domain/repository/Repositories.kt. This section covers 528 nodes and 1529 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Extraction Pipeline groups implementation around emobilize, ayodong, app, domain, mostly in domain/model/Task.kt, ui/tasks/TasksViewModel.kt, HALAMAN.md. This section covers 610 nodes and 1704 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Extraction Pipeline (528 nodes, 1529 edges)
-    subgraph extract_pipeline_data_repository_PreferencesAppS_ff62683d["data/repository/PreferencesAppSettingsRepository.kt"]
-        app_src_main_java_ayodong_emobilize_data_reposit_954b24b8("PreferencesAppSettingsRepository<br/><small>data/repository/PreferencesAppSettingsRepository.kt</small>")
-        app_src_main_java_ayodong_emobilize_data_reposit_efd11740("get()<br/><small>data/repository/PreferencesAppSettingsRepository.kt</small>")
-        app_src_main_java_ayodong_emobilize_data_reposit_b37362cc("update()<br/><small>data/repository/PreferencesAppSettingsRepository.kt</small>")
-        app_src_main_java_ayodong_emobilize_data_reposit_819d8fc0("enumValue()<br/><small>data/repository/PreferencesAppSettingsRepository.kt</small>")
+    %% Section: Extraction Pipeline (610 nodes, 1704 edges)
+    subgraph extract_pipeline_data_repository_InMemorySchedul_ae61d00b["data/repository/InMemoryScheduleRepository.kt"]
+        app_src_main_java_ayodong_emobilize_data_reposit_cf91846f("InMemoryScheduleRepository<br/><small>data/repository/InMemoryScheduleRepository.kt</small>")
+        app_src_main_java_ayodong_emobilize_data_reposit_1aba3763("blocks()<br/><small>data/repository/InMemoryScheduleRepository.kt</small>")
+        app_src_main_java_ayodong_emobilize_data_reposit_46528c21("place()<br/><small>data/repository/InMemoryScheduleRepository.kt</small>")
+        app_src_main_java_ayodong_emobilize_data_reposit_f98a8988("delete()<br/><small>data/repository/InMemoryScheduleRepository.kt</small>")
+        app_src_main_java_ayodong_emobilize_data_reposit_22e7f0ae("applyCategory()<br/><small>data/repository/InMemoryScheduleRepository.kt</small>")
     end
     subgraph extract_pipeline_domain_repository_Repositories_e31d1edc["domain/repository/Repositories.kt"]
-        app_src_main_java_ayodong_emobilize_domain_repos_3f05dbf6("AppSettingsRepository<br/><small>domain/repository/Repositories.kt</small>")
-        app_src_main_java_ayodong_emobilize_domain_repos_40455cf8("get()<br/><small>domain/repository/Repositories.kt</small>")
-        app_src_main_java_ayodong_emobilize_domain_repos_9e5459eb("update()<br/><small>domain/repository/Repositories.kt</small>")
-    end
-    subgraph extract_pipeline_domain_usecase_AppSettingsUseCa_cd50be95["domain/usecase/AppSettingsUseCases.kt"]
-        app_src_main_java_ayodong_emobilize_domain_useca_ddb5b5f0("GetAppSettingsUseCase<br/><small>domain/usecase/AppSettingsUseCases.kt</small>")
-        app_src_main_java_ayodong_emobilize_domain_useca_50529360("invoke()<br/><small>domain/usecase/AppSettingsUseCases.kt</small>")
-        app_src_main_java_ayodong_emobilize_domain_useca_e930c49c("UpdateAppSettingsUseCase<br/><small>domain/usecase/AppSettingsUseCases.kt</small>")
+        app_src_main_java_ayodong_emobilize_domain_repos_e7512332("ScheduleRepository<br/><small>domain/repository/Repositories.kt</small>")
+        app_src_main_java_ayodong_emobilize_domain_repos_eb4f95f1("blocks()<br/><small>domain/repository/Repositories.kt</small>")
+        app_src_main_java_ayodong_emobilize_domain_repos_aa2a9686("place()<br/><small>domain/repository/Repositories.kt</small>")
+        app_src_main_java_ayodong_emobilize_domain_repos_04b31e3e("delete()<br/><small>domain/repository/Repositories.kt</small>")
+        app_src_main_java_ayodong_emobilize_domain_repos_6788aef2("applyCategory()<br/><small>domain/repository/Repositories.kt</small>")
     end
     subgraph extract_pipeline_ui_theme_Type_kt_b419feb5["ui/theme/Type.kt"]
         app_src_main_java_ayodong_emobilize_ui_theme_typ_77c95f84("ShadcnType<br/><small>ui/theme/Type.kt</small>")
         app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba("appStyle()<br/><small>ui/theme/Type.kt</small>")
     end
     app_src_main_java_ayodong_emobilize_ui_calendar_5b62d631("CalendarScreen.kt")
-    app_src_main_java_ayodong_emobilize_ui_settings_91f36e04("SettingsScreen.kt")
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e("RadialDock.kt")
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce("RadialMenu.kt")
     app_src_main_java_ayodong_emobilize_ui_tasks_add_69273fbc("AddTaskCard.kt")
-    app_src_main_java_ayodong_emobilize_ui_tasks_cal_bbb98e95("CalendarFormSheet.kt")
     app_src_main_java_ayodong_emobilize_ui_tasks_tas_c2801c55("TaskFormSheet.kt")
     app_src_main_java_ayodong_emobilize_ui_tasks_tas_55587ba0("TasksScreen.kt")
     app_src_main_java_ayodong_emobilize_ui_theme_typ_77c95f84 -->|calls| app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba
-    app_src_main_java_ayodong_emobilize_data_reposit_954b24b8 -->|method| app_src_main_java_ayodong_emobilize_data_reposit_efd11740
-    app_src_main_java_ayodong_emobilize_data_reposit_954b24b8 -->|method| app_src_main_java_ayodong_emobilize_data_reposit_b37362cc
-    app_src_main_java_ayodong_emobilize_data_reposit_954b24b8 -->|method| app_src_main_java_ayodong_emobilize_data_reposit_819d8fc0
-    app_src_main_java_ayodong_emobilize_domain_repos_3f05dbf6 -->|method| app_src_main_java_ayodong_emobilize_domain_repos_40455cf8
-    app_src_main_java_ayodong_emobilize_domain_repos_3f05dbf6 -->|method| app_src_main_java_ayodong_emobilize_domain_repos_9e5459eb
-    app_src_main_java_ayodong_emobilize_domain_useca_ddb5b5f0 -->|method| app_src_main_java_ayodong_emobilize_domain_useca_50529360
-    app_src_main_java_ayodong_emobilize_data_reposit_efd11740 -->|calls| app_src_main_java_ayodong_emobilize_data_reposit_819d8fc0
-    app_src_main_java_ayodong_emobilize_ui_calendar_5b62d631 -->|imports| app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba
-    app_src_main_java_ayodong_emobilize_ui_settings_91f36e04 -->|imports| app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba
+    app_src_main_java_ayodong_emobilize_data_reposit_cf91846f -->|method| app_src_main_java_ayodong_emobilize_data_reposit_1aba3763
+    app_src_main_java_ayodong_emobilize_data_reposit_cf91846f -->|method| app_src_main_java_ayodong_emobilize_data_reposit_46528c21
+    app_src_main_java_ayodong_emobilize_data_reposit_cf91846f -->|method| app_src_main_java_ayodong_emobilize_data_reposit_f98a8988
+    app_src_main_java_ayodong_emobilize_data_reposit_cf91846f -->|method| app_src_main_java_ayodong_emobilize_data_reposit_22e7f0ae
+    app_src_main_java_ayodong_emobilize_domain_repos_e7512332 -->|method| app_src_main_java_ayodong_emobilize_domain_repos_eb4f95f1
+    app_src_main_java_ayodong_emobilize_domain_repos_e7512332 -->|method| app_src_main_java_ayodong_emobilize_domain_repos_aa2a9686
+    app_src_main_java_ayodong_emobilize_domain_repos_e7512332 -->|method| app_src_main_java_ayodong_emobilize_domain_repos_04b31e3e
+    app_src_main_java_ayodong_emobilize_domain_repos_e7512332 -->|method| app_src_main_java_ayodong_emobilize_domain_repos_6788aef2
     app_src_main_java_ayodong_emobilize_ui_tasks_add_69273fbc -->|imports| app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba
-    app_src_main_java_ayodong_emobilize_ui_tasks_cal_bbb98e95 -->|imports| app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba
     app_src_main_java_ayodong_emobilize_ui_tasks_tas_c2801c55 -->|imports| app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba
+    app_src_main_java_ayodong_emobilize_ui_calendar_5b62d631 -->|imports| app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba
     app_src_main_java_ayodong_emobilize_ui_tasks_tas_55587ba0 -->|imports| app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba
-    %% Omitted for readability: 510 nodes, 0 edges
-    class app_src_main_java_ayodong_emobilize_data_reposit_954b24b8 klass;
-    class app_src_main_java_ayodong_emobilize_data_reposit_efd11740 function;
-    class app_src_main_java_ayodong_emobilize_data_reposit_b37362cc function;
-    class app_src_main_java_ayodong_emobilize_data_reposit_819d8fc0 function;
-    class app_src_main_java_ayodong_emobilize_domain_repos_3f05dbf6 klass;
-    class app_src_main_java_ayodong_emobilize_domain_repos_40455cf8 function;
-    class app_src_main_java_ayodong_emobilize_domain_repos_9e5459eb function;
-    class app_src_main_java_ayodong_emobilize_domain_useca_ddb5b5f0 klass;
-    class app_src_main_java_ayodong_emobilize_domain_useca_50529360 function;
-    class app_src_main_java_ayodong_emobilize_domain_useca_e930c49c klass;
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba
+    %% Omitted for readability: 592 nodes, 0 edges
+    class app_src_main_java_ayodong_emobilize_data_reposit_cf91846f klass;
+    class app_src_main_java_ayodong_emobilize_data_reposit_1aba3763 function;
+    class app_src_main_java_ayodong_emobilize_data_reposit_46528c21 function;
+    class app_src_main_java_ayodong_emobilize_data_reposit_f98a8988 function;
+    class app_src_main_java_ayodong_emobilize_data_reposit_22e7f0ae function;
+    class app_src_main_java_ayodong_emobilize_domain_repos_e7512332 klass;
+    class app_src_main_java_ayodong_emobilize_domain_repos_eb4f95f1 function;
+    class app_src_main_java_ayodong_emobilize_domain_repos_aa2a9686 function;
+    class app_src_main_java_ayodong_emobilize_domain_repos_04b31e3e function;
+    class app_src_main_java_ayodong_emobilize_domain_repos_6788aef2 function;
     class app_src_main_java_ayodong_emobilize_ui_theme_typ_77c95f84 klass;
     class app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba function;
     class app_src_main_java_ayodong_emobilize_ui_calendar_5b62d631 klass;
-    class app_src_main_java_ayodong_emobilize_ui_settings_91f36e04 klass;
+    class app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e klass;
+    class app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce klass;
     class app_src_main_java_ayodong_emobilize_ui_tasks_add_69273fbc klass;
-    class app_src_main_java_ayodong_emobilize_ui_tasks_cal_bbb98e95 klass;
     class app_src_main_java_ayodong_emobilize_ui_tasks_tas_c2801c55 klass;
     class app_src_main_java_ayodong_emobilize_ui_tasks_tas_55587ba0 klass;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
@@ -237,243 +232,243 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>ScheduleMode</code><br><small style="color:var(--muted)">domain/model/Task.kt</small></td>
+  <td><code>FabAction</code><br><small style="color:var(--muted)">domain/model/Task.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br><code>TaskFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/TaskFormSheet.kt</small><br>+1 more</td>
+  <td><code>CalendarScreen.kt</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br><code>EmobilizeApp.kt</code><br><small style="color:var(--muted)">emobilize/ui/EmobilizeApp.kt</small><br><code>Palette.kt</code><br><small style="color:var(--muted)">ui/theme/Palette.kt</small><br>+4 more</td>
   <td>No direct outbound edge</td>
-  <td>ScheduleMode node in domain/model/Task.kt.</td>
+  <td>FabAction node in domain/model/Task.kt.</td>
 </tr>
 <tr>
   <td>2</td>
-  <td><code>ShadcnRadius</code><br><small style="color:var(--muted)">ui/theme/Shadcn.kt</small></td>
+  <td><code>NavTab</code><br><small style="color:var(--muted)">domain/model/Task.kt</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+5 more</td>
+  <td><code>EmobilizeApp.kt</code><br><small style="color:var(--muted)">emobilize/ui/EmobilizeApp.kt</small><br><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>ShadcnRadius node in ui/theme/Shadcn.kt.</td>
+  <td>NavTab node in domain/model/Task.kt.</td>
 </tr>
 <tr>
   <td>3</td>
-  <td><code>ExpandableReminderCard()</code><br><small style="color:var(--muted)">ui/notifications/ExpandableReminderCard.kt</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small></td>
-  <td>ExpandableReminderCard() node in ui/notifications/ExpandableReminderCard.kt.</td>
+  <td><code>AgendaCard</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>DayAgenda()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>AgendaCard node in ui/calendar/CalendarScreen.kt.</td>
 </tr>
 <tr>
   <td>4</td>
-  <td><code>at()</code><br><small style="color:var(--muted)">ui/theme/Palette.kt</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br><code>CalendarScreen.kt</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br>+2 more</td>
-  <td>No direct outbound edge</td>
-  <td>at() node in ui/theme/Palette.kt.</td>
+  <td><code>ShadcnType</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small></td>
+  <td>ShadcnType node in ui/theme/Type.kt.</td>
 </tr>
 <tr>
   <td>5</td>
-  <td><code>Deadline</code><br><small style="color:var(--muted)">domain/model/Task.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Deadline node in domain/model/Task.kt.</td>
+  <td><code>taskDate()</code><br><small style="color:var(--muted)">domain/model/Calendar.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>taskOccursOn()</code><br><small style="color:var(--muted)">domain/model/Calendar.kt</small></td>
+  <td><code>deadlineToInputDate()</code><br><small style="color:var(--muted)">domain/model/Task.kt</small></td>
+  <td>taskDate() node in domain/model/Calendar.kt.</td>
 </tr>
 <tr>
   <td>6</td>
-  <td><code>Range</code><br><small style="color:var(--muted)">domain/model/Task.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Range node in domain/model/Task.kt.</td>
+  <td><code>taskOccursOn()</code><br><small style="color:var(--muted)">domain/model/Calendar.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>CalendarScreen.kt</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br><code>DayAgenda()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br><code>MonthBody()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br>+1 more</td>
+  <td><code>taskDate()</code><br><small style="color:var(--muted)">domain/model/Calendar.kt</small></td>
+  <td>taskOccursOn() node in domain/model/Calendar.kt.</td>
 </tr>
 <tr>
   <td>7</td>
-  <td><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>alignment</code><br><code>appfont</code><br><code>AppMetrics</code><br><small style="color:var(--muted)">ui/theme/Metrics.kt</small><br>+37 more</td>
-  <td>AuthScreen.kt node in ui/auth/AuthScreen.kt.</td>
+  <td><code>displayAngle()</code><br><small style="color:var(--muted)">domain/model/Task.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu()</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>displayAngle() node in domain/model/Task.kt.</td>
 </tr>
 <tr>
   <td>8</td>
-  <td><code>CalendarScreen.kt</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>alignment</code><br><code>alpha</code><br><code>AppMetrics</code><br><small style="color:var(--muted)">ui/theme/Metrics.kt</small><br>+63 more</td>
-  <td>CalendarScreen.kt node in ui/calendar/CalendarScreen.kt.</td>
+  <td><code>formatInputTime()</code><br><small style="color:var(--muted)">domain/model/Task.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>CalendarScreen.kt</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br><code>TaskFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/TaskFormSheet.kt</small><br><code>TaskMeta()</code><br><small style="color:var(--muted)">ui/tasks/TasksScreen.kt</small><br>+3 more</td>
+  <td>No direct outbound edge</td>
+  <td>formatInputTime() node in domain/model/Task.kt.</td>
 </tr>
 <tr>
   <td>9</td>
-  <td><code>EmobilizeApp.kt</code><br><small style="color:var(--muted)">emobilize/ui/EmobilizeApp.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>AddTaskCard()</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>alignment</code><br><code>background</code><br>+44 more</td>
-  <td>EmobilizeApp.kt node in emobilize/ui/EmobilizeApp.kt.</td>
+  <td><code>AgendaRow()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>DayAgenda()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small></td>
+  <td>AgendaRow() node in ui/calendar/CalendarScreen.kt.</td>
 </tr>
 <tr>
   <td>10</td>
-  <td><code>ExpandableReminderCard.kt</code><br><small style="color:var(--muted)">ui/notifications/ExpandableReminderCard.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>alignment</code><br><code>animatecontentsize</code><br><code>animatefloatasstate</code><br>+45 more</td>
-  <td>ExpandableReminderCard.kt node in ui/notifications/ExpandableReminderCard.kt.</td>
+  <td><code>CalendarHeader()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>CalendarScreen()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small><br><code>CircleNav()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td>CalendarHeader() node in ui/calendar/CalendarScreen.kt.</td>
 </tr>
 <tr>
   <td>11</td>
-  <td><code>Composable</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>ExpandableReminderCard.kt</code><br><small style="color:var(--muted)">ui/notifications/ExpandableReminderCard.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>Composable node in project.</td>
+  <td><code>CalendarScreen()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>EmobilizeApp()</code><br><small style="color:var(--muted)">emobilize/ui/EmobilizeApp.kt</small><br><code>EmobilizeApp.kt</code><br><small style="color:var(--muted)">emobilize/ui/EmobilizeApp.kt</small></td>
+  <td><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small><br><code>CalendarHeader()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br><code>DayBody()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br>+3 more</td>
+  <td>CalendarScreen() node in ui/calendar/CalendarScreen.kt.</td>
 </tr>
 <tr>
   <td>12</td>
-  <td><code>Modifier</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>ExpandableReminderCard.kt</code><br><small style="color:var(--muted)">ui/notifications/ExpandableReminderCard.kt</small></td>
+  <td><code>CircleNav()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>CalendarHeader()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br><code>DayBody()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>Modifier node in project.</td>
+  <td>CircleNav() node in ui/calendar/CalendarScreen.kt.</td>
 </tr>
 <tr>
   <td>13</td>
-  <td><code>Task</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>ExpandableReminderCard.kt</code><br><small style="color:var(--muted)">ui/notifications/ExpandableReminderCard.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>Task node in project.</td>
+  <td><code>DayAgenda()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>DayBody()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br><code>MonthBody()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br><code>WeekBody()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><code>AgendaCard</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br><code>AgendaRow()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small><br>+4 more</td>
+  <td>DayAgenda() node in ui/calendar/CalendarScreen.kt.</td>
 </tr>
 <tr>
   <td>14</td>
-  <td><code>SettingsScreen.kt</code><br><small style="color:var(--muted)">ui/settings/SettingsScreen.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>alertdialog</code><br><code>alignment</code><br><code>appfont</code><br>+53 more</td>
-  <td>SettingsScreen.kt node in ui/settings/SettingsScreen.kt.</td>
+  <td><code>DayBody()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>CalendarScreen()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small><br><code>CircleNav()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br><code>DayAgenda()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td>DayBody() node in ui/calendar/CalendarScreen.kt.</td>
 </tr>
 <tr>
   <td>15</td>
-  <td><code>SplashScreen.kt</code><br><small style="color:var(--muted)">ui/splash/SplashScreen.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>alignment</code><br><code>animatable</code><br><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small><br>+26 more</td>
-  <td>SplashScreen.kt node in ui/splash/SplashScreen.kt.</td>
+  <td><code>DayCell()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>MonthBody()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><code>DayNumber()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td>DayCell() node in ui/calendar/CalendarScreen.kt.</td>
 </tr>
 <tr>
   <td>16</td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>alignment</code><br><code>appfont</code><br><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small><br>+60 more</td>
-  <td>AddTaskCard.kt node in ui/tasks/AddTaskCard.kt.</td>
+  <td><code>DayNumber()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>DayCell()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br><code>WeekBody()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small></td>
+  <td>DayNumber() node in ui/calendar/CalendarScreen.kt.</td>
 </tr>
 <tr>
   <td>17</td>
-  <td><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>alignment</code><br><code>appfont</code><br><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small><br>+46 more</td>
-  <td>CalendarFormSheet.kt node in ui/tasks/CalendarFormSheet.kt.</td>
+  <td><code>MonthBody()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>CalendarScreen()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small><br><code>DayAgenda()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br><code>DayCell()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br>+2 more</td>
+  <td>MonthBody() node in ui/calendar/CalendarScreen.kt.</td>
 </tr>
 <tr>
   <td>18</td>
-  <td><code>TaskFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/TaskFormSheet.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>alignment</code><br><code>appfont</code><br><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small><br>+63 more</td>
-  <td>TaskFormSheet.kt node in ui/tasks/TaskFormSheet.kt.</td>
+  <td><code>SelectionBanner()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>CalendarScreen()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small></td>
+  <td>SelectionBanner() node in ui/calendar/CalendarScreen.kt.</td>
 </tr>
 <tr>
   <td>19</td>
-  <td><code>TasksScreen.kt</code><br><small style="color:var(--muted)">ui/tasks/TasksScreen.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>alignment</code><br><code>alpha</code><br><code>AppMetrics</code><br><small style="color:var(--muted)">ui/theme/Metrics.kt</small><br>+52 more</td>
-  <td>TasksScreen.kt node in ui/tasks/TasksScreen.kt.</td>
+  <td><code>taskSort()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>DayAgenda()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><code>inputToHours()</code><br><small style="color:var(--muted)">domain/model/Calendar.kt</small><br><code>parseDisplayTime()</code><br><small style="color:var(--muted)">domain/model/Task.kt</small></td>
+  <td>taskSort() node in ui/calendar/CalendarScreen.kt.</td>
 </tr>
 <tr>
   <td>20</td>
-  <td><code>FontWeight</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+9 more</td>
-  <td>No direct outbound edge</td>
-  <td>FontWeight node in project.</td>
+  <td><code>taskWhenLabel()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>DayAgenda()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><code>formatInputDate()</code><br><small style="color:var(--muted)">domain/model/Task.kt</small><br><code>formatInputTime()</code><br><small style="color:var(--muted)">domain/model/Task.kt</small></td>
+  <td>taskWhenLabel() node in ui/calendar/CalendarScreen.kt.</td>
 </tr>
 <tr>
   <td>21</td>
-  <td><code>alertdialog</code><br><small style="color:var(--muted)"></small></td>
+  <td><code>WeekBody()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>SettingsScreen.kt</code><br><small style="color:var(--muted)">ui/settings/SettingsScreen.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>alertdialog node in project.</td>
+  <td><code>CalendarScreen()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small><br><code>DayAgenda()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br><code>DayNumber()</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br>+2 more</td>
+  <td>WeekBody() node in ui/calendar/CalendarScreen.kt.</td>
 </tr>
 <tr>
   <td>22</td>
-  <td><code>alignment</code><br><small style="color:var(--muted)"></small></td>
+  <td><code>BottomDock()</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+9 more</td>
-  <td>No direct outbound edge</td>
-  <td>alignment node in project.</td>
+  <td><code>EmobilizeApp()</code><br><small style="color:var(--muted)">emobilize/ui/EmobilizeApp.kt</small><br><code>EmobilizeApp.kt</code><br><small style="color:var(--muted)">emobilize/ui/EmobilizeApp.kt</small></td>
+  <td><code>DockTab()</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
+  <td>BottomDock() node in ui/dock/RadialDock.kt.</td>
 </tr>
 <tr>
   <td>23</td>
-  <td><code>alpha</code><br><small style="color:var(--muted)"></small></td>
+  <td><code>DockTab()</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>CalendarScreen.kt</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br><code>TasksScreen.kt</code><br><small style="color:var(--muted)">ui/tasks/TasksScreen.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>alpha node in project.</td>
+  <td><code>BottomDock()</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
+  <td><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small></td>
+  <td>DockTab() node in ui/dock/RadialDock.kt.</td>
 </tr>
 <tr>
   <td>24</td>
-  <td><code>animatecontentsize</code><br><small style="color:var(--muted)"></small></td>
+  <td><code>FabFace()</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>ExpandableReminderCard.kt</code><br><small style="color:var(--muted)">ui/notifications/ExpandableReminderCard.kt</small></td>
+  <td><code>RadialMenu()</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>animatecontentsize node in project.</td>
+  <td>FabFace() node in ui/dock/RadialDock.kt.</td>
 </tr>
 <tr>
   <td>25</td>
-  <td><code>appfont</code><br><small style="color:var(--muted)"></small></td>
+  <td><code>actionIcon()</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+2 more</td>
+  <td><code>RadialMenu()</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>appfont node in project.</td>
+  <td>actionIcon() node in ui/dock/RadialMenu.kt.</td>
 </tr>
 <tr>
   <td>26</td>
-  <td><code>arrangement</code><br><small style="color:var(--muted)"></small></td>
+  <td><code>RadialMenu()</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br><code>CalendarScreen.kt</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br>+6 more</td>
-  <td>No direct outbound edge</td>
-  <td>arrangement node in project.</td>
+  <td><code>EmobilizeApp()</code><br><small style="color:var(--muted)">emobilize/ui/EmobilizeApp.kt</small><br><code>EmobilizeApp.kt</code><br><small style="color:var(--muted)">emobilize/ui/EmobilizeApp.kt</small></td>
+  <td><code>actionIcon()</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small><br><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small><br><code>displayAngle()</code><br><small style="color:var(--muted)">domain/model/Task.kt</small><br>+2 more</td>
+  <td>RadialMenu() node in ui/dock/RadialMenu.kt.</td>
 </tr>
 <tr>
   <td>27</td>
-  <td><code>arrowback</code><br><small style="color:var(--muted)"></small></td>
+  <td><code>EmobilizeApp()</code><br><small style="color:var(--muted)">emobilize/ui/EmobilizeApp.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>SettingsScreen.kt</code><br><small style="color:var(--muted)">ui/settings/SettingsScreen.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>arrowback node in project.</td>
+  <td><code>MainActivity.kt</code><br><small style="color:var(--muted)">ayodong/emobilize/MainActivity.kt</small><br><code>onCreate()</code><br><small style="color:var(--muted)">ayodong/emobilize/MainActivity.kt</small></td>
+  <td><code>AddTaskCard()</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>BottomDock()</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>CalendarFormSheet()</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+7 more</td>
+  <td>EmobilizeApp() node in emobilize/ui/EmobilizeApp.kt.</td>
 </tr>
 <tr>
   <td>28</td>
-  <td><code>background</code><br><small style="color:var(--muted)"></small></td>
+  <td><code>CategoryEditor()</code><br><small style="color:var(--muted)">ui/settings/SettingsScreen.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+9 more</td>
-  <td>No direct outbound edge</td>
-  <td>background node in project.</td>
+  <td><code>SettingsScreen()</code><br><small style="color:var(--muted)">ui/settings/SettingsScreen.kt</small></td>
+  <td><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small><br><code>SettingsCard()</code><br><small style="color:var(--muted)">ui/settings/SettingsScreen.kt</small></td>
+  <td>CategoryEditor() node in ui/settings/SettingsScreen.kt.</td>
 </tr>
 <tr>
   <td>29</td>
-  <td><code>backhandler</code><br><small style="color:var(--muted)"></small></td>
+  <td><code>ChoiceRow()</code><br><small style="color:var(--muted)">ui/settings/SettingsScreen.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>EmobilizeApp.kt</code><br><small style="color:var(--muted)">emobilize/ui/EmobilizeApp.kt</small><br>+1 more</td>
+  <td><code>SettingsScreen()</code><br><small style="color:var(--muted)">ui/settings/SettingsScreen.kt</small></td>
   <td>No direct outbound edge</td>
-  <td>backhandler node in project.</td>
+  <td>ChoiceRow() node in ui/settings/SettingsScreen.kt.</td>
 </tr>
 <tr>
   <td>30</td>
-  <td><code>basictextfield</code><br><small style="color:var(--muted)"></small></td>
+  <td><code>OptionChip()</code><br><small style="color:var(--muted)">ui/settings/SettingsScreen.kt</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+2 more</td>
-  <td>No direct outbound edge</td>
-  <td>basictextfield node in project.</td>
+  <td><code>SettingsScreen()</code><br><small style="color:var(--muted)">ui/settings/SettingsScreen.kt</small></td>
+  <td><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small></td>
+  <td>OptionChip() node in ui/settings/SettingsScreen.kt.</td>
 </tr>
 </table>
 
@@ -482,19 +477,19 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>domain/model/Task.kt</code></td><td>44 nodes</td></tr>
+      <tr><td><code>domain/model/Task.kt</code></td><td>50 nodes</td></tr>
 <tr><td><code>ui/tasks/TasksViewModel.kt</code></td><td>38 nodes</td></tr>
+<tr><td><code>HALAMAN.md</code></td><td>28 nodes</td></tr>
 <tr><td><code>domain/repository/Repositories.kt</code></td><td>20 nodes</td></tr>
 <tr><td><code>CONTEXT.md</code></td><td>16 nodes</td></tr>
 <tr><td><code>domain/model/Calendar.kt</code></td><td>16 nodes</td></tr>
 <tr><td><code>ui/calendar/CalendarScreen.kt</code></td><td>15 nodes</td></tr>
-<tr><td><code>ui/tasks/AddTaskCard.kt</code></td><td>13 nodes</td></tr>
-<tr><td><code>domain/model/Account.kt</code></td><td>11 nodes</td></tr>
+<tr><td><code>ui/tasks/AddTaskCard.kt</code></td><td>15 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: imports x667, references x322, calls x229, contains x163. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: imports x769, references x352, calls x232, contains x197. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -566,8 +561,358 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 4. Tests & Fixtures ====== -->
-<h2 id="tests-fixtures">4. Tests &amp; Fixtures</h2>
+<!-- ====== 4. CLI & Skill Installers ====== -->
+<h2 id="cli-skills">4. CLI &amp; Skill Installers</h2>
+<p>CLI &amp; Skill Installers groups implementation around app, mipmap, res, launcher, mostly in res/mipmap-xxhdpi/ic_launcher_round.webp, .github/workflows/ci.yml, res/mipmap-hdpi/ic_launcher.webp. This section covers 62 nodes and 83 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: CLI &amp; Skill Installers (62 nodes, 83 edges)
+    subgraph cli_skills_github_workflows_ci_yml_5960336d[".github/workflows/ci.yml"]
+        github_workflows_ci_check_02b64cca("check<br/><small>.github/workflows/ci.yml</small>")
+        github_workflows_ci_jdk25_31bceed4("JDK 25 Temurin<br/><small>.github/workflows/ci.yml</small>")
+        github_workflows_ci_android_sdk_c553a386("Android SDK<br/><small>.github/workflows/ci.yml</small>")
+        github_workflows_ci_resolvecidependencies_3d7751d8(":app:resolveCiDependencies<br/><small>.github/workflows/ci.yml</small>")
+        github_workflows_ci_testdebugunittest_bb739448(":app:testDebugUnitTest<br/><small>.github/workflows/ci.yml</small>")
+        github_workflows_ci_assembledebug_4fbe3eb3(":app:assembleDebug<br/><small>.github/workflows/ci.yml</small>")
+        github_workflows_ci_ci_ed272bd6("CI<br/><small>.github/workflows/ci.yml</small>")
+        github_workflows_ci_dependency_graph_8740eb2e("dependency-graph<br/><small>.github/workflows/ci.yml</small>")
+        github_workflows_ci_dependency_submission_b9632719("Gradle dependency submission<br/><small>.github/workflows/ci.yml</small>")
+    end
+    subgraph cli_skills_CONTEXT_md_740b89ee["CONTEXT.md"]
+        context_emobilize_dc37f6ce("Emobilize<br/><small>CONTEXT.md</small>")
+        context_compiledebugkotlin_407b359a("compileDebugKotlin<br/><small>CONTEXT.md</small>")
+    end
+    subgraph cli_skills_res_mipmap_mdpi_ic_launcher_webp_5967b4a1["res/mipmap-mdpi/ic_launcher.webp"]
+        app_src_main_res_mipmap_mdpi_ic_launcher_launche_6973d168("Launcher Icon<br/><small>res/mipmap-mdpi/ic_launcher.webp</small>")
+        app_src_main_res_mipmap_mdpi_ic_launcher_android_d1f0b8de("White Android Robot<br/><small>res/mipmap-mdpi/ic_launcher.webp</small>")
+    end
+    app_src_main_res_mipmap_hdpi_ic_launcher_icon_e3cb7e06("HDPI Android Launcher Icon<br/><small>res/mipmap-hdpi/ic_launcher.webp</small>")
+    app_src_main_res_mipmap_xhdpi_ic_launcher_2732e083("ic_launcher<br/><small>res/mipmap-xhdpi/ic_launcher.webp</small>")
+    app_src_main_res_mipmap_xxhdpi_ic_launcher_e56d624e("XXHDPI Launcher Icon<br/><small>res/mipmap-xxhdpi/ic_launcher.webp</small>")
+    app_src_main_res_mipmap_xxhdpi_ic_launcher_round_d7993c77("ic_launcher_round xxhdpi bitmap<br/><small>res/mipmap-xxhdpi/ic_launcher_round.webp</small>")
+    app_src_main_res_mipmap_xxxhdpi_ic_launcher_icon_21fa4cd3("XXXHDPI Android Launcher Icon<br/><small>res/mipmap-xxxhdpi/ic_launcher.webp</small>")
+    github_workflows_ci_check_02b64cca -->|references| github_workflows_ci_jdk25_31bceed4
+    github_workflows_ci_check_02b64cca -->|references| github_workflows_ci_android_sdk_c553a386
+    github_workflows_ci_check_02b64cca -->|references| github_workflows_ci_resolvecidependencies_3d7751d8
+    github_workflows_ci_check_02b64cca -->|references| github_workflows_ci_testdebugunittest_bb739448
+    github_workflows_ci_check_02b64cca -->|references| github_workflows_ci_assembledebug_4fbe3eb3
+    github_workflows_ci_ci_ed272bd6 -->|references| github_workflows_ci_check_02b64cca
+    github_workflows_ci_ci_ed272bd6 -->|references| github_workflows_ci_dependency_graph_8740eb2e
+    github_workflows_ci_dependency_graph_8740eb2e -->|references| github_workflows_ci_jdk25_31bceed4
+    github_workflows_ci_dependency_graph_8740eb2e -->|references| github_workflows_ci_android_sdk_c553a386
+    github_workflows_ci_dependency_graph_8740eb2e -->|references| github_workflows_ci_dependency_submission_b9632719
+    context_emobilize_dc37f6ce -->|references| context_compiledebugkotlin_407b359a
+    app_src_main_res_mipmap_mdpi_ic_launcher_launche_6973d168 -->|references| app_src_main_res_mipmap_mdpi_ic_launcher_android_d1f0b8de
+    github_workflows_ci_check_02b64cca -->|relates| context_emobilize_dc37f6ce
+    app_src_main_res_mipmap_mdpi_ic_launcher_launche_6973d168 -->|relates| context_emobilize_dc37f6ce
+    %% Omitted for readability: 44 nodes, 0 edges
+    class github_workflows_ci_check_02b64cca function;
+    class github_workflows_ci_jdk25_31bceed4 klass;
+    class github_workflows_ci_android_sdk_c553a386 klass;
+    class github_workflows_ci_resolvecidependencies_3d7751d8 function;
+    class github_workflows_ci_testdebugunittest_bb739448 function;
+    class github_workflows_ci_assembledebug_4fbe3eb3 async;
+    class github_workflows_ci_ci_ed272bd6 klass;
+    class github_workflows_ci_dependency_graph_8740eb2e function;
+    class github_workflows_ci_dependency_submission_b9632719 klass;
+    class context_emobilize_dc37f6ce klass;
+    class context_compiledebugkotlin_407b359a function;
+    class app_src_main_res_mipmap_mdpi_ic_launcher_launche_6973d168 klass;
+    class app_src_main_res_mipmap_mdpi_ic_launcher_android_d1f0b8de klass;
+    class app_src_main_res_mipmap_hdpi_ic_launcher_icon_e3cb7e06 klass;
+    class app_src_main_res_mipmap_xhdpi_ic_launcher_2732e083 function;
+    class app_src_main_res_mipmap_xxhdpi_ic_launcher_e56d624e klass;
+    class app_src_main_res_mipmap_xxhdpi_ic_launcher_round_d7993c77 function;
+    class app_src_main_res_mipmap_xxxhdpi_ic_launcher_icon_21fa4cd3 klass;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>White Android Robot Mascot</code><br><small style="color:var(--muted)">res/mipmap-hdpi/ic_launcher.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>White Android Robot Mascot node in res/mipmap-hdpi/ic_launcher.webp.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Bottom-Right Drop Shadow</code><br><small style="color:var(--muted)">res/mipmap-hdpi/ic_launcher.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Bottom-Right Drop Shadow node in res/mipmap-hdpi/ic_launcher.webp.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>Android Green Grid Background</code><br><small style="color:var(--muted)">res/mipmap-hdpi/ic_launcher.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Android Green Grid Background node in res/mipmap-hdpi/ic_launcher.webp.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Android App Launcher Icon</code><br><small style="color:var(--muted)">res/mipmap-hdpi/ic_launcher.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Android App Launcher Icon node in res/mipmap-hdpi/ic_launcher.webp.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>Android platform</code><br><small style="color:var(--muted)">res/mipmap-hdpi/ic_launcher_round.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Android platform node in res/mipmap-hdpi/ic_launcher_round.webp.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>Green circular field</code><br><small style="color:var(--muted)">res/mipmap-hdpi/ic_launcher_round.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Green circular field node in res/mipmap-hdpi/ic_launcher_round.webp.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>Pale green grid field</code><br><small style="color:var(--muted)">res/mipmap-hdpi/ic_launcher_round.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Pale green grid field node in res/mipmap-hdpi/ic_launcher_round.webp.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>Round home-screen launcher icon</code><br><small style="color:var(--muted)">res/mipmap-hdpi/ic_launcher_round.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Round home-screen launcher icon node in res/mipmap-hdpi/ic_launcher_round.webp.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>Rounded Square Icon Tile</code><br><small style="color:var(--muted)">res/mipmap-hdpi/ic_launcher.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Rounded Square Icon Tile node in res/mipmap-hdpi/ic_launcher.webp.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>Green circular background</code><br><small style="color:var(--muted)">res/mipmap-mdpi/ic_launcher_round.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Green circular background node in res/mipmap-mdpi/ic_launcher_round.webp.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>mdpi density bucket</code><br><small style="color:var(--muted)">res/mipmap-mdpi/ic_launcher_round.webp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>mdpi density bucket node in res/mipmap-mdpi/ic_launcher_round.webp.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>Circular icon crop</code><br><small style="color:var(--muted)">res/mipmap-mdpi/ic_launcher_round.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Circular icon crop node in res/mipmap-mdpi/ic_launcher_round.webp.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>Android Robot Mascot</code><br><small style="color:var(--muted)">res/mipmap-xhdpi/ic_launcher.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Android Robot Mascot node in res/mipmap-xhdpi/ic_launcher.webp.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>Default Android Studio Launcher Icon</code><br><small style="color:var(--muted)">res/mipmap-xhdpi/ic_launcher.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Default Android Studio Launcher Icon node in res/mipmap-xhdpi/ic_launcher.webp.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>Green Grid Background</code><br><small style="color:var(--muted)">res/mipmap-xhdpi/ic_launcher.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Green Grid Background node in res/mipmap-xhdpi/ic_launcher.webp.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>Faint grid pattern</code><br><small style="color:var(--muted)">res/mipmap-xhdpi/ic_launcher_round.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Faint grid pattern node in res/mipmap-xhdpi/ic_launcher_round.webp.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>Stock Android launcher artwork</code><br><small style="color:var(--muted)">res/mipmap-xhdpi/ic_launcher_round.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Stock Android launcher artwork node in res/mipmap-xhdpi/ic_launcher_round.webp.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>Rounded Square Icon</code><br><small style="color:var(--muted)">res/mipmap-xhdpi/ic_launcher.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Rounded Square Icon node in res/mipmap-xhdpi/ic_launcher.webp.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>Android Robot Head</code><br><small style="color:var(--muted)">res/mipmap-xxhdpi/ic_launcher.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Android Robot Head node in res/mipmap-xxhdpi/ic_launcher.webp.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>Default Android Launcher Artwork</code><br><small style="color:var(--muted)">res/mipmap-xxhdpi/ic_launcher.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Default Android Launcher Artwork node in res/mipmap-xxhdpi/ic_launcher.webp.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>Android platform identity</code><br><small style="color:var(--muted)">res/mipmap-xxhdpi/ic_launcher_round.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Android platform identity node in res/mipmap-xxhdpi/ic_launcher_round.webp.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>Android robot head with antennae and eyes</code><br><small style="color:var(--muted)">res/mipmap-xxhdpi/ic_launcher_round.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Android robot head with antennae and eyes node in res/mipmap-xxhdpi/ic_launcher_round.webp.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>Circular icon mask</code><br><small style="color:var(--muted)">res/mipmap-xxhdpi/ic_launcher_round.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Circular icon mask node in res/mipmap-xxhdpi/ic_launcher_round.webp.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>Bright green circular field</code><br><small style="color:var(--muted)">res/mipmap-xxhdpi/ic_launcher_round.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Bright green circular field node in res/mipmap-xxhdpi/ic_launcher_round.webp.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>Lower-right long shadow</code><br><small style="color:var(--muted)">res/mipmap-xxhdpi/ic_launcher_round.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Lower-right long shadow node in res/mipmap-xxhdpi/ic_launcher_round.webp.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>White square grid overlay</code><br><small style="color:var(--muted)">res/mipmap-xxhdpi/ic_launcher_round.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>White square grid overlay node in res/mipmap-xxhdpi/ic_launcher_round.webp.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>xxhdpi mipmap density bucket</code><br><small style="color:var(--muted)">res/mipmap-xxhdpi/ic_launcher_round.webp</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>xxhdpi mipmap density bucket node in res/mipmap-xxhdpi/ic_launcher_round.webp.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>White Android Robot Head</code><br><small style="color:var(--muted)">res/mipmap-xxxhdpi/ic_launcher.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>White Android Robot Head node in res/mipmap-xxxhdpi/ic_launcher.webp.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>Bottom-Right Long Shadow</code><br><small style="color:var(--muted)">res/mipmap-xxxhdpi/ic_launcher.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Bottom-Right Long Shadow node in res/mipmap-xxxhdpi/ic_launcher.webp.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>Application Launcher Icon</code><br><small style="color:var(--muted)">res/mipmap-xxxhdpi/ic_launcher.webp</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Application Launcher Icon node in res/mipmap-xxxhdpi/ic_launcher.webp.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>.github/workflows/ci.yml</code></td><td>10 nodes</td></tr>
+<tr><td><code>res/mipmap-xxhdpi/ic_launcher_round.webp</code></td><td>10 nodes</td></tr>
+<tr><td><code>res/mipmap-hdpi/ic_launcher.webp</code></td><td>6 nodes</td></tr>
+<tr><td><code>res/mipmap-xxxhdpi/ic_launcher.webp</code></td><td>6 nodes</td></tr>
+<tr><td><code>res/mipmap-hdpi/ic_launcher_round.webp</code></td><td>5 nodes</td></tr>
+<tr><td><code>res/mipmap-xhdpi/ic_launcher.webp</code></td><td>5 nodes</td></tr>
+<tr><td><code>res/mipmap-mdpi/ic_launcher.webp</code></td><td>4 nodes</td></tr>
+<tr><td><code>res/mipmap-mdpi/ic_launcher_round.webp</code></td><td>4 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: references x40, relates x36, explains x2. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 5. Tests & Fixtures ====== -->
+<h2 id="tests-fixtures">5. Tests &amp; Fixtures</h2>
 <p>Tests &amp; Fixtures groups implementation around test, exampleunittestkt, app, ayodong, mostly in ayodong/emobilize/ExampleUnitTest.kt. This section covers 4 nodes and 4 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -656,711 +1001,66 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 5. RadialDock.kt ====== -->
-<h2 id="radialdock-kt">5. RadialDock.kt</h2>
-<p>RadialDock.kt groups implementation around radialdockkt, app, ayodong, emobilize, mostly in ui/dock/RadialDock.kt. This section covers 28 nodes and 27 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 6. App UI Architecture ====== -->
+<h2 id="app-ui-architecture">6. App UI Architecture</h2>
+<p>App UI Architecture groups implementation around contextmd, designmd, neutral, shadcn, mostly in CONTEXT.md, DESIGN.md. This section covers 61 nodes and 100 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: RadialDock.kt (28 nodes, 27 edges)
-    subgraph radialdock_kt_External_generated_5c73ecec["External / generated"]
-        animatable_d02483f9("animatable")
-        fastoutslowineasing_34d8cb5e("fastoutslowineasing")
-        repeatmode_0161c4bb("repeatmode")
-        animatefloat_4d4c52de("animatefloat")
-        infiniterepeatable_c78592fb("infiniterepeatable")
-        rememberinfinitetransition_8215f627("rememberinfinitetransition")
-        tween_851f2f8c("tween")
-        navigationbars_5b3400ec("navigationbars")
-        list_38b62be4("list")
-        add_58d1bbce("add")
-        close_da38860c("close")
-        daterange_926603a4("daterange")
-        keyboardarrowup_ac987b11("keyboardarrowup")
-        launchedeffect_d876f2f1("launchedeffect")
-        rememberupdatedstate_697ba196("rememberupdatedstate")
-        rotate_2ac527f1("rotate")
-        shadow_ed9d3d83("shadow")
+    %% Section: App UI Architecture (61 nodes, 100 edges)
+    subgraph app_ui_architecture_CONTEXT_md_b75ccd97["CONTEXT.md"]
+        context_emobilizeapp_b688cc99("EmobilizeApp<br/><small>CONTEXT.md</small>")
+        context_localpalette_9142fadf("LocalPalette<br/><small>CONTEXT.md</small>")
+        context_calendarformsheet_95efdb5a("CalendarFormSheet<br/><small>CONTEXT.md</small>")
+        context_radialmenu_fe91fb45("RadialMenu<br/><small>CONTEXT.md</small>")
+        context_appcontainer_896a2d6e("AppContainer<br/><small>CONTEXT.md</small>")
+        context_tasksviewmodel_3865527f("TasksViewModel<br/><small>CONTEXT.md</small>")
+        context_appmetrics_60f3b4d1("AppMetrics<br/><small>CONTEXT.md</small>")
+        context_appstyle_1940e2ef("appStyle<br/><small>CONTEXT.md</small>")
+        context_addtaskcard_b5f19761("AddTaskCard<br/><small>CONTEXT.md</small>")
+        context_eventtype_a7b3650b("EventType<br/><small>CONTEXT.md</small>")
     end
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e("RadialDock.kt")
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| animatable_d02483f9
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| fastoutslowineasing_34d8cb5e
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| repeatmode_0161c4bb
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| animatefloat_4d4c52de
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| infiniterepeatable_c78592fb
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| rememberinfinitetransition_8215f627
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| tween_851f2f8c
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| navigationbars_5b3400ec
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| list_38b62be4
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| add_58d1bbce
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| close_da38860c
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| daterange_926603a4
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| keyboardarrowup_ac987b11
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| launchedeffect_d876f2f1
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| rememberupdatedstate_697ba196
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| rotate_2ac527f1
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| shadow_ed9d3d83
-    %% Omitted for readability: 10 nodes, 0 edges
-    class animatable_d02483f9 function;
-    class fastoutslowineasing_34d8cb5e function;
-    class repeatmode_0161c4bb function;
-    class animatefloat_4d4c52de function;
-    class infiniterepeatable_c78592fb function;
-    class rememberinfinitetransition_8215f627 function;
-    class tween_851f2f8c function;
-    class navigationbars_5b3400ec function;
-    class list_38b62be4 function;
-    class add_58d1bbce function;
-    class close_da38860c function;
-    class daterange_926603a4 function;
-    class keyboardarrowup_ac987b11 function;
-    class launchedeffect_d876f2f1 function;
-    class rememberupdatedstate_697ba196 function;
-    class rotate_2ac527f1 function;
-    class shadow_ed9d3d83 function;
-    class app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e klass;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
-<tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>abs</code><br><code>add</code><br><code>alignment</code><br>+83 more</td>
-  <td>RadialDock.kt node in ui/dock/RadialDock.kt.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>abs</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small><br><code>Shadcn.kt</code><br><small style="color:var(--muted)">ui/theme/Shadcn.kt</small><br>+1 more</td>
-  <td>No direct outbound edge</td>
-  <td>abs node in project.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>add</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>add node in project.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>animatable</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>SplashScreen.kt</code><br><small style="color:var(--muted)">ui/splash/SplashScreen.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>animatable node in project.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>animatefloat</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>animatefloat node in project.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>brush</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>brush node in project.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>close</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>close node in project.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>cos</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>cos node in project.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>daterange</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>daterange node in project.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>fastoutslowineasing</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>fastoutslowineasing node in project.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>graphicslayer</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small><br><code>SplashScreen.kt</code><br><small style="color:var(--muted)">ui/splash/SplashScreen.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>Builds dependency relationships and graph data.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>hapticfeedbacktype</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>hapticfeedbacktype node in project.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>infiniterepeatable</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>infiniterepeatable node in project.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>keyboardarrowup</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>keyboardarrowup node in project.</td>
-</tr>
-<tr>
-  <td>15</td>
-  <td><code>launchedeffect</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small><br>+1 more</td>
-  <td>No direct outbound edge</td>
-  <td>launchedeffect node in project.</td>
-</tr>
-<tr>
-  <td>16</td>
-  <td><code>list</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>list node in project.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>localdensity</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>localdensity node in project.</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>navigationbars</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>navigationbars node in project.</td>
-</tr>
-<tr>
-  <td>19</td>
-  <td><code>path</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>path node in project.</td>
-</tr>
-<tr>
-  <td>20</td>
-  <td><code>rect</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>rect node in project.</td>
-</tr>
-<tr>
-  <td>21</td>
-  <td><code>rememberinfinitetransition</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>rememberinfinitetransition node in project.</td>
-</tr>
-<tr>
-  <td>22</td>
-  <td><code>rememberupdatedstate</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>rememberupdatedstate node in project.</td>
-</tr>
-<tr>
-  <td>23</td>
-  <td><code>repeatmode</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>repeatmode node in project.</td>
-</tr>
-<tr>
-  <td>24</td>
-  <td><code>rotate</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>ExpandableReminderCard.kt</code><br><small style="color:var(--muted)">ui/notifications/ExpandableReminderCard.kt</small><br><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>rotate node in project.</td>
-</tr>
-<tr>
-  <td>25</td>
-  <td><code>shadow</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>TasksScreen.kt</code><br><small style="color:var(--muted)">ui/tasks/TasksScreen.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>shadow node in project.</td>
-</tr>
-<tr>
-  <td>26</td>
-  <td><code>sin</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>sin node in project.</td>
-</tr>
-<tr>
-  <td>27</td>
-  <td><code>tween</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>SplashScreen.kt</code><br><small style="color:var(--muted)">ui/splash/SplashScreen.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>tween node in project.</td>
-</tr>
-<tr>
-  <td>28</td>
-  <td><code>withtimeoutornull</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>withtimeoutornull node in project.</td>
-</tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>ui/dock/RadialDock.kt</code></td><td>1 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: imports x27. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 6. RadialMenu.kt ====== -->
-<h2 id="radialmenu-kt">6. RadialMenu.kt</h2>
-<p>RadialMenu.kt groups implementation around radialmenukt, app, ayodong, emobilize, mostly in ui/dock/RadialMenu.kt. This section covers 27 nodes and 26 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: RadialMenu.kt (27 nodes, 26 edges)
-    subgraph radialmenu_kt_External_generated_ceaf5a84["External / generated"]
-        animatefloatasstate_ffda9b85("animatefloatasstate")
-        spring_24890213("spring")
-        canvas_7aa15835("canvas")
-        awaiteachgesture_fa00987c("awaiteachgesture")
-        awaitfirstdown_89dcd172("awaitfirstdown")
-        detecttapgestures_8a5ea0ed("detecttapgestures")
-        windowinsets_171e0391("windowinsets")
-        aspaddingvalues_84fba395("aspaddingvalues")
-        delete_9485989f("delete")
-        edit_9ead47a8("edit")
-        refresh_26b56c1b("refresh")
-        mutablefloatstateof_46885509("mutablefloatstateof")
-        stroke_fa2a4fd4("stroke")
-        pointerinput_35763de7("pointerinput")
-        onsizechanged_7ac56d20("onsizechanged")
-        localhapticfeedback_d33d9306("localhapticfeedback")
-        contentdescription_45cd728f("contentdescription")
+    subgraph app_ui_architecture_DESIGN_md_77cf5862["DESIGN.md"]
+        design_emobilize_design_system_97fdf9d4("Emobilize Design System<br/><small>DESIGN.md</small>")
+        design_komponen_0bf16213("Komponen<br/><small>DESIGN.md</small>")
+        design_layer_tokens_99f5c6e1("Layer tokens<br/><small>DESIGN.md</small>")
+        design_spacing_scale_497e0085("Spacing scale<br/><small>DESIGN.md</small>")
+        design_color_tokens_63144c86("Neutral color tokens<br/><small>DESIGN.md</small>")
+        design_radius_scale_4da64504("shadcn radius scale<br/><small>DESIGN.md</small>")
+        design_montserrat_37cc4355("Montserrat<br/><small>DESIGN.md</small>")
+        design_shadcn_theme_neutral_c3fc7b78("@shadcn/theme-neutral<br/><small>DESIGN.md</small>")
     end
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce("RadialMenu.kt")
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| animatefloatasstate_ffda9b85
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| spring_24890213
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| canvas_7aa15835
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| awaiteachgesture_fa00987c
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| awaitfirstdown_89dcd172
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| detecttapgestures_8a5ea0ed
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| windowinsets_171e0391
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| aspaddingvalues_84fba395
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| delete_9485989f
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| edit_9ead47a8
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| refresh_26b56c1b
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| mutablefloatstateof_46885509
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| stroke_fa2a4fd4
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| pointerinput_35763de7
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| onsizechanged_7ac56d20
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| localhapticfeedback_d33d9306
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| contentdescription_45cd728f
-    %% Omitted for readability: 9 nodes, 0 edges
-    class animatefloatasstate_ffda9b85 function;
-    class spring_24890213 function;
-    class canvas_7aa15835 function;
-    class awaiteachgesture_fa00987c async;
-    class awaitfirstdown_89dcd172 async;
-    class detecttapgestures_8a5ea0ed function;
-    class windowinsets_171e0391 function;
-    class aspaddingvalues_84fba395 function;
-    class delete_9485989f function;
-    class edit_9ead47a8 function;
-    class refresh_26b56c1b function;
-    class mutablefloatstateof_46885509 function;
-    class stroke_fa2a4fd4 function;
-    class pointerinput_35763de7 function;
-    class onsizechanged_7ac56d20 function;
-    class localhapticfeedback_d33d9306 function;
-    class contentdescription_45cd728f function;
-    class app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce klass;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
-<tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
-  <td><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>abs</code><br><code>add</code><br><code>alignment</code><br>+64 more</td>
-  <td>RadialMenu.kt node in ui/dock/RadialMenu.kt.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>animatefloatasstate</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>ExpandableReminderCard.kt</code><br><small style="color:var(--muted)">ui/notifications/ExpandableReminderCard.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>animatefloatasstate node in project.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>aspaddingvalues</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>aspaddingvalues node in project.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>atan2</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>atan2 node in project.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>awaiteachgesture</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-async">Async</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>awaiteachgesture node in project.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>awaitfirstdown</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-async">Async</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>awaitfirstdown node in project.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>canvas</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>ExpandableReminderCard.kt</code><br><small style="color:var(--muted)">ui/notifications/ExpandableReminderCard.kt</small><br><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br>+2 more</td>
-  <td>No direct outbound edge</td>
-  <td>canvas node in project.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>contentdescription</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>contentdescription node in project.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>delete</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>delete node in project.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>detecttapgestures</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>detecttapgestures node in project.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>edit</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small><br><code>SettingsScreen.kt</code><br><small style="color:var(--muted)">ui/settings/SettingsScreen.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>edit node in project.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>hypot</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>hypot node in project.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>intoffset</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>intoffset node in project.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>localhapticfeedback</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>localhapticfeedback node in project.</td>
-</tr>
-<tr>
-  <td>15</td>
-  <td><code>min</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>min node in project.</td>
-</tr>
-<tr>
-  <td>16</td>
-  <td><code>mutablefloatstateof</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>mutablefloatstateof node in project.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>onclick</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-cmd">Entry</span></td>
-  <td><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>onclick node in project.</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>onsizechanged</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>onsizechanged node in project.</td>
-</tr>
-<tr>
-  <td>19</td>
-  <td><code>pointerinput</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>pointerinput node in project.</td>
-</tr>
-<tr>
-  <td>20</td>
-  <td><code>refresh</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>refresh node in project.</td>
-</tr>
-<tr>
-  <td>21</td>
-  <td><code>roundtoint</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>Calendar.kt</code><br><small style="color:var(--muted)">domain/model/Calendar.kt</small><br><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small><br>+1 more</td>
-  <td>No direct outbound edge</td>
-  <td>roundtoint node in project.</td>
-</tr>
-<tr>
-  <td>22</td>
-  <td><code>semantics</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>semantics node in project.</td>
-</tr>
-<tr>
-  <td>23</td>
-  <td><code>spring</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>spring node in project.</td>
-</tr>
-<tr>
-  <td>24</td>
-  <td><code>stroke</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>ExpandableReminderCard.kt</code><br><small style="color:var(--muted)">ui/notifications/ExpandableReminderCard.kt</small><br><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br>+2 more</td>
-  <td>No direct outbound edge</td>
-  <td>stroke node in project.</td>
-</tr>
-<tr>
-  <td>25</td>
-  <td><code>textalign</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>textalign node in project.</td>
-</tr>
-<tr>
-  <td>26</td>
-  <td><code>windowinsets</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>windowinsets node in project.</td>
-</tr>
-<tr>
-  <td>27</td>
-  <td><code>zindex</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>EmobilizeApp.kt</code><br><small style="color:var(--muted)">emobilize/ui/EmobilizeApp.kt</small><br><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>zindex node in project.</td>
-</tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>ui/dock/RadialMenu.kt</code></td><td>1 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: imports x26. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 7. Designmd Neutral Warna ====== -->
-<h2 id="designmd-neutral-warna">7. Designmd Neutral Warna</h2>
-<p>Designmd Neutral Warna groups implementation around designmd, neutral, warna, chip, mostly in DESIGN.md. This section covers 18 nodes and 17 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: Designmd Neutral Warna (18 nodes, 17 edges)
-    design_komponen_0bf16213("Komponen<br/><small>DESIGN.md</small>")
-    design_emobilize_design_system_97fdf9d4("Emobilize Design System<br/><small>DESIGN.md</small>")
-    design_warna_3be4179e("Warna<br/><small>DESIGN.md</small>")
-    design_056f1182("DESIGN.md")
-    design_tipografi_a363c6b1("Tipografi<br/><small>DESIGN.md</small>")
-    design_radius_eeecad00("Radius<br/><small>DESIGN.md</small>")
-    design_chip_b509c48f("Chip<br/><small>DESIGN.md</small>")
-    design_dock_0e1815c4("Dock<br/><small>DESIGN.md</small>")
-    design_input_b8a15f1b("Input<br/><small>DESIGN.md</small>")
-    design_jarak_07fca997("Jarak<br/><small>DESIGN.md</small>")
-    design_kartu_tugas_dfb875b8("Kartu tugas<br/><small>DESIGN.md</small>")
-    design_lapisan_70c25e97("Lapisan<br/><small>DESIGN.md</small>")
-    design_neutral_dark_396c459e("Neutral Dark<br/><small>DESIGN.md</small>")
-    design_neutral_light_63c6556d("Neutral Light<br/><small>DESIGN.md</small>")
-    design_sheet_9965bbda("Sheet<br/><small>DESIGN.md</small>")
-    design_toggle_68c2812d("Toggle<br/><small>DESIGN.md</small>")
-    design_tombol_utama_41ca6753("Tombol utama<br/><small>DESIGN.md</small>")
-    design_warna_produk_67341d58("Warna produk<br/><small>DESIGN.md</small>")
-    design_056f1182 -->|contains| design_emobilize_design_system_97fdf9d4
-    design_emobilize_design_system_97fdf9d4 -->|contains| design_tipografi_a363c6b1
-    design_emobilize_design_system_97fdf9d4 -->|contains| design_radius_eeecad00
-    design_emobilize_design_system_97fdf9d4 -->|contains| design_jarak_07fca997
+    design_emobilize_design_system_97fdf9d4 -->|references| design_radius_scale_4da64504
+    design_emobilize_design_system_97fdf9d4 -->|references| design_montserrat_37cc4355
+    design_emobilize_design_system_97fdf9d4 -->|references| design_shadcn_theme_neutral_c3fc7b78
+    design_emobilize_design_system_97fdf9d4 -->|references| design_spacing_scale_497e0085
+    context_appcontainer_896a2d6e -->|references| context_tasksviewmodel_3865527f
+    context_appmetrics_60f3b4d1 -->|references| design_spacing_scale_497e0085
+    context_appstyle_1940e2ef -->|references| design_montserrat_37cc4355
+    context_calendarformsheet_95efdb5a -->|relates| context_addtaskcard_b5f19761
+    context_calendarformsheet_95efdb5a -->|references| context_eventtype_a7b3650b
+    context_localpalette_9142fadf -->|cites| design_emobilize_design_system_97fdf9d4
     design_emobilize_design_system_97fdf9d4 -->|contains| design_komponen_0bf16213
-    design_emobilize_design_system_97fdf9d4 -->|contains| design_warna_3be4179e
-    design_emobilize_design_system_97fdf9d4 -->|contains| design_warna_produk_67341d58
-    design_komponen_0bf16213 -->|contains| design_kartu_tugas_dfb875b8
-    design_komponen_0bf16213 -->|contains| design_sheet_9965bbda
-    design_komponen_0bf16213 -->|contains| design_input_b8a15f1b
-    design_komponen_0bf16213 -->|contains| design_toggle_68c2812d
-    design_komponen_0bf16213 -->|contains| design_chip_b509c48f
-    design_komponen_0bf16213 -->|contains| design_tombol_utama_41ca6753
-    design_komponen_0bf16213 -->|contains| design_dock_0e1815c4
-    design_warna_3be4179e -->|contains| design_neutral_light_63c6556d
-    design_warna_3be4179e -->|contains| design_neutral_dark_396c459e
-    design_warna_3be4179e -->|contains| design_lapisan_70c25e97
-    class design_komponen_0bf16213 concept;
+    %% Omitted for readability: 43 nodes, 0 edges
+    class context_emobilizeapp_b688cc99 klass;
+    class context_localpalette_9142fadf klass;
+    class context_calendarformsheet_95efdb5a klass;
+    class context_radialmenu_fe91fb45 klass;
+    class context_appcontainer_896a2d6e klass;
+    class context_tasksviewmodel_3865527f klass;
+    class context_appmetrics_60f3b4d1 klass;
+    class context_appstyle_1940e2ef function;
+    class context_addtaskcard_b5f19761 klass;
+    class context_eventtype_a7b3650b klass;
     class design_emobilize_design_system_97fdf9d4 concept;
-    class design_warna_3be4179e concept;
-    class design_056f1182 concept;
-    class design_tipografi_a363c6b1 concept;
-    class design_radius_eeecad00 concept;
-    class design_chip_b509c48f concept;
-    class design_dock_0e1815c4 concept;
-    class design_input_b8a15f1b concept;
-    class design_jarak_07fca997 concept;
-    class design_kartu_tugas_dfb875b8 concept;
-    class design_lapisan_70c25e97 concept;
-    class design_neutral_dark_396c459e concept;
-    class design_neutral_light_63c6556d concept;
-    class design_sheet_9965bbda concept;
-    class design_toggle_68c2812d concept;
-    class design_tombol_utama_41ca6753 concept;
-    class design_warna_produk_67341d58 concept;
+    class design_komponen_0bf16213 concept;
+    class design_layer_tokens_99f5c6e1 klass;
+    class design_spacing_scale_497e0085 klass;
+    class design_color_tokens_63144c86 klass;
+    class design_radius_scale_4da64504 function;
+    class design_montserrat_37cc4355 klass;
+    class design_shadcn_theme_neutral_c3fc7b78 function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -1526,6 +1226,102 @@ flowchart LR
   <td>No direct outbound edge</td>
   <td>Documentation node describing Warna produk.</td>
 </tr>
+<tr>
+  <td>19</td>
+  <td><code>AddTaskCard</code><br><small style="color:var(--muted)">CONTEXT.md</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>AddTaskCard node in CONTEXT.md.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>AppContainer</code><br><small style="color:var(--muted)">CONTEXT.md</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>AppContainer node in CONTEXT.md.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>AppMetrics</code><br><small style="color:var(--muted)">CONTEXT.md</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>AppMetrics node in CONTEXT.md.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>appStyle</code><br><small style="color:var(--muted)">CONTEXT.md</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>appStyle node in CONTEXT.md.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>BottomDock</code><br><small style="color:var(--muted)">CONTEXT.md</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>BottomDock node in CONTEXT.md.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>CalendarFormSheet</code><br><small style="color:var(--muted)">CONTEXT.md</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>CalendarFormSheet node in CONTEXT.md.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>CalendarScreen</code><br><small style="color:var(--muted)">CONTEXT.md</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>CalendarScreen node in CONTEXT.md.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>EmobilizeApp</code><br><small style="color:var(--muted)">CONTEXT.md</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>EmobilizeApp node in CONTEXT.md.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>EventType</code><br><small style="color:var(--muted)">CONTEXT.md</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>EventType node in CONTEXT.md.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>InMemoryScheduleRepository</code><br><small style="color:var(--muted)">CONTEXT.md</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>InMemoryScheduleRepository node in CONTEXT.md.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>InMemoryTaskRepository</code><br><small style="color:var(--muted)">CONTEXT.md</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>InMemoryTaskRepository node in CONTEXT.md.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>Legacy model package</code><br><small style="color:var(--muted)">CONTEXT.md</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Legacy model package node in CONTEXT.md.</td>
+</tr>
 </table>
 
 <div class="grid">
@@ -1533,24 +1329,304 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>DESIGN.md</code></td><td>18 nodes</td></tr>
+      <tr><td><code>CONTEXT.md</code></td><td>32 nodes</td></tr>
+<tr><td><code>DESIGN.md</code></td><td>29 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x17. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: references x60, relates x20, contains x17, cites x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
-<!-- ====== 8. gradlew ====== -->
-<h2 id="gradlew">8. gradlew</h2>
-<p>gradlew groups implementation around gradlew, script, die, warn, mostly in gradlew. This section covers 4 nodes and 5 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 7. Splashscreenkt App Ayodong ====== -->
+<h2 id="splashscreenkt-app-ayodong">7. Splashscreenkt App Ayodong</h2>
+<p>Splashscreenkt App Ayodong groups implementation around splashscreenkt, app, ayodong, emobilize, mostly in ui/splash/SplashScreen.kt. This section covers 12 nodes and 11 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: gradlew (4 nodes, 5 edges)
+    %% Section: Splashscreenkt App Ayodong (12 nodes, 11 edges)
+    subgraph splashscreenkt_app_ayodong_External_generated_9b3d908a["External / generated"]
+        animatable_d02483f9("animatable")
+        tween_851f2f8c("tween")
+        fillmaxsize_921bce67("fillmaxsize")
+        launchedeffect_d876f2f1("launchedeffect")
+        remember_0759f56c("remember")
+        modifier_4a67e721("modifier")
+        graphicslayer_706613ee("graphicslayer")
+        painterresource_97030e95("painterresource")
+        fontweight_65551750("FontWeight")
+        sp_e8c5e5be("sp")
+        delay_ab464f02("delay")
+    end
+    app_src_main_java_ayodong_emobilize_ui_splash_sp_e7f62ac0("SplashScreen.kt")
+    app_src_main_java_ayodong_emobilize_ui_splash_sp_e7f62ac0 -->|imports| animatable_d02483f9
+    app_src_main_java_ayodong_emobilize_ui_splash_sp_e7f62ac0 -->|imports| tween_851f2f8c
+    app_src_main_java_ayodong_emobilize_ui_splash_sp_e7f62ac0 -->|imports| fillmaxsize_921bce67
+    app_src_main_java_ayodong_emobilize_ui_splash_sp_e7f62ac0 -->|imports| launchedeffect_d876f2f1
+    app_src_main_java_ayodong_emobilize_ui_splash_sp_e7f62ac0 -->|imports| remember_0759f56c
+    app_src_main_java_ayodong_emobilize_ui_splash_sp_e7f62ac0 -->|imports| modifier_4a67e721
+    app_src_main_java_ayodong_emobilize_ui_splash_sp_e7f62ac0 -->|imports| graphicslayer_706613ee
+    app_src_main_java_ayodong_emobilize_ui_splash_sp_e7f62ac0 -->|imports| painterresource_97030e95
+    app_src_main_java_ayodong_emobilize_ui_splash_sp_e7f62ac0 -->|imports| fontweight_65551750
+    app_src_main_java_ayodong_emobilize_ui_splash_sp_e7f62ac0 -->|imports| sp_e8c5e5be
+    app_src_main_java_ayodong_emobilize_ui_splash_sp_e7f62ac0 -->|imports| delay_ab464f02
+    class animatable_d02483f9 function;
+    class tween_851f2f8c function;
+    class fillmaxsize_921bce67 function;
+    class launchedeffect_d876f2f1 function;
+    class remember_0759f56c function;
+    class modifier_4a67e721 function;
+    class graphicslayer_706613ee function;
+    class painterresource_97030e95 function;
+    class fontweight_65551750 klass;
+    class sp_e8c5e5be function;
+    class delay_ab464f02 function;
+    class app_src_main_java_ayodong_emobilize_ui_splash_sp_e7f62ac0 klass;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>SplashScreen.kt</code><br><small style="color:var(--muted)">ui/splash/SplashScreen.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>alignment</code><br><code>animatable</code><br><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small><br>+26 more</td>
+  <td>SplashScreen.kt node in ui/splash/SplashScreen.kt.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>FontWeight</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+9 more</td>
+  <td>No direct outbound edge</td>
+  <td>FontWeight node in project.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>animatable</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>SplashScreen.kt</code><br><small style="color:var(--muted)">ui/splash/SplashScreen.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>animatable node in project.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>delay</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>SplashScreen.kt</code><br><small style="color:var(--muted)">ui/splash/SplashScreen.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>delay node in project.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>fillmaxsize</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+8 more</td>
+  <td>No direct outbound edge</td>
+  <td>fillmaxsize node in project.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>graphicslayer</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small><br><code>SplashScreen.kt</code><br><small style="color:var(--muted)">ui/splash/SplashScreen.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>Builds dependency relationships and graph data.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>launchedeffect</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small><br>+1 more</td>
+  <td>No direct outbound edge</td>
+  <td>launchedeffect node in project.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>modifier</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>EmobilizeApp.kt</code><br><small style="color:var(--muted)">emobilize/ui/EmobilizeApp.kt</small><br>+2 more</td>
+  <td>No direct outbound edge</td>
+  <td>modifier node in project.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>painterresource</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ExpandableReminderCard.kt</code><br><small style="color:var(--muted)">ui/notifications/ExpandableReminderCard.kt</small><br><code>SplashScreen.kt</code><br><small style="color:var(--muted)">ui/splash/SplashScreen.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>painterresource node in project.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>remember</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br><code>ExpandableReminderCard.kt</code><br><small style="color:var(--muted)">ui/notifications/ExpandableReminderCard.kt</small><br>+5 more</td>
+  <td>No direct outbound edge</td>
+  <td>remember node in project.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>sp</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+9 more</td>
+  <td>No direct outbound edge</td>
+  <td>sp node in project.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>tween</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>SplashScreen.kt</code><br><small style="color:var(--muted)">ui/splash/SplashScreen.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>tween node in project.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>ui/splash/SplashScreen.kt</code></td><td>1 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: imports x11. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 8. Halamanmd Aksi Dari ====== -->
+<h2 id="halamanmd-aksi-dari">8. Halamanmd Aksi Dari</h2>
+<p>Halamanmd Aksi Dari groups implementation around halamanmd, aksi, dari, radial, mostly in HALAMAN.md. This section covers 5 nodes and 4 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Halamanmd Aksi Dari (5 nodes, 4 edges)
+    halaman_tasks_02edb7b5("Tasks<br/><small>HALAMAN.md</small>")
+    halaman_isi_layar_1dae6234("Isi layar<br/><small>HALAMAN.md</small>")
+    halaman_filter_89a8391e("Filter<br/><small>HALAMAN.md</small>")
+    halaman_kartu_tugas_c7b8619d("Kartu tugas<br/><small>HALAMAN.md</small>")
+    halaman_aksi_dari_radial_di_tab_ini_2b003dbe("Aksi dari radial di tab ini<br/><small>HALAMAN.md</small>")
+    halaman_tasks_02edb7b5 -->|contains| halaman_isi_layar_1dae6234
+    halaman_tasks_02edb7b5 -->|contains| halaman_filter_89a8391e
+    halaman_tasks_02edb7b5 -->|contains| halaman_kartu_tugas_c7b8619d
+    halaman_tasks_02edb7b5 -->|contains| halaman_aksi_dari_radial_di_tab_ini_2b003dbe
+    class halaman_tasks_02edb7b5 concept;
+    class halaman_isi_layar_1dae6234 concept;
+    class halaman_filter_89a8391e concept;
+    class halaman_kartu_tugas_c7b8619d concept;
+    class halaman_aksi_dari_radial_di_tab_ini_2b003dbe concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>Aksi dari radial di tab ini</code><br><small style="color:var(--muted)">HALAMAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Aksi dari radial di tab ini.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Filter</code><br><small style="color:var(--muted)">HALAMAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Filter.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>Isi layar</code><br><small style="color:var(--muted)">HALAMAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Isi layar.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Kartu tugas</code><br><small style="color:var(--muted)">HALAMAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Kartu tugas.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>Tasks</code><br><small style="color:var(--muted)">HALAMAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Tasks.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>HALAMAN.md</code></td><td>5 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x4. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 9. Gradle Wrapper Script ====== -->
+<h2 id="gradle-wrapper-script">9. Gradle Wrapper Script</h2>
+<p>Gradle Wrapper Script groups implementation around gradlew, script, die, warn, mostly in gradlew. This section covers 4 nodes and 5 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Gradle Wrapper Script (4 nodes, 5 edges)
     gradlew_entry_7c2b69ee("gradlew script<br/><small>gradlew</small>")
     gradlew_die_e498af22("die()<br/><small>gradlew</small>")
     gradlew_warn_309ba309("warn()<br/><small>gradlew</small>")
@@ -1631,81 +1707,14 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 9. Offset ====== -->
-<h2 id="offset">9. Offset</h2>
-<p>Offset groups implementation around sectorpath, app, ayodong, emobilize, mostly in ui/dock/RadialMenu.kt. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 10. Gradle Settings ====== -->
+<h2 id="gradle-settings">10. Gradle Settings</h2>
+<p>Gradle Settings groups implementation around settingsgradlekts, mostly in settings.gradle.kts. This section covers 1 nodes and 0 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Offset (2 nodes, 1 edges)
-    offset_53a610e9("Offset")
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_bcbff1af("sectorPath()<br/><small>ui/dock/RadialMenu.kt</small>")
-    app_src_main_java_ayodong_emobilize_ui_dock_radi_bcbff1af -->|references| offset_53a610e9
-    class offset_53a610e9 klass;
-    class app_src_main_java_ayodong_emobilize_ui_dock_radi_bcbff1af function;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
-<tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
-  <td><code>sectorPath()</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>RadialMenu()</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
-  <td>No direct outbound edge</td>
-  <td>sectorPath() node in ui/dock/RadialMenu.kt.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>Offset</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>ExpandableReminderCard.kt</code><br><small style="color:var(--muted)">ui/notifications/ExpandableReminderCard.kt</small><br><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br>+2 more</td>
-  <td>No direct outbound edge</td>
-  <td>Offset node in project.</td>
-</tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>ui/dock/RadialMenu.kt</code></td><td>1 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: references x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 10. settings.gradle.kts ====== -->
-<h2 id="settings-gradle-kts">10. settings.gradle.kts</h2>
-<p>settings.gradle.kts groups implementation around settingsgradlekts, mostly in settings.gradle.kts. This section covers 1 nodes and 0 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: settings.gradle.kts (1 nodes, 0 edges)
+    %% Section: Gradle Settings (1 nodes, 0 edges)
     settings_gradle_6d67144b("settings.gradle.kts")
     class settings_gradle_6d67144b function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
@@ -1754,15 +1763,109 @@ flowchart LR
 </div>
 <hr>
 
+<h2 id="hyperedges">Group Relationships (Hyperedges)</h2>
+<div class="grid">
+
+  <div class="card">
+    <h4>Composed round Android launcher mark</h4>
+    <p><code>form</code> — 3 participants</p>
+    <ul>
+      <li><code>app_src_main_res_mipmap_hdpi_ic_launcher_round</code></li>
+      <li><code>app_src_main_res_mipmap_xhdpi_ic_launcher_android_robot</code></li>
+      <li><code>app_src_main_res_mipmap_hdpi_ic_launcher_round_green_disk</code></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Launcher Icon Visual Composition</h4>
+    <p><code>form</code> — 5 participants</p>
+    <ul>
+      <li><code>app_src_main_res_mipmap_hdpi_ic_launcher_icon</code></li>
+      <li><code>app_src_main_res_mipmap_hdpi_ic_launcher_android_robot</code></li>
+      <li><code>app_src_main_res_mipmap_hdpi_ic_launcher_green_grid</code></li>
+      <li><code>app_src_main_res_mipmap_hdpi_ic_launcher_rounded_square</code></li>
+      <li><code>app_src_main_res_mipmap_hdpi_ic_launcher_drop_shadow</code></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Launcher Icon Composition</h4>
+    <p><code>form</code> — 3 participants</p>
+    <ul>
+      <li><code>app_src_main_res_mipmap_mdpi_ic_launcher_launcher_icon</code></li>
+      <li><code>app_src_main_res_mipmap_mdpi_ic_launcher_android_robot</code></li>
+      <li><code>app_src_main_res_mipmap_mdpi_ic_launcher_green_squircle</code></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Round Android launcher glyph</h4>
+    <p><code>form</code> — 4 participants</p>
+    <ul>
+      <li><code>app_src_main_res_mipmap_mdpi_ic_launcher_round_icon</code></li>
+      <li><code>app_src_main_res_mipmap_hdpi_ic_launcher_android_robot</code></li>
+      <li><code>app_src_main_res_mipmap_mdpi_ic_launcher_round_green_disc</code></li>
+      <li><code>app_src_main_res_mipmap_mdpi_ic_launcher_round_round_crop</code></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Launcher Icon Composition</h4>
+    <p><code>form</code> — 5 participants</p>
+    <ul>
+      <li><code>app_src_main_res_mipmap_xhdpi_ic_launcher</code></li>
+      <li><code>app_src_main_res_mipmap_xhdpi_ic_launcher_android_robot</code></li>
+      <li><code>app_src_main_res_mipmap_xhdpi_ic_launcher_green_grid</code></li>
+      <li><code>app_src_main_res_mipmap_xhdpi_ic_launcher_rounded_square</code></li>
+      <li><code>app_src_main_res_mipmap_hdpi_ic_launcher_drop_shadow</code></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Round launcher icon composition</h4>
+    <p><code>form</code> — 3 participants</p>
+    <ul>
+      <li><code>app_src_main_res_mipmap_xhdpi_ic_launcher_android_robot</code></li>
+      <li><code>app_src_main_res_mipmap_mdpi_ic_launcher_round_green_disc</code></li>
+      <li><code>app_src_main_res_mipmap_xhdpi_ic_launcher_round_grid_pattern</code></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Launcher Icon Composition</h4>
+    <p><code>form</code> — 4 participants</p>
+    <ul>
+      <li><code>app_src_main_res_mipmap_xxhdpi_ic_launcher_android_robot</code></li>
+      <li><code>app_src_main_res_mipmap_xhdpi_ic_launcher_green_grid</code></li>
+      <li><code>app_src_main_res_mipmap_xxhdpi_ic_launcher_material_long_shadow</code></li>
+      <li><code>app_src_main_res_mipmap_xhdpi_ic_launcher_rounded_square</code></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Round launcher glyph composition</h4>
+    <p><code>form</code> — 4 participants</p>
+    <ul>
+      <li><code>app_src_main_res_mipmap_xxhdpi_ic_launcher_round_android_robot</code></li>
+      <li><code>app_src_main_res_mipmap_xxhdpi_ic_launcher_round_green_circular_field</code></li>
+      <li><code>app_src_main_res_mipmap_xxhdpi_ic_launcher_round_white_grid_overlay</code></li>
+      <li><code>app_src_main_res_mipmap_xxhdpi_ic_launcher_round_long_shadow</code></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Round Android launcher icon composition</h4>
+    <p><code>form</code> — 4 participants</p>
+    <ul>
+      <li><code>app_src_main_res_mipmap_xxxhdpi_ic_launcher_android_robot</code></li>
+      <li><code>app_src_main_res_mipmap_xxxhdpi_ic_launcher_round_green_grid</code></li>
+      <li><code>app_src_main_res_mipmap_xxhdpi_ic_launcher_round_circular_mask</code></li>
+      <li><code>app_src_main_res_mipmap_hdpi_ic_launcher_drop_shadow</code></li>
+    </ul>
+  </div>
+</div>
+<hr>
 <h2 id="stats">Project Statistics</h2>
 
 <div class="grid">
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>614</td></tr>
-      <tr><td>Edges</td><td>1742</td></tr>
-      <tr><td>Hyperedges</td><td>0</td></tr>
+      <tr><td>Nodes</td><td>761</td></tr>
+      <tr><td>Edges</td><td>1989</td></tr>
+      <tr><td>Hyperedges</td><td>13</td></tr>
       <tr><td>Communities</td><td>33</td></tr>
       <tr><td>Documented Sections</td><td>9</td></tr>
     </table>
@@ -1770,16 +1873,16 @@ flowchart LR
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>1697</td></tr>
-      <tr><td>INFERRED</td><td>45</td></tr>
-      <tr><td>AMBIGUOUS</td><td>0</td></tr>
+      <tr><td>EXTRACTED</td><td>1870</td></tr>
+      <tr><td>INFERRED</td><td>116</td></tr>
+      <tr><td>AMBIGUOUS</td><td>3</td></tr>
     </table>
   </div>
 </div>
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>Emobilize — Architecture Documentation</p>
-  <p>Generated: 2026-10-21 15:27 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-10-21 16:33 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->
