@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emobilize — Complete Call Flow &amp; Architecture Documentation</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --bg: #0f172a; --surface: #1e293b; --border: #334155;
+  --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8;
+  --warn: #fbbf24; --err: #f87171; --ok: #34d399;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+.container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+h1 { font-size: 2.4rem; margin-bottom: 8px; background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+h2 { font-size: 1.7rem; margin: 48px 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--accent); }
+h3 { font-size: 1.25rem; margin: 32px 0 12px; color: var(--accent); }
+h4 { font-size: 1.05rem; margin: 20px 0 8px; color: var(--warn); }
+p { margin: 8px 0; color: var(--muted); }
+.subtitle { color: var(--muted); font-size: 1.1rem; margin-bottom: 32px; }
+.mermaid { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin: 20px 0; overflow-x: auto; position: relative; }
+.mermaid.is-enhanced { padding: 0; overflow: hidden; min-height: 260px; }
+.mermaid-viewport { padding: 54px 24px 24px; overflow: hidden; cursor: grab; touch-action: none; min-height: 260px; }
+.mermaid-viewport.is-dragging { cursor: grabbing; }
+.mermaid-viewport svg { max-width: none !important; height: auto; transform-origin: 0 0; transition: transform 120ms ease; }
+.mermaid-toolbar { position: absolute; top: 10px; right: 10px; z-index: 3; display: flex; align-items: center; gap: 6px; padding: 6px; background: rgba(15,23,42,0.92); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.28); }
+.mermaid-toolbar button, .mermaid-toolbar .zoom-level { height: 28px; min-width: 32px; border: 1px solid var(--border); border-radius: 6px; background: #1e293b; color: var(--text); font: 600 0.78rem system-ui, sans-serif; display: inline-flex; align-items: center; justify-content: center; }
+.mermaid-toolbar button { cursor: pointer; }
+.mermaid-toolbar button:hover { border-color: var(--accent); color: var(--accent); }
+.mermaid-toolbar .zoom-level { min-width: 52px; color: var(--muted); background: transparent; }
+.call-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.92rem; }
+.call-table th { background: #1a2744; color: var(--accent); text-align: left; padding: 10px 14px; border: 1px solid var(--border); }
+.call-table td { padding: 8px 14px; border: 1px solid var(--border); vertical-align: top; }
+.call-table tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+.tag-async { background: #7c3aed33; color: #a78bfa; }
+.tag-class { background: #05966933; color: var(--ok); }
+.tag-func { background: #2563eb33; color: var(--accent); }
+.tag-cmd { background: #d9770633; color: var(--warn); }
+.tag-endpoint { background: #dc262633; color: var(--err); }
+.tag-hook { background: #db277733; color: #f472b6; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 16px 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; margin: 16px 0; }
+.arrow-chain { font-family: 'Fira Code', monospace; font-size: 0.85rem; color: var(--accent); padding: 10px; background: rgba(56,189,248,0.06); border-radius: 6px; }
+code { font-family: 'Fira Code', 'Cascadia Code', monospace; background: rgba(255,255,255,0.06); padding: 1px 6px; border-radius: 3px; font-size: 0.88em; }
+ul, ol { margin: 8px 0 8px 24px; color: var(--muted); }
+li { margin: 4px 0; }
+a { color: var(--accent); }
+hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+.nav { position: sticky; top: 0; background: var(--bg); z-index: 10; padding: 12px 0; border-bottom: 1px solid var(--border); display: flex; gap: 20px; flex-wrap: wrap; font-size: 0.9rem; }
+.nav a { text-decoration: none; }
+.nav a:hover { text-decoration: underline; }
+@media (max-width: 768px) { .container { padding: 16px; } h1 { font-size: 1.8rem; } }
+
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Emobilize — Complete Call Flow &amp; Architecture Documentation</h1>
+<p class="subtitle">Generated from graphify knowledge graph: 569 nodes, 1624 edges, 31 communities. Commit: 42c9a9c</p>
+
+<div class="nav">
+    <a href="#overview">Architecture Overview</a>
+    <a href="#extract-pipeline">Extraction Pipeline</a>
+    <a href="#build-graph">Graph Build</a>
+    <a href="#tests-fixtures">Tests &amp; Fixtures</a>
+    <a href="#radialdock-kt">RadialDock.kt</a>
+    <a href="#radialmenu-kt">RadialMenu.kt</a>
+    <a href="#gradlew">gradlew</a>
+    <a href="#offset">Offset</a>
+    <a href="#settings-gradle-kts">settings.gradle.kts</a>
+</div>
+
+<!-- ====== Architecture Overview ====== -->
+<h2 id="overview">1. Architecture Overview</h2>
+
+<div class="mermaid">
+
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>501 nodes</small>")
+    class EXTRACT_PIPELINE_5F350230 module;
+    BUILD_GRAPH_321CBB04("Graph Build<br/><small>2 nodes</small>")
+    class BUILD_GRAPH_321CBB04 module;
+    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>4 nodes</small>")
+    class TESTS_FIXTURES_B84B1DCC module;
+    RADIALDOCK_KT_C0672986("RadialDock.kt<br/><small>28 nodes</small>")
+    class RADIALDOCK_KT_C0672986 module;
+    RADIALMENU_KT_D2FD5F33("RadialMenu.kt<br/><small>27 nodes</small>")
+    class RADIALMENU_KT_D2FD5F33 module;
+    GRADLEW_5BBFA66E("gradlew<br/><small>4 nodes</small>")
+    class GRADLEW_5BBFA66E module;
+    OFFSET_53A610E9("Offset<br/><small>2 nodes</small>")
+    class OFFSET_53A610E9 module;
+    SETTINGS_GRADLE_KTS_DCEA4F96("settings.gradle.kts<br/><small>1 nodes</small>")
+    class SETTINGS_GRADLE_KTS_DCEA4F96 module;
+    RADIALDOCK_KT_C0672986 -->|imports x41| EXTRACT_PIPELINE_5F350230
+    RADIALMENU_KT_D2FD5F33 -->|imports x29| EXTRACT_PIPELINE_5F350230
+    RADIALDOCK_KT_C0672986 -->|imports x20| RADIALMENU_KT_D2FD5F33
+    RADIALMENU_KT_D2FD5F33 -->|imports x13| RADIALDOCK_KT_C0672986
+    EXTRACT_PIPELINE_5F350230 -->|imports x10| RADIALMENU_KT_D2FD5F33
+    EXTRACT_PIPELINE_5F350230 -->|imports x9| RADIALDOCK_KT_C0672986
+    EXTRACT_PIPELINE_5F350230 -->|imports x3| OFFSET_53A610E9
+    RADIALMENU_KT_D2FD5F33 -->|imports x2| OFFSET_53A610E9
+    RADIALDOCK_KT_C0672986 -->|imports| OFFSET_53A610E9
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h4>Architecture Layers</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
+      <tr><td>Extraction Pipeline</td><td>501</td><td><code>0, 1, 2, 3, 4, 7, 8, 10, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 27</code></td></tr><tr><td>Graph Build</td><td>2</td><td><code>28, 29</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>4</td><td><code>24</code></td></tr><tr><td>RadialDock.kt</td><td>28</td><td><code>5</code></td></tr><tr><td>RadialMenu.kt</td><td>27</td><td><code>6</code></td></tr><tr><td>gradlew</td><td>4</td><td><code>25</code></td></tr><tr><td>Offset</td><td>2</td><td><code>26</code></td></tr><tr><td>settings.gradle.kts</td><td>1</td><td><code>30</code></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Core Flow</h4>
+    <div class="arrow-chain">Graph Build -&gt; Extraction Pipeline -&gt; RadialMenu.kt -&gt; RadialDock.kt -&gt; Offset -&gt; Tests &amp; Fixtures -&gt; gradlew</div>
+  </div>
+</div>
+<div class="grid">
+  <div class="card">
+    <h4>Graph Report Highlights</h4>
+    <ul>
+      <li>569 nodes · 1624 edges · 31 communities (17 shown, 14 thin omitted)</li>
+      <li>Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 13 edges (avg confidence: 0.85)</li>
+      <li>Token cost: 0 input · 0 output</li>
+      <li>1. `TasksViewModel` - 54 edges</li>
+      <li>2. `appStyle()` - 54 edges</li>
+      <li>3. `FabAction` - 25 edges</li>
+    </ul>
+  </div>
+</div>
+<hr>
+<!-- ====== 2. Extraction Pipeline ====== -->
+<h2 id="extract-pipeline">2. Extraction Pipeline</h2>
+<p>Extraction Pipeline groups implementation around ayodong, app, emobilize, domain, mostly in domain/model/Task.kt, ui/tasks/TasksViewModel.kt, domain/repository/Repositories.kt. This section covers 501 nodes and 1433 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Extraction Pipeline (501 nodes, 1433 edges)
+    subgraph extract_pipeline_data_repository_PreferencesAppS_ff62683d["data/repository/PreferencesAppSettingsRepository.kt"]
+        app_src_main_java_ayodong_emobilize_data_reposit_954b24b8("PreferencesAppSettingsRepository<br/><small>data/repository/PreferencesAppSettingsRepository.kt</small>")
+        app_src_main_java_ayodong_emobilize_data_reposit_efd11740("get()<br/><small>data/repository/PreferencesAppSettingsRepository.kt</small>")
+        app_src_main_java_ayodong_emobilize_data_reposit_b37362cc("update()<br/><small>data/repository/PreferencesAppSettingsRepository.kt</small>")
+        app_src_main_java_ayodong_emobilize_data_reposit_819d8fc0("enumValue()<br/><small>data/repository/PreferencesAppSettingsRepository.kt</small>")
+    end
+    subgraph extract_pipeline_domain_repository_Repositories_e31d1edc["domain/repository/Repositories.kt"]
+        app_src_main_java_ayodong_emobilize_domain_repos_3f05dbf6("AppSettingsRepository<br/><small>domain/repository/Repositories.kt</small>")
+        app_src_main_java_ayodong_emobilize_domain_repos_40455cf8("get()<br/><small>domain/repository/Repositories.kt</small>")
+        app_src_main_java_ayodong_emobilize_domain_repos_9e5459eb("update()<br/><small>domain/repository/Repositories.kt</small>")
+    end
+    subgraph extract_pipeline_ui_tasks_TasksViewModel_kt_106a1540["ui/tasks/TasksViewModel.kt"]
+        app_src_main_java_ayodong_emobilize_ui_tasks_tas_84cd9f16("TaskDraft<br/><small>ui/tasks/TasksViewModel.kt</small>")
+        app_src_main_java_ayodong_emobilize_ui_tasks_tas_d1efa9f8("rangeValid()<br/><small>ui/tasks/TasksViewModel.kt</small>")
+    end
+    subgraph extract_pipeline_ui_theme_Type_kt_b419feb5["ui/theme/Type.kt"]
+        app_src_main_java_ayodong_emobilize_ui_theme_typ_77c95f84("ShadcnType<br/><small>ui/theme/Type.kt</small>")
+        app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba("appStyle()<br/><small>ui/theme/Type.kt</small>")
+    end
+    app_src_main_java_ayodong_emobilize_domain_useca_ddb5b5f0("GetAppSettingsUseCase<br/><small>domain/usecase/AppSettingsUseCases.kt</small>")
+    app_src_main_java_ayodong_emobilize_ui_calendar_5b62d631("CalendarScreen.kt")
+    app_src_main_java_ayodong_emobilize_ui_settings_91f36e04("SettingsScreen.kt")
+    app_src_main_java_ayodong_emobilize_ui_tasks_add_69273fbc("AddTaskCard.kt")
+    app_src_main_java_ayodong_emobilize_ui_tasks_cal_bbb98e95("CalendarFormSheet.kt")
+    app_src_main_java_ayodong_emobilize_ui_tasks_tas_c2801c55("TaskFormSheet.kt")
+    app_src_main_java_ayodong_emobilize_ui_tasks_tas_55587ba0("TasksScreen.kt")
+    app_src_main_java_ayodong_emobilize_ui_tasks_tas_84cd9f16 -->|method| app_src_main_java_ayodong_emobilize_ui_tasks_tas_d1efa9f8
+    app_src_main_java_ayodong_emobilize_ui_theme_typ_77c95f84 -->|calls| app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba
+    app_src_main_java_ayodong_emobilize_data_reposit_954b24b8 -->|method| app_src_main_java_ayodong_emobilize_data_reposit_efd11740
+    app_src_main_java_ayodong_emobilize_data_reposit_954b24b8 -->|method| app_src_main_java_ayodong_emobilize_data_reposit_b37362cc
+    app_src_main_java_ayodong_emobilize_data_reposit_954b24b8 -->|method| app_src_main_java_ayodong_emobilize_data_reposit_819d8fc0
+    app_src_main_java_ayodong_emobilize_domain_repos_3f05dbf6 -->|method| app_src_main_java_ayodong_emobilize_domain_repos_40455cf8
+    app_src_main_java_ayodong_emobilize_domain_repos_3f05dbf6 -->|method| app_src_main_java_ayodong_emobilize_domain_repos_9e5459eb
+    app_src_main_java_ayodong_emobilize_data_reposit_efd11740 -->|calls| app_src_main_java_ayodong_emobilize_data_reposit_819d8fc0
+    app_src_main_java_ayodong_emobilize_ui_calendar_5b62d631 -->|imports| app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba
+    app_src_main_java_ayodong_emobilize_ui_settings_91f36e04 -->|imports| app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba
+    app_src_main_java_ayodong_emobilize_ui_tasks_add_69273fbc -->|imports| app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba
+    app_src_main_java_ayodong_emobilize_ui_tasks_cal_bbb98e95 -->|imports| app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba
+    app_src_main_java_ayodong_emobilize_ui_tasks_tas_c2801c55 -->|imports| app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba
+    app_src_main_java_ayodong_emobilize_ui_tasks_tas_55587ba0 -->|imports| app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba
+    %% Omitted for readability: 483 nodes, 0 edges
+    class app_src_main_java_ayodong_emobilize_data_reposit_954b24b8 klass;
+    class app_src_main_java_ayodong_emobilize_data_reposit_efd11740 function;
+    class app_src_main_java_ayodong_emobilize_data_reposit_b37362cc function;
+    class app_src_main_java_ayodong_emobilize_data_reposit_819d8fc0 function;
+    class app_src_main_java_ayodong_emobilize_domain_repos_3f05dbf6 klass;
+    class app_src_main_java_ayodong_emobilize_domain_repos_40455cf8 function;
+    class app_src_main_java_ayodong_emobilize_domain_repos_9e5459eb function;
+    class app_src_main_java_ayodong_emobilize_ui_tasks_tas_84cd9f16 klass;
+    class app_src_main_java_ayodong_emobilize_ui_tasks_tas_d1efa9f8 function;
+    class app_src_main_java_ayodong_emobilize_ui_theme_typ_77c95f84 klass;
+    class app_src_main_java_ayodong_emobilize_ui_theme_typ_8d3c92ba function;
+    class app_src_main_java_ayodong_emobilize_domain_useca_ddb5b5f0 klass;
+    class app_src_main_java_ayodong_emobilize_ui_calendar_5b62d631 klass;
+    class app_src_main_java_ayodong_emobilize_ui_settings_91f36e04 klass;
+    class app_src_main_java_ayodong_emobilize_ui_tasks_add_69273fbc klass;
+    class app_src_main_java_ayodong_emobilize_ui_tasks_cal_bbb98e95 klass;
+    class app_src_main_java_ayodong_emobilize_ui_tasks_tas_c2801c55 klass;
+    class app_src_main_java_ayodong_emobilize_ui_tasks_tas_55587ba0 klass;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>ShadcnRadius</code><br><small style="color:var(--muted)">ui/theme/Shadcn.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+4 more</td>
+  <td>No direct outbound edge</td>
+  <td>ShadcnRadius node in ui/theme/Shadcn.kt.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>at()</code><br><small style="color:var(--muted)">ui/theme/Palette.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br><code>CalendarScreen.kt</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br>+2 more</td>
+  <td>No direct outbound edge</td>
+  <td>at() node in ui/theme/Palette.kt.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>categoryColor()</code><br><small style="color:var(--muted)">ui/theme/Palette.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br><code>CalendarScreen.kt</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br>+2 more</td>
+  <td>No direct outbound edge</td>
+  <td>categoryColor() node in ui/theme/Palette.kt.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>inkOn()</code><br><small style="color:var(--muted)">ui/theme/Palette.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br><code>TaskFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/TaskFormSheet.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>inkOn() node in ui/theme/Palette.kt.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>menuColor()</code><br><small style="color:var(--muted)">ui/theme/Palette.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>CalendarScreen.kt</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br><code>EmobilizeApp.kt</code><br><small style="color:var(--muted)">emobilize/ui/EmobilizeApp.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small><br>+1 more</td>
+  <td>No direct outbound edge</td>
+  <td>menuColor() node in ui/theme/Palette.kt.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>priorityColor()</code><br><small style="color:var(--muted)">ui/theme/Palette.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br><code>TaskFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/TaskFormSheet.kt</small><br>+1 more</td>
+  <td>No direct outbound edge</td>
+  <td>priorityColor() node in ui/theme/Palette.kt.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>alignment</code><br><code>appfont</code><br><code>AppMetrics</code><br><small style="color:var(--muted)">ui/theme/Metrics.kt</small><br>+37 more</td>
+  <td>AuthScreen.kt node in ui/auth/AuthScreen.kt.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>CalendarScreen.kt</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>alignment</code><br><code>alpha</code><br><code>AppMetrics</code><br><small style="color:var(--muted)">ui/theme/Metrics.kt</small><br>+63 more</td>
+  <td>CalendarScreen.kt node in ui/calendar/CalendarScreen.kt.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>EmobilizeApp.kt</code><br><small style="color:var(--muted)">emobilize/ui/EmobilizeApp.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>AddTaskCard()</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>alignment</code><br><code>background</code><br>+44 more</td>
+  <td>EmobilizeApp.kt node in emobilize/ui/EmobilizeApp.kt.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>SettingsScreen.kt</code><br><small style="color:var(--muted)">ui/settings/SettingsScreen.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>alertdialog</code><br><code>alignment</code><br><code>appfont</code><br>+53 more</td>
+  <td>SettingsScreen.kt node in ui/settings/SettingsScreen.kt.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>SplashScreen.kt</code><br><small style="color:var(--muted)">ui/splash/SplashScreen.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>alignment</code><br><code>animatable</code><br><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small><br>+25 more</td>
+  <td>SplashScreen.kt node in ui/splash/SplashScreen.kt.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>alignment</code><br><code>appfont</code><br><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small><br>+60 more</td>
+  <td>AddTaskCard.kt node in ui/tasks/AddTaskCard.kt.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>alignment</code><br><code>appfont</code><br><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small><br>+46 more</td>
+  <td>CalendarFormSheet.kt node in ui/tasks/CalendarFormSheet.kt.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>TaskFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/TaskFormSheet.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>alignment</code><br><code>appfont</code><br><code>appStyle()</code><br><small style="color:var(--muted)">ui/theme/Type.kt</small><br>+63 more</td>
+  <td>TaskFormSheet.kt node in ui/tasks/TaskFormSheet.kt.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>TasksScreen.kt</code><br><small style="color:var(--muted)">ui/tasks/TasksScreen.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>alignment</code><br><code>alpha</code><br><code>AppMetrics</code><br><small style="color:var(--muted)">ui/theme/Metrics.kt</small><br>+52 more</td>
+  <td>TasksScreen.kt node in ui/tasks/TasksScreen.kt.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>Palette.kt</code><br><small style="color:var(--muted)">ui/theme/Palette.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>Color</code><br><code>FabAction</code><br><small style="color:var(--muted)">domain/model/Task.kt</small><br><code>staticcompositionlocalof</code></td>
+  <td>Palette.kt node in ui/theme/Palette.kt.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>Color</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>Palette.kt</code><br><small style="color:var(--muted)">ui/theme/Palette.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>Color node in project.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>ayodong</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ayodong node in project.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>FontWeight</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+8 more</td>
+  <td>No direct outbound edge</td>
+  <td>FontWeight node in project.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>alertdialog</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>SettingsScreen.kt</code><br><small style="color:var(--muted)">ui/settings/SettingsScreen.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>alertdialog node in project.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>alignment</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+8 more</td>
+  <td>No direct outbound edge</td>
+  <td>alignment node in project.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>alpha</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>CalendarScreen.kt</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br><code>TasksScreen.kt</code><br><small style="color:var(--muted)">ui/tasks/TasksScreen.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>alpha node in project.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>appfont</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+2 more</td>
+  <td>No direct outbound edge</td>
+  <td>appfont node in project.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>arrangement</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br><code>CalendarScreen.kt</code><br><small style="color:var(--muted)">ui/calendar/CalendarScreen.kt</small><br>+5 more</td>
+  <td>No direct outbound edge</td>
+  <td>arrangement node in project.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>arrowback</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>SettingsScreen.kt</code><br><small style="color:var(--muted)">ui/settings/SettingsScreen.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>arrowback node in project.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>background</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+8 more</td>
+  <td>No direct outbound edge</td>
+  <td>background node in project.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>backhandler</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>EmobilizeApp.kt</code><br><small style="color:var(--muted)">emobilize/ui/EmobilizeApp.kt</small><br>+1 more</td>
+  <td>No direct outbound edge</td>
+  <td>backhandler node in project.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>basictextfield</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+2 more</td>
+  <td>No direct outbound edge</td>
+  <td>basictextfield node in project.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>border</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+6 more</td>
+  <td>No direct outbound edge</td>
+  <td>border node in project.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>box</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>AuthScreen.kt</code><br><small style="color:var(--muted)">ui/auth/AuthScreen.kt</small><br><code>CalendarFormSheet.kt</code><br><small style="color:var(--muted)">ui/tasks/CalendarFormSheet.kt</small><br>+8 more</td>
+  <td>No direct outbound edge</td>
+  <td>box node in project.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>domain/model/Task.kt</code></td><td>44 nodes</td></tr>
+<tr><td><code>ui/tasks/TasksViewModel.kt</code></td><td>38 nodes</td></tr>
+<tr><td><code>domain/repository/Repositories.kt</code></td><td>20 nodes</td></tr>
+<tr><td><code>domain/model/Calendar.kt</code></td><td>16 nodes</td></tr>
+<tr><td><code>ui/calendar/CalendarScreen.kt</code></td><td>15 nodes</td></tr>
+<tr><td><code>ui/tasks/AddTaskCard.kt</code></td><td>13 nodes</td></tr>
+<tr><td><code>domain/model/Account.kt</code></td><td>11 nodes</td></tr>
+<tr><td><code>domain/usecase/TaskUseCases.kt</code></td><td>11 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: imports x623, references x287, calls x228, contains x147. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 3. Graph Build ====== -->
+<h2 id="build-graph">3. Graph Build</h2>
+<p>Graph Build groups implementation around buildgradlekts, app, mostly in app/build.gradle.kts, build.gradle.kts. This section covers 2 nodes and 0 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Graph Build (2 nodes, 0 edges)
+    app_build_gradle_d5080885("app/build.gradle.kts")
+    build_gradle_877734b9("build.gradle.kts")
+    class app_build_gradle_d5080885 function;
+    class build_gradle_877734b9 function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>app/build.gradle.kts</code><br><small style="color:var(--muted)">app/build.gradle.kts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>app/build.gradle.kts node in app/build.gradle.kts.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>build.gradle.kts</code><br><small style="color:var(--muted)">build.gradle.kts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>build.gradle.kts node in build.gradle.kts.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>app/build.gradle.kts</code></td><td>1 nodes</td></tr>
+<tr><td><code>build.gradle.kts</code></td><td>1 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: No high-confidence call edges detected. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 4. Tests & Fixtures ====== -->
+<h2 id="tests-fixtures">4. Tests &amp; Fixtures</h2>
+<p>Tests &amp; Fixtures groups implementation around test, exampleunittestkt, app, ayodong, mostly in ayodong/emobilize/ExampleUnitTest.kt. This section covers 4 nodes and 4 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Tests &amp; Fixtures (4 nodes, 4 edges)
+    subgraph tests_fixtures_ayodong_emobilize_ExampleUnitTest_64d4db76["ayodong/emobilize/ExampleUnitTest.kt"]
+        app_src_test_java_ayodong_emobilize_exampleunitt_ca03dcc7("ExampleUnitTest.kt")
+        app_src_test_java_ayodong_emobilize_exampleunitt_ef58fb16("ExampleUnitTest<br/><small>ayodong/emobilize/ExampleUnitTest.kt</small>")
+        app_src_test_java_ayodong_emobilize_exampleunitt_c3bae6b9("addition_isCorrect()<br/><small>ayodong/emobilize/ExampleUnitTest.kt</small>")
+    end
+    app_src_test_java_ayodong_emobilize_exampleunitt_ef056ac3("Test")
+    app_src_test_java_ayodong_emobilize_exampleunitt_ef58fb16 -->|method| app_src_test_java_ayodong_emobilize_exampleunitt_c3bae6b9
+    app_src_test_java_ayodong_emobilize_exampleunitt_ca03dcc7 -->|imports| app_src_test_java_ayodong_emobilize_exampleunitt_ef056ac3
+    class app_src_test_java_ayodong_emobilize_exampleunitt_ca03dcc7 test;
+    class app_src_test_java_ayodong_emobilize_exampleunitt_ef58fb16 test;
+    class app_src_test_java_ayodong_emobilize_exampleunitt_c3bae6b9 test;
+    class app_src_test_java_ayodong_emobilize_exampleunitt_ef056ac3 klass;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>ExampleUnitTest</code><br><small style="color:var(--muted)">ayodong/emobilize/ExampleUnitTest.kt</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>addition_isCorrect()</code><br><small style="color:var(--muted)">ayodong/emobilize/ExampleUnitTest.kt</small></td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>.addition_isCorrect()</code><br><small style="color:var(--muted)">ayodong/emobilize/ExampleUnitTest.kt</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td><code>ExampleUnitTest</code><br><small style="color:var(--muted)">ayodong/emobilize/ExampleUnitTest.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>.addition_isCorrect() node in ayodong/emobilize/ExampleUnitTest.kt.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>ExampleUnitTest.kt</code><br><small style="color:var(--muted)">ayodong/emobilize/ExampleUnitTest.kt</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>Test</code></td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Test</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>ExampleUnitTest.kt</code><br><small style="color:var(--muted)">ayodong/emobilize/ExampleUnitTest.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>ayodong/emobilize/ExampleUnitTest.kt</code></td><td>3 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: method x1, references x1, imports x1, contains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 5. RadialDock.kt ====== -->
+<h2 id="radialdock-kt">5. RadialDock.kt</h2>
+<p>RadialDock.kt groups implementation around radialdockkt, app, ayodong, emobilize, mostly in ui/dock/RadialDock.kt. This section covers 28 nodes and 27 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: RadialDock.kt (28 nodes, 27 edges)
+    subgraph radialdock_kt_External_generated_5c73ecec["External / generated"]
+        animatable_d02483f9("animatable")
+        fastoutslowineasing_34d8cb5e("fastoutslowineasing")
+        repeatmode_0161c4bb("repeatmode")
+        animatefloat_4d4c52de("animatefloat")
+        infiniterepeatable_c78592fb("infiniterepeatable")
+        rememberinfinitetransition_8215f627("rememberinfinitetransition")
+        tween_851f2f8c("tween")
+        navigationbars_5b3400ec("navigationbars")
+        list_38b62be4("list")
+        add_58d1bbce("add")
+        close_da38860c("close")
+        daterange_926603a4("daterange")
+        keyboardarrowup_ac987b11("keyboardarrowup")
+        launchedeffect_d876f2f1("launchedeffect")
+        rememberupdatedstate_697ba196("rememberupdatedstate")
+        rotate_2ac527f1("rotate")
+        shadow_ed9d3d83("shadow")
+    end
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e("RadialDock.kt")
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| animatable_d02483f9
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| fastoutslowineasing_34d8cb5e
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| repeatmode_0161c4bb
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| animatefloat_4d4c52de
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| infiniterepeatable_c78592fb
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| rememberinfinitetransition_8215f627
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| tween_851f2f8c
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| navigationbars_5b3400ec
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| list_38b62be4
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| add_58d1bbce
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| close_da38860c
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| daterange_926603a4
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| keyboardarrowup_ac987b11
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| launchedeffect_d876f2f1
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| rememberupdatedstate_697ba196
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| rotate_2ac527f1
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e -->|imports| shadow_ed9d3d83
+    %% Omitted for readability: 10 nodes, 0 edges
+    class animatable_d02483f9 function;
+    class fastoutslowineasing_34d8cb5e function;
+    class repeatmode_0161c4bb function;
+    class animatefloat_4d4c52de function;
+    class infiniterepeatable_c78592fb function;
+    class rememberinfinitetransition_8215f627 function;
+    class tween_851f2f8c function;
+    class navigationbars_5b3400ec function;
+    class list_38b62be4 function;
+    class add_58d1bbce function;
+    class close_da38860c function;
+    class daterange_926603a4 function;
+    class keyboardarrowup_ac987b11 function;
+    class launchedeffect_d876f2f1 function;
+    class rememberupdatedstate_697ba196 function;
+    class rotate_2ac527f1 function;
+    class shadow_ed9d3d83 function;
+    class app_src_main_java_ayodong_emobilize_ui_dock_radi_5898ed8e klass;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>abs</code><br><code>add</code><br><code>alignment</code><br>+83 more</td>
+  <td>RadialDock.kt node in ui/dock/RadialDock.kt.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>abs</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small><br><code>Shadcn.kt</code><br><small style="color:var(--muted)">ui/theme/Shadcn.kt</small><br>+1 more</td>
+  <td>No direct outbound edge</td>
+  <td>abs node in project.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>add</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>add node in project.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>animatable</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>SplashScreen.kt</code><br><small style="color:var(--muted)">ui/splash/SplashScreen.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>animatable node in project.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>animatefloat</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>animatefloat node in project.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>brush</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>brush node in project.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>close</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>close node in project.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>cos</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>cos node in project.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>daterange</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>daterange node in project.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>fastoutslowineasing</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>fastoutslowineasing node in project.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>graphicslayer</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small><br><code>SplashScreen.kt</code><br><small style="color:var(--muted)">ui/splash/SplashScreen.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>Builds dependency relationships and graph data.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>hapticfeedbacktype</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>hapticfeedbacktype node in project.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>infiniterepeatable</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>infiniterepeatable node in project.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>keyboardarrowup</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>keyboardarrowup node in project.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>launchedeffect</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small><br>+1 more</td>
+  <td>No direct outbound edge</td>
+  <td>launchedeffect node in project.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>list</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>list node in project.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>localdensity</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>localdensity node in project.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>navigationbars</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>navigationbars node in project.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>path</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>path node in project.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>rect</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>rect node in project.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>rememberinfinitetransition</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>rememberinfinitetransition node in project.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>rememberupdatedstate</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>rememberupdatedstate node in project.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>repeatmode</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>repeatmode node in project.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>rotate</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>rotate node in project.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>shadow</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>TasksScreen.kt</code><br><small style="color:var(--muted)">ui/tasks/TasksScreen.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>shadow node in project.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>sin</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>sin node in project.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>tween</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>SplashScreen.kt</code><br><small style="color:var(--muted)">ui/splash/SplashScreen.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>tween node in project.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>withtimeoutornull</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>withtimeoutornull node in project.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>ui/dock/RadialDock.kt</code></td><td>1 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: imports x27. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 6. RadialMenu.kt ====== -->
+<h2 id="radialmenu-kt">6. RadialMenu.kt</h2>
+<p>RadialMenu.kt groups implementation around radialmenukt, app, ayodong, emobilize, mostly in ui/dock/RadialMenu.kt. This section covers 27 nodes and 26 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: RadialMenu.kt (27 nodes, 26 edges)
+    subgraph radialmenu_kt_External_generated_ceaf5a84["External / generated"]
+        animatefloatasstate_ffda9b85("animatefloatasstate")
+        spring_24890213("spring")
+        canvas_7aa15835("canvas")
+        awaiteachgesture_fa00987c("awaiteachgesture")
+        awaitfirstdown_89dcd172("awaitfirstdown")
+        detecttapgestures_8a5ea0ed("detecttapgestures")
+        windowinsets_171e0391("windowinsets")
+        aspaddingvalues_84fba395("aspaddingvalues")
+        delete_9485989f("delete")
+        edit_9ead47a8("edit")
+        refresh_26b56c1b("refresh")
+        mutablefloatstateof_46885509("mutablefloatstateof")
+        stroke_fa2a4fd4("stroke")
+        pointerinput_35763de7("pointerinput")
+        onsizechanged_7ac56d20("onsizechanged")
+        localhapticfeedback_d33d9306("localhapticfeedback")
+        contentdescription_45cd728f("contentdescription")
+    end
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce("RadialMenu.kt")
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| animatefloatasstate_ffda9b85
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| spring_24890213
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| canvas_7aa15835
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| awaiteachgesture_fa00987c
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| awaitfirstdown_89dcd172
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| detecttapgestures_8a5ea0ed
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| windowinsets_171e0391
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| aspaddingvalues_84fba395
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| delete_9485989f
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| edit_9ead47a8
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| refresh_26b56c1b
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| mutablefloatstateof_46885509
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| stroke_fa2a4fd4
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| pointerinput_35763de7
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| onsizechanged_7ac56d20
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| localhapticfeedback_d33d9306
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce -->|imports| contentdescription_45cd728f
+    %% Omitted for readability: 9 nodes, 0 edges
+    class animatefloatasstate_ffda9b85 function;
+    class spring_24890213 function;
+    class canvas_7aa15835 function;
+    class awaiteachgesture_fa00987c async;
+    class awaitfirstdown_89dcd172 async;
+    class detecttapgestures_8a5ea0ed function;
+    class windowinsets_171e0391 function;
+    class aspaddingvalues_84fba395 function;
+    class delete_9485989f function;
+    class edit_9ead47a8 function;
+    class refresh_26b56c1b function;
+    class mutablefloatstateof_46885509 function;
+    class stroke_fa2a4fd4 function;
+    class pointerinput_35763de7 function;
+    class onsizechanged_7ac56d20 function;
+    class localhapticfeedback_d33d9306 function;
+    class contentdescription_45cd728f function;
+    class app_src_main_java_ayodong_emobilize_ui_dock_radi_694e53ce klass;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>abs</code><br><code>add</code><br><code>alignment</code><br>+64 more</td>
+  <td>RadialMenu.kt node in ui/dock/RadialMenu.kt.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>animatefloatasstate</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>animatefloatasstate node in project.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>aspaddingvalues</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>aspaddingvalues node in project.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>atan2</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>atan2 node in project.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>awaiteachgesture</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-async">Async</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>awaiteachgesture node in project.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>awaitfirstdown</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-async">Async</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>awaitfirstdown node in project.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>canvas</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small><br>+1 more</td>
+  <td>No direct outbound edge</td>
+  <td>canvas node in project.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>contentdescription</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>contentdescription node in project.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>delete</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>delete node in project.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>detecttapgestures</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>detecttapgestures node in project.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>edit</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small><br><code>SettingsScreen.kt</code><br><small style="color:var(--muted)">ui/settings/SettingsScreen.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>edit node in project.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>hypot</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>hypot node in project.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>intoffset</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>intoffset node in project.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>localhapticfeedback</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>localhapticfeedback node in project.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>min</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>min node in project.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>mutablefloatstateof</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>mutablefloatstateof node in project.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>onclick</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-cmd">Entry</span></td>
+  <td><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>onclick node in project.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>onsizechanged</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>onsizechanged node in project.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>pointerinput</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>pointerinput node in project.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>refresh</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>refresh node in project.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>roundtoint</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>Calendar.kt</code><br><small style="color:var(--muted)">domain/model/Calendar.kt</small><br><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small><br>+1 more</td>
+  <td>No direct outbound edge</td>
+  <td>roundtoint node in project.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>semantics</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>semantics node in project.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>spring</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>spring node in project.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>stroke</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small><br>+1 more</td>
+  <td>No direct outbound edge</td>
+  <td>stroke node in project.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>textalign</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>textalign node in project.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>windowinsets</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>windowinsets node in project.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>zindex</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>EmobilizeApp.kt</code><br><small style="color:var(--muted)">emobilize/ui/EmobilizeApp.kt</small><br><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>zindex node in project.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>ui/dock/RadialMenu.kt</code></td><td>1 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: imports x26. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 7. gradlew ====== -->
+<h2 id="gradlew">7. gradlew</h2>
+<p>gradlew groups implementation around gradlew, script, die, warn, mostly in gradlew. This section covers 4 nodes and 5 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: gradlew (4 nodes, 5 edges)
+    gradlew_entry_7c2b69ee("gradlew script<br/><small>gradlew</small>")
+    gradlew_die_e498af22("die()<br/><small>gradlew</small>")
+    gradlew_warn_309ba309("warn()<br/><small>gradlew</small>")
+    gradlew_5bbfa66e("gradlew")
+    gradlew_entry_7c2b69ee -->|calls| gradlew_die_e498af22
+    gradlew_entry_7c2b69ee -->|calls| gradlew_warn_309ba309
+    class gradlew_entry_7c2b69ee function;
+    class gradlew_die_e498af22 function;
+    class gradlew_warn_309ba309 function;
+    class gradlew_5bbfa66e function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>gradlew</code><br><small style="color:var(--muted)">gradlew</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>gradlew node in gradlew.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>gradlew script</code><br><small style="color:var(--muted)">gradlew</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>die()</code><br><small style="color:var(--muted)">gradlew</small><br><code>warn()</code><br><small style="color:var(--muted)">gradlew</small></td>
+  <td>gradlew script node in gradlew.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>die()</code><br><small style="color:var(--muted)">gradlew</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gradlew script</code><br><small style="color:var(--muted)">gradlew</small></td>
+  <td>No direct outbound edge</td>
+  <td>die() node in gradlew.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>warn()</code><br><small style="color:var(--muted)">gradlew</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gradlew script</code><br><small style="color:var(--muted)">gradlew</small></td>
+  <td>No direct outbound edge</td>
+  <td>warn() node in gradlew.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>gradlew</code></td><td>4 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: defines x2, calls x2, contains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 8. Offset ====== -->
+<h2 id="offset">8. Offset</h2>
+<p>Offset groups implementation around sectorpath, app, ayodong, emobilize, mostly in ui/dock/RadialMenu.kt. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Offset (2 nodes, 1 edges)
+    offset_53a610e9("Offset")
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_bcbff1af("sectorPath()<br/><small>ui/dock/RadialMenu.kt</small>")
+    app_src_main_java_ayodong_emobilize_ui_dock_radi_bcbff1af -->|references| offset_53a610e9
+    class offset_53a610e9 klass;
+    class app_src_main_java_ayodong_emobilize_ui_dock_radi_bcbff1af function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>sectorPath()</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RadialMenu()</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small></td>
+  <td>No direct outbound edge</td>
+  <td>sectorPath() node in ui/dock/RadialMenu.kt.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Offset</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>AddTaskCard.kt</code><br><small style="color:var(--muted)">ui/tasks/AddTaskCard.kt</small><br><code>RadialDock.kt</code><br><small style="color:var(--muted)">ui/dock/RadialDock.kt</small><br><code>RadialMenu.kt</code><br><small style="color:var(--muted)">ui/dock/RadialMenu.kt</small><br>+1 more</td>
+  <td>No direct outbound edge</td>
+  <td>Offset node in project.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>ui/dock/RadialMenu.kt</code></td><td>1 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: references x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 9. settings.gradle.kts ====== -->
+<h2 id="settings-gradle-kts">9. settings.gradle.kts</h2>
+<p>settings.gradle.kts groups implementation around settingsgradlekts, mostly in settings.gradle.kts. This section covers 1 nodes and 0 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: settings.gradle.kts (1 nodes, 0 edges)
+    settings_gradle_6d67144b("settings.gradle.kts")
+    class settings_gradle_6d67144b function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>settings.gradle.kts</code><br><small style="color:var(--muted)">settings.gradle.kts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>settings.gradle.kts node in settings.gradle.kts.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>settings.gradle.kts</code></td><td>1 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: No high-confidence call edges detected. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<h2 id="stats">Project Statistics</h2>
+
+<div class="grid">
+  <div class="card">
+    <h4>Graph</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><td>Nodes</td><td>569</td></tr>
+      <tr><td>Edges</td><td>1624</td></tr>
+      <tr><td>Hyperedges</td><td>0</td></tr>
+      <tr><td>Communities</td><td>31</td></tr>
+      <tr><td>Documented Sections</td><td>8</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Edge Confidence</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><td>EXTRACTED</td><td>1611</td></tr>
+      <tr><td>INFERRED</td><td>13</td></tr>
+      <tr><td>AMBIGUOUS</td><td>0</td></tr>
+    </table>
+  </div>
+</div>
+
+<div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
+  <p>Emobilize — Architecture Documentation</p>
+  <p>Generated: 2026-10-16 17:28 UTC · graphify callflow-html</p>
+</div>
+
+</div><!-- .container -->
+
+<script>
+(function () {
+  const mermaidConfig = {
+    startOnLoad: false,
+    theme: 'dark',
+    securityLevel: 'loose',
+    flowchart: { htmlLabels: true, useMaxWidth: true },
+    themeVariables: {
+      primaryColor: '#1e293b',
+      primaryTextColor: '#e2e8f0',
+      primaryBorderColor: '#38bdf8',
+      secondaryColor: '#0f172a',
+      tertiaryColor: '#334155',
+      lineColor: '#64748b',
+      textColor: '#e2e8f0',
+    }
+  };
+
+  mermaid.initialize(mermaidConfig);
+
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function enhanceMermaidDiagrams() {
+    document.querySelectorAll('.mermaid').forEach((container) => {
+      if (container.dataset.zoomReady === 'true') return;
+      const svg = container.querySelector('svg');
+      if (!svg) return;
+
+      container.dataset.zoomReady = 'true';
+      container.classList.add('is-enhanced');
+
+      const viewport = document.createElement('div');
+      viewport.className = 'mermaid-viewport';
+      svg.parentNode.insertBefore(viewport, svg);
+      viewport.appendChild(svg);
+
+      const toolbar = document.createElement('div');
+      toolbar.className = 'mermaid-toolbar';
+      toolbar.innerHTML = [
+        '<button type="button" data-action="zoom-out" title="Zoom out">-</button>',
+        '<span class="zoom-level" data-role="level">100%</span>',
+        '<button type="button" data-action="zoom-in" title="Zoom in">+</button>',
+        '<button type="button" data-action="fit" title="Fit width">Fit</button>',
+        '<button type="button" data-action="reset" title="Reset view">Reset</button>'
+      ].join('');
+      container.insertBefore(toolbar, viewport);
+
+      const state = { scale: 1, x: 0, y: 0, dragging: false, startX: 0, startY: 0, originX: 0, originY: 0 };
+      const level = toolbar.querySelector('[data-role="level"]');
+
+      function applyTransform() {
+        svg.style.transform = `translate(${state.x}px, ${state.y}px) scale(${state.scale})`;
+        level.textContent = `${Math.round(state.scale * 100)}%`;
+      }
+
+      function zoomBy(delta) {
+        state.scale = clamp(state.scale + delta, 0.25, 3);
+        applyTransform();
+      }
+
+      function reset() {
+        state.scale = 1;
+        state.x = 0;
+        state.y = 0;
+        applyTransform();
+      }
+
+      function fitWidth() {
+        const rawWidth = svg.viewBox && svg.viewBox.baseVal && svg.viewBox.baseVal.width
+          ? svg.viewBox.baseVal.width
+          : svg.getBoundingClientRect().width / state.scale;
+        if (!rawWidth) {
+          reset();
+          return;
+        }
+        state.scale = clamp((viewport.clientWidth - 48) / rawWidth, 0.25, 1.4);
+        state.x = 0;
+        state.y = 0;
+        applyTransform();
+      }
+
+      toolbar.addEventListener('click', (event) => {
+        const button = event.target.closest('button[data-action]');
+        if (!button) return;
+        const action = button.dataset.action;
+        if (action === 'zoom-in') zoomBy(0.15);
+        if (action === 'zoom-out') zoomBy(-0.15);
+        if (action === 'fit') fitWidth();
+        if (action === 'reset') reset();
+      });
+
+      viewport.addEventListener('wheel', (event) => {
+        if (!event.ctrlKey && !event.metaKey) return;
+        event.preventDefault();
+        zoomBy(event.deltaY < 0 ? 0.1 : -0.1);
+      }, { passive: false });
+
+      viewport.addEventListener('pointerdown', (event) => {
+        if (event.button !== 0) return;
+        state.dragging = true;
+        state.startX = event.clientX;
+        state.startY = event.clientY;
+        state.originX = state.x;
+        state.originY = state.y;
+        viewport.classList.add('is-dragging');
+        viewport.setPointerCapture(event.pointerId);
+      });
+
+      viewport.addEventListener('pointermove', (event) => {
+        if (!state.dragging) return;
+        state.x = state.originX + event.clientX - state.startX;
+        state.y = state.originY + event.clientY - state.startY;
+        applyTransform();
+      });
+
+      function endDrag(event) {
+        if (!state.dragging) return;
+        state.dragging = false;
+        viewport.classList.remove('is-dragging');
+        if (viewport.hasPointerCapture(event.pointerId)) {
+          viewport.releasePointerCapture(event.pointerId);
+        }
+      }
+
+      viewport.addEventListener('pointerup', endDrag);
+      viewport.addEventListener('pointercancel', endDrag);
+      applyTransform();
+    });
+  }
+
+  function renderMermaid() {
+    const result = mermaid.run
+      ? mermaid.run({ querySelector: '.mermaid' })
+      : Promise.resolve();
+    Promise.resolve(result)
+      .then(enhanceMermaidDiagrams)
+      .catch((error) => {
+        console.error('Mermaid render failed:', error);
+        enhanceMermaidDiagrams();
+      });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderMermaid);
+  } else {
+    renderMermaid();
+  }
+})();
+</script>
+
+</body>
+</html>
