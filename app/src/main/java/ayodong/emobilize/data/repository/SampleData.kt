@@ -5,7 +5,6 @@ import ayodong.emobilize.domain.model.DateRange
 import ayodong.emobilize.domain.model.EventType
 import ayodong.emobilize.domain.model.FilterKey
 import ayodong.emobilize.domain.model.Priority
-import ayodong.emobilize.domain.model.ReminderOption
 import ayodong.emobilize.domain.model.Task
 import ayodong.emobilize.domain.model.TimeBlock
 import ayodong.emobilize.domain.model.formatInputDate
@@ -19,8 +18,8 @@ internal fun sampleTasks(today: LocalDate = LocalDate.now()): List<Task> {
     val dentist = isoDate(today.plusDays(3))
     return listOf(
         Task(1, "Read research paper", Category.Study, "Today", "10:30 AM", FilterKey.Today, Priority.High, description = "Read the method section and write three notes.", estimateMinutes = 90),
-        Task(2, "Finish backend API", Category.Work, "Today", "4:00 PM", FilterKey.Today, Priority.High, description = "Ship the task list endpoint and check the error cases.", reminder = ReminderOption.OneHourBefore, estimateMinutes = 120),
-        Task(3, "Gym", Category.Health, "Tomorrow", "6:00 PM", FilterKey.Tomorrow, Priority.Medium, description = "Strength session, then a short stretch.", reminder = ReminderOption.TenMinutesBefore, estimateMinutes = 60),
+        Task(2, "Finish backend API", Category.Work, "Today", "4:00 PM", FilterKey.Today, Priority.High, description = "Ship the task list endpoint and check the error cases.", estimateMinutes = 120),
+        Task(3, "Gym", Category.Health, "Tomorrow", "6:00 PM", FilterKey.Tomorrow, Priority.Medium, description = "Strength session, then a short stretch.", estimateMinutes = 60),
         Task(
             4,
             "Design portfolio draft",
@@ -30,11 +29,10 @@ internal fun sampleTasks(today: LocalDate = LocalDate.now()): List<Task> {
             FilterKey.Later,
             Priority.Medium,
             description = "Lay out the first three case studies.",
-            reminder = ReminderOption.OneDayBefore,
             estimateMinutes = 180,
         ),
         Task(5, "Buy groceries", Category.Health, "Today", null, FilterKey.Today, Priority.Low, description = "Rice, eggs, and fruit for the week."),
-        Task(6, "Reply to client email", Category.Work, "Today", "8:00 AM", FilterKey.Today, Priority.Medium, description = "Confirm the revised delivery date and attach the invoice.", reminder = ReminderOption.AtDeadline, estimateMinutes = 15),
+        Task(6, "Reply to client email", Category.Work, "Today", "8:00 AM", FilterKey.Today, Priority.Medium, description = "Confirm the revised delivery date and attach the invoice.", estimateMinutes = 15),
         Task(
             7,
             "Group project sprint",
@@ -45,7 +43,6 @@ internal fun sampleTasks(today: LocalDate = LocalDate.now()): List<Task> {
             Priority.High,
             range = DateRange(isoDate(today), "13:00", tomorrow, "15:00"),
             description = "Build the prototype screens with the team and merge before the review.",
-            reminder = ReminderOption.AtDeadline,
             estimateMinutes = 240,
         ),
         Task(
@@ -59,7 +56,6 @@ internal fun sampleTasks(today: LocalDate = LocalDate.now()): List<Task> {
             eventType = EventType.Event,
             eventEndTime = "3 PM",
             description = "Routine check-up and cleaning at the campus clinic.",
-            reminder = ReminderOption.OneHourBefore,
         ),
         Task(9, "Plan weekend trip", null, "", null, FilterKey.All, description = "Pick a place, check the train times, and share the plan."),
     )
@@ -70,7 +66,7 @@ internal fun sampleBlocks(today: LocalDate = LocalDate.now()): Map<LocalDate, Li
     return mapOf(
         days[0] to listOf(
             TimeBlock(101, "Read Research Paper", 9f, 10.5f, Category.Study),
-            TimeBlock(102, "Team Standup", 11f, 11.5f, Category.Work, ReminderOption.TenMinutesBefore),
+            TimeBlock(102, "Team Standup", 11f, 11.5f, Category.Work),
             TimeBlock(103, "Lunch Break", 12.5f, 13.5f, Category.Health),
             TimeBlock(104, "Finish Backend API", 14f, 16f, Category.Work),
             TimeBlock(105, "Gym", 17f, 18f, Category.Health),
@@ -78,7 +74,7 @@ internal fun sampleBlocks(today: LocalDate = LocalDate.now()): Map<LocalDate, Li
         days[1] to listOf(
             TimeBlock(106, "Portfolio Design", 10f, 12f, Category.Work),
             TimeBlock(107, "Lunch", 12.5f, 13.5f, Category.Health),
-            TimeBlock(108, "Code Review", 15f, 16.5f, Category.Work, ReminderOption.TenMinutesBefore),
+            TimeBlock(108, "Code Review", 15f, 16.5f, Category.Work),
         ),
         days[2] to listOf(
             TimeBlock(109, "Morning Planning", 8f, 9f, Category.Study),
@@ -89,7 +85,7 @@ internal fun sampleBlocks(today: LocalDate = LocalDate.now()): Map<LocalDate, Li
             TimeBlock(114, "Buy Groceries", 19f, 19.5f, Category.Health),
         ),
         days[4] to listOf(
-            TimeBlock(115, "Submit Assignment", 10f, 11f, Category.Study, ReminderOption.OneHourBefore),
+            TimeBlock(115, "Submit Assignment", 10f, 11f, Category.Study),
             TimeBlock(116, "Lunch", 13f, 14f, Category.Health),
         ),
         days[5] to listOf(
