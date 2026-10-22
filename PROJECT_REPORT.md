@@ -1,8 +1,8 @@
 # Emobilize — Mobile Task & Schedule Management
 ## Comprehensive Project Report & Architecture Analysis
 
-> **Sumber Analisis**: Laporan ini disusun berdasarkan analisis arsitektur basis kode dan graf pengetahuan terverifikasi **Graphify** (`graphify-out/graph.json` dan `graphify-out/GRAPH_REPORT.md`, snapshot commit `192a0f82`).  
-> **Status Basis Kode**: 1001 node, 2680 edge, 55 komunitas arsitektur, 0 siklus impor (*zero circular dependencies*). Deskripsi fitur di bawah mengikuti cabang `tasks-radial-menu` sampai commit `93d523a`.
+> **Sumber Analisis**: Laporan ini menjelaskan pohon submission `submission-source-code` pada commit `46d209f`. Sumber aplikasi sama dengan cabang pengembangan `tasks-radial-menu` sampai commit `93d523a`.  
+> **Status Basis Kode**: Angka arsitektur berasal dari peta Graphify terakhir (commit `192a0f82`): 1001 node, 2680 edge, 55 komunitas, 0 siklus impor. Berkas `graphify-out/` tidak ikut dalam pohon submission ini.
 
 ---
 
@@ -96,13 +96,13 @@ Berdasarkan pemetaan komunitas Graphify, basis kode dibagi menjadi domain tanggu
   - Mengelola aset branding (vektor logo monogram "E"), komponen kartu pengingat notifikasi (`ExpandableReminderCard`), verifikasi token tema, dan penyusunan katalog pratinjau (`Previews.kt`).
 
 ### 2. Sistem Kerja Kelompok (*Working System*)
-- **Branching Strategy**: Menggunakan model *feature branch* terpusat pada cabang `tasks-radial-menu` yang terhubung ke repositori GitHub upstream.
+- **Branching Strategy**: Pengembangan berjalan di cabang `tasks-radial-menu`. Pohon submission `submission-source-code` menyimpan sumber aplikasi dan tidak menyertakan perkakas lokal (`graphify-out/`, `.agents/`, `.idea/`).
 - **Single Source of Truth (SSOT)**:
   - Mutasi tugas dan jadwal lewat `TasksViewModel`; akun lokal lewat `AuthViewModel`. Keduanya disuntikkan dari `AppContainer`.
   - Settings memakai draf di layar dan baru menulis `AppSettings` saat **Save Changes**, termasuk sakelar notifikasi.
   - Tugas dan blok waktu hidup di memori proses. Preferensi aplikasi hidup di SharedPreferences. Data sampel hilang saat proses ditutup.
 - **Audit Kode & Knowledge Graph (Graphify)**:
-  - Pemantauan berkala menggunakan Graphify untuk menjaga kohesi modul, memastikan tidak ada siklus impor (*zero import cycles*), dan memantau konektivitas *God Nodes*.
+  - Kohesi modul, siklus impor, dan God Nodes diperiksa di cabang pengembangan. Hasil peta tidak dimasukkan ke pohon submission.
 - **Quality Assurance & Verification**:
   - Setiap perubahan divalidasi melalui kompilasi Kotlin tanpa error (`.\gradlew compileDebugKotlin` / `assembleDebug`).
   - Pratinjau multi-tema (Light/Dark, Collapsed/Expanded) diuji visual melalui Android Studio Compose Preview (`@Preview`).
@@ -152,9 +152,9 @@ Berdasarkan ekstraksi AST dan topologi graf:
 2. **Kesehatan Arsitektur (Architectural Health)**:
    - **Import Cycles**: 0 (bebas dari dependensi melingkar).
    - **Separation Level**: Modul UI tidak mengakses repositori secara langsung. Tugas lewat use case dan `TasksViewModel`; akun lewat `AuthViewModel`; preferensi lewat repository SharedPreferences.
-   - Snapshot graf ini dibuat dari commit `192a0f82`. Hyperedge lama yang menandai Auth dan kartu pengingat sebagai "belum dipasang" sudah kedaluwarsa: keduanya punya rute di `NavHost`.
+   - Snapshot graf ini dibuat dari commit `192a0f82` dan tidak disertakan di pohon submission. Hyperedge lama yang menandai Auth dan kartu pengingat sebagai "belum dipasang" sudah kedaluwarsa: keduanya punya rute di `NavHost`.
 3. **Komunitas Utama**:
    - `EmobilizeApp`, `TasksViewModel.kt`, `Task.kt`, `Design system tokens`, `Add task card`, `Radial dock menu`, `Settings and theme`, `In-memory task store`, `App settings prefs`, `ExpandableReminderCard`, `Auth account store`.
 
 ---
-*Dokumen ini diperbarui pada 22 Oktober 2026 dari snapshot Graphify commit `192a0f82` dan kondisi cabang `tasks-radial-menu` pada commit `93d523a`.*
+*Dokumen ini diperbarui pada 22 Oktober 2026 untuk cabang `submission-source-code` pada commit `46d209f`. Perilaku aplikasi mengikuti `tasks-radial-menu` sampai commit `93d523a`. Angka Graphify tetap dari snapshot commit `192a0f82`.*
