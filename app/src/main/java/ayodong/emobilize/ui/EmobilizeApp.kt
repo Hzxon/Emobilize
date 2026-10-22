@@ -138,8 +138,7 @@ fun EmobilizeApp(viewModel: TasksViewModel, authViewModel: AuthViewModel) {
                 ReminderScreen(
                     tasks = viewModel.tasks,
                     doneIds = viewModel.done,
-                    notificationsEnabled = viewModel.notificationsEnabled,
-                    onNotificationsChange = viewModel::changeNotifications,
+                    notificationsEnabled = viewModel.appSettings.notificationsEnabled,
                     onBack = { navController.leave() },
                     onMarkDone = viewModel::markDone,
                     onReschedule = { taskId ->

@@ -131,6 +131,32 @@ fun SettingsScreen(
             }
 
             Spacer(Modifier.height(24.dp))
+            SectionLabel("NOTIFICATIONS")
+            SettingsCard {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text("Push notifications", style = appStyle(14.sp, FontWeight.SemiBold), color = palette.text)
+                        Spacer(Modifier.height(2.dp))
+                        Text(
+                            if (draftSettings.notificationsEnabled) {
+                                "Emobilize can alert you before a deadline"
+                            } else {
+                                "Reminders are paused"
+                            },
+                            style = appStyle(12.sp),
+                            color = palette.textMuted,
+                        )
+                    }
+                    Switch(
+                        checked = draftSettings.notificationsEnabled,
+                        onCheckedChange = { enabled ->
+                            draftSettings = draftSettings.copy(notificationsEnabled = enabled)
+                        },
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(24.dp))
             SectionLabel("TASKS")
             SettingsCard {
                 SettingHeading("Default category", "Preselect a category when adding a task")

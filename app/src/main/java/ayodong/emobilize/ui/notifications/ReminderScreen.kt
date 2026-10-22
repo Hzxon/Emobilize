@@ -2,17 +2,13 @@ package ayodong.emobilize.ui.notifications
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -20,11 +16,9 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -48,7 +42,6 @@ fun ReminderScreen(
     tasks: List<Task>,
     doneIds: Set<Long>,
     notificationsEnabled: Boolean,
-    onNotificationsChange: (Boolean) -> Unit,
     onBack: () -> Unit,
     onMarkDone: (Long) -> Unit,
     onReschedule: (Long) -> Unit,
@@ -81,17 +74,12 @@ fun ReminderScreen(
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = palette.text)
             }
             Text(
-                "Reminders",
+                "Push Notification UI",
                 modifier = Modifier.padding(start = 8.dp),
                 style = appStyle(24.sp, FontWeight.SemiBold, lineHeight = 32.sp),
                 color = palette.text,
             )
         }
-        PushToggleCard(
-            enabled = notificationsEnabled,
-            onChange = onNotificationsChange,
-            modifier = Modifier.padding(top = 16.dp),
-        )
         if (!notificationsEnabled) {
             Text(
                 "Notifications are off. Turn them on to preview reminders.",
@@ -130,36 +118,5 @@ fun ReminderScreen(
                 }
             }
         }
-    }
-}
-
-// Stands in for the system notification permission. It only changes app state; nothing is requested from Android.
-@Composable
-private fun PushToggleCard(
-    enabled: Boolean,
-    onChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val palette = LocalPalette.current
-    val shape = RoundedCornerShape(AppMetrics.cardRadius)
-    Row(
-        modifier
-            .fillMaxWidth()
-            .clip(shape)
-            .background(palette.card)
-            .border(1.dp, palette.scheme.border, shape)
-            .padding(14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(Modifier.weight(1f)) {
-            Text("Push notifications", style = appStyle(14.sp, FontWeight.SemiBold), color = palette.text)
-            Spacer(Modifier.height(2.dp))
-            Text(
-                if (enabled) "Emobilize can alert you before a deadline" else "Reminders are paused",
-                style = appStyle(12.sp),
-                color = palette.textMuted,
-            )
-        }
-        Switch(checked = enabled, onCheckedChange = onChange)
     }
 }

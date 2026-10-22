@@ -20,6 +20,7 @@ class PreferencesAppSettingsRepository(context: Context) : AppSettingsRepository
             runCatching { Priority.valueOf(raw) }.getOrNull()
         },
         showCompletedTasks = prefs.getBoolean(ShowCompletedKey, true),
+        notificationsEnabled = prefs.getBoolean(NotificationsKey, true),
     )
 
     override fun update(settings: AppSettings) {
@@ -30,6 +31,7 @@ class PreferencesAppSettingsRepository(context: Context) : AppSettingsRepository
             .putLong(CategoryKey, settings.defaultCategoryId ?: 0L)
             .putString(PriorityKey, settings.defaultPriority?.name.orEmpty())
             .putBoolean(ShowCompletedKey, settings.showCompletedTasks)
+            .putBoolean(NotificationsKey, settings.notificationsEnabled)
             .apply()
     }
 
@@ -44,5 +46,6 @@ class PreferencesAppSettingsRepository(context: Context) : AppSettingsRepository
         const val CategoryKey = "default_category_id"
         const val PriorityKey = "default_priority"
         const val ShowCompletedKey = "show_completed_tasks"
+        const val NotificationsKey = "notifications_enabled"
     }
 }

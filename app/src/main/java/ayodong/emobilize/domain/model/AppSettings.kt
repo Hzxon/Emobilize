@@ -10,4 +10,5 @@ data class AppSettings(
     val defaultCategoryId: Long? = null,
     val defaultPriority: Priority? = null,
     val showCompletedTasks: Boolean = true,
+    val notificationsEnabled: Boolean = true,
 )

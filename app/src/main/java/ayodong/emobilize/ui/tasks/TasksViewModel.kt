@@ -121,9 +121,6 @@ class TasksViewModel(
         private set
     var calendarBlockId by mutableStateOf<Long?>(null)
         private set
-    var notificationsEnabled by mutableStateOf(true)
-        private set
-
     val addDraft = TaskDraft()
     val editDraft = TaskDraft()
 
@@ -320,10 +317,6 @@ class TasksViewModel(
     fun markDone(id: Long) {
         setTaskStatus(id, TaskStatus.Done)
         reloadTasks()
-    }
-
-    fun changeNotifications(enabled: Boolean) {
-        notificationsEnabled = enabled
     }
 
     fun canSubmit(draft: TaskDraft): Boolean {
