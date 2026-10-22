@@ -33,6 +33,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -41,9 +43,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import ayodong.emobilize.domain.model.EventType
 import ayodong.emobilize.domain.model.FabAction
 import ayodong.emobilize.domain.model.NavTab
 import ayodong.emobilize.domain.model.ThemeMode
@@ -127,18 +131,20 @@ fun EmobilizeApp(viewModel: TasksViewModel, authViewModel: AuthViewModel) {
                     viewModel = viewModel,
                     taskId = taskId,
                     onBack = { navController.leave() },
-                    onEdit = { navController.navigate(AppRoute.editTask(taskId)) },
+                    onEdit = { navController.openEditor(viewModel, taskId) },
                 )
             }
             dialog(AppRoute.Reminders, dialogProperties = overlayDialog) {
                 ReminderScreen(
                     tasks = viewModel.tasks,
                     doneIds = viewModel.done,
+                    notificationsEnabled = viewModel.notificationsEnabled,
+                    onNotificationsChange = viewModel::changeNotifications,
                     onBack = { navController.leave() },
                     onMarkDone = viewModel::markDone,
                     onReschedule = { taskId ->
                         navController.leave()
-                        navController.navigate(AppRoute.editTask(taskId))
+                        navController.openEditor(viewModel, taskId)
                     },
                 )
             }
@@ -286,8 +292,9 @@ private fun MainShell(
     var menuOpen by rememberSaveable { mutableStateOf(false) }
     var tab by rememberSaveable { mutableStateOf(initialTab) }
     val colors = LocalPalette.current
-    val overlayOpen = navController.currentDestination?.route != AppRoute.Tasks &&
-        navController.currentDestination?.route != AppRoute.Calendar
+    val backEntry by navController.currentBackStackEntryAsState()
+    val route = backEntry?.destination?.route
+    val overlayOpen = route != AppRoute.Tasks && route != AppRoute.Calendar
     BackHandler(
         enabled = !overlayOpen && (menuOpen || viewModel.pendingAction != null || viewModel.selectedBlockId != null),
     ) {
@@ -370,7 +377,7 @@ private fun MainShell(
                             navController.navigate(AppRoute.taskDetail(taskId))
                         },
                         onEditTask = { taskId ->
-                            navController.navigate(AppRoute.editTask(taskId))
+                            navController.openEditor(viewModel, taskId)
                         },
                     )
                 }
@@ -459,6 +466,12 @@ private fun NavHostController.leave() {
     popBackStack()
 }
 
+// Events carry an end time that only the calendar form shows and validates, so they are edited there.
+private fun NavHostController.openEditor(viewModel: TasksViewModel, taskId: Long) {
+    val isEvent = viewModel.tasks.find { it.id == taskId }?.eventType == EventType.Event
+    navigate(if (isEvent) AppRoute.calendarTask(taskId) else AppRoute.editTask(taskId))
+}
+
 private fun NavHostController.openTasks() {
     navigate(AppRoute.Tasks) {
         popUpTo(AppRoute.Auth) { inclusive = true }
@@ -486,6 +499,15 @@ private fun TabPage(
         Modifier
             .fillMaxSize()
             .zIndex(if (visible) 1f else 0f)
+            .then(
+                if (visible) {
+                    // Claims every touch inside the visible page so taps on blank space never reach the faded page below.
+                    // It sits before the offset so it covers the full width while the page slides in.
+                    Modifier.pointerInput(Unit) { awaitPointerEventScope { while (true) awaitPointerEvent() } }
+                } else {
+                    Modifier.clearAndSetSemantics {}
+                },
+            )
             .offset(x = shift)
             .graphicsLayer { this.alpha = alpha },
     ) {

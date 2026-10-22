@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
@@ -141,6 +142,14 @@ fun TaskFormSheet(
                     keyboardType = KeyboardType.Text,
                     singleLine = false,
                     minLines = 3,
+                )
+                FormField(
+                    value = draft.minutes,
+                    onValueChange = { draft.minutes = it },
+                    label = "Estimate (minutes)",
+                    error = draft.minutesError(),
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done,
                 )
                 Spacer(Modifier.height(24.dp))
                 SectionLabel("Category")

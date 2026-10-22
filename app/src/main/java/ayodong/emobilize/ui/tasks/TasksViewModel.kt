@@ -63,6 +63,20 @@ class TaskDraft {
     fun titleError(): String? = if (name.isBlank()) "Enter a title" else null
 
     fun descriptionError(): String? = if (description.isBlank()) "Enter a description" else null
+
+    fun minutesError(): String? = when {
+        minutes.isEmpty() -> null
+        !minutes.all(Char::isDigit) -> "Use whole numbers only"
+        minutes.toIntOrNull() !in 1..1440 -> "Enter 1 to 1440 minutes"
+        else -> null
+    }
+
+    fun eventTimeError(): String? =
+        if (startTime.isNotBlank() && endTime.isNotBlank() && inputToHours(endTime) <= inputToHours(startTime)) {
+            "End time must be after start time"
+        } else {
+            null
+        }
 }
 
 class TasksViewModel(
@@ -106,6 +120,8 @@ class TasksViewModel(
     var calendarTaskId by mutableStateOf<Long?>(null)
         private set
     var calendarBlockId by mutableStateOf<Long?>(null)
+        private set
+    var notificationsEnabled by mutableStateOf(true)
         private set
 
     val addDraft = TaskDraft()
@@ -163,7 +179,9 @@ class TasksViewModel(
         if (calendarTaskId == taskId) return true
         val task = tasks.find { it.id == taskId } ?: return false
         val date = deadlineToInputDate(task.deadline)
-        val startTime = task.range?.startTime ?: displayTimeToInput(task.time).ifBlank { "09:00" }
+        val startTime = task.range?.startTime ?: displayTimeToInput(task.time).ifBlank {
+            if (task.eventType == EventType.Event) "" else "09:00"
+        }
         resetAddDraft(task.eventType)
         addDraft.name = task.name
         addDraft.description = task.description
@@ -176,7 +194,9 @@ class TasksViewModel(
         addDraft.startDate = task.range?.startDate ?: date
         addDraft.startTime = startTime
         addDraft.endDate = task.range?.endDate ?: date
-        addDraft.endTime = task.range?.endTime ?: displayTimeToInput(task.eventEndTime).ifBlank { startTime }
+        addDraft.endTime = task.range?.endTime ?: displayTimeToInput(task.eventEndTime).ifBlank {
+            if (task.eventType == EventType.Event) "" else startTime
+        }
         addDraft.reminder = task.reminder
         addDraft.minutes = task.estimateMinutes?.toString().orEmpty()
         calendarTaskId = task.id
@@ -302,8 +322,12 @@ class TasksViewModel(
         reloadTasks()
     }
 
+    fun changeNotifications(enabled: Boolean) {
+        notificationsEnabled = enabled
+    }
+
     fun canSubmit(draft: TaskDraft): Boolean {
-        if (draft.titleError() != null) return false
+        if (draft.titleError() != null || draft.minutesError() != null) return false
         if (!draft.includeSchedule) return true
         return if (draft.scheduleMode == ScheduleMode.Deadline) {
             draft.date.isNotBlank()
@@ -315,7 +339,7 @@ class TasksViewModel(
     fun canSubmitCalendar(draft: TaskDraft): Boolean {
         if (draft.titleError() != null) return false
         return when (draft.eventType) {
-            EventType.Event -> draft.date.isNotBlank()
+            EventType.Event -> draft.date.isNotBlank() && draft.eventTimeError() == null
             EventType.Task -> canSubmit(draft)
             EventType.RegularSchedule -> draft.rangeValid()
         }
@@ -347,7 +371,7 @@ class TasksViewModel(
     }
 
     fun submitAdd(): Boolean {
-        if (addDraft.titleError() != null || addDraft.descriptionError() != null) return false
+        if (addDraft.titleError() != null || addDraft.descriptionError() != null || addDraft.minutesError() != null) return false
         if (addDraft.includeSchedule && addDraft.scheduleMode == ScheduleMode.Range && !addDraft.rangeValid()) return false
         addTask(draftToTask(addDraft, System.currentTimeMillis()))
         reloadTasks()

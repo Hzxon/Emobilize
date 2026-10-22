@@ -106,7 +106,8 @@ fun deadlineToInputDate(deadline: String, today: LocalDate = LocalDate.now()): S
     val month = monthNames.indexOfFirst { it.startsWith(match.groupValues[1]) } + 1
     if (month <= 0) return isoDate(today)
     val day = match.groupValues[2].toInt()
-    return isoDate(LocalDate.of(today.year, month, day))
+    val date = runCatching { LocalDate.of(today.year, month, day) }.getOrNull() ?: return isoDate(today)
+    return isoDate(date)
 }
 
 fun parseDisplayTime(time: String): Float {

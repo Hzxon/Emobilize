@@ -34,6 +34,8 @@ import androidx.compose.ui.unit.sp
 import ayodong.emobilize.domain.model.FabAction
 import ayodong.emobilize.domain.model.ReminderOption
 import ayodong.emobilize.domain.model.Task
+import ayodong.emobilize.domain.model.formatInputDate
+import ayodong.emobilize.domain.model.formatInputTime
 import ayodong.emobilize.ui.theme.AppMetrics
 import ayodong.emobilize.ui.theme.LocalPalette
 import ayodong.emobilize.ui.theme.ShadcnRadius
@@ -137,9 +139,16 @@ private fun TaskDetailBody(
     val schedule = when {
         task.range != null -> {
             val range = task.range
-            "${range.startDate} ${range.startTime} to ${range.endDate} ${range.endTime}"
+            val start = formatInputDate(range.startDate)
+            val end = formatInputDate(range.endDate)
+            val from = formatInputTime(range.startTime)
+            val to = formatInputTime(range.endTime)
+            if (start == end) "$start, $from to $to" else "$start, $from to $end, $to"
         }
-        task.deadline.isNotBlank() -> listOfNotNull(task.deadline, task.time).joinToString(", ")
+        task.deadline.isNotBlank() -> {
+            val start = listOfNotNull(task.deadline, task.time).joinToString(", ")
+            if (task.time != null && task.eventEndTime != null) "$start to ${task.eventEndTime}" else start
+        }
         else -> null
     }
     Text(
