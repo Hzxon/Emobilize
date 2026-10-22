@@ -93,14 +93,25 @@ fun CalendarScreen(
     val activeDate = runCatching { LocalDate.parse(activeIso) }.getOrDefault(today)
     val visibleMonth = YearMonth.from(runCatching { LocalDate.parse(monthIso) }.getOrDefault(today))
     val view = runCatching { CalView.valueOf(viewName) }.getOrDefault(CalView.Week)
+        .let { if (it == CalView.Day) CalView.Week else it }
     val canDelete = pending == FabAction.Delete && (selectedTaskId != null || selectedBlockId != null)
+    val selectDate: (LocalDate) -> Unit = { date ->
+        activeIso = date.toString()
+        monthIso = date.withDayOfMonth(1).toString()
+    }
+    val shiftMonth: (Long) -> Unit = { delta ->
+        val nextMonth = visibleMonth.plusMonths(delta)
+        val nextDate = nextMonth.atDay(activeDate.dayOfMonth.coerceAtMost(nextMonth.lengthOfMonth()))
+        monthIso = nextMonth.atDay(1).toString()
+        activeIso = nextDate.toString()
+    }
 
     Column(modifier.fillMaxSize()) {
         CalendarHeader(
             month = visibleMonth,
             view = view,
-            onPrev = { monthIso = visibleMonth.minusMonths(1).atDay(1).toString() },
-            onNext = { monthIso = visibleMonth.plusMonths(1).atDay(1).toString() },
+            onPrev = { shiftMonth(-1) },
+            onNext = { shiftMonth(1) },
             onView = { viewName = it.name },
         )
         if (pending == FabAction.Edit || pending == FabAction.Delete) {
@@ -122,11 +133,11 @@ fun CalendarScreen(
                     pending = pending,
                     selectedTaskId = selectedTaskId,
                     selectedBlockId = selectedBlockId,
-                    onDate = { activeIso = it.toString() },
+                    onDate = selectDate,
                     onSelectTask = onSelectTask,
                     onSelectBlock = onSelectBlock,
                 )
-                CalView.Week -> WeekBody(
+                CalView.Week, CalView.Day -> WeekBody(
                     activeDate = activeDate,
                     weekStart = weekStart,
                     today = today,
@@ -135,19 +146,7 @@ fun CalendarScreen(
                     pending = pending,
                     selectedTaskId = selectedTaskId,
                     selectedBlockId = selectedBlockId,
-                    onDate = { activeIso = it.toString() },
-                    onSelectTask = onSelectTask,
-                    onSelectBlock = onSelectBlock,
-                )
-                CalView.Day -> DayBody(
-                    activeDate = activeDate,
-                    today = today,
-                    tasks = tasks,
-                    blocks = blocks,
-                    pending = pending,
-                    selectedTaskId = selectedTaskId,
-                    selectedBlockId = selectedBlockId,
-                    onDate = { activeIso = it.toString() },
+                    onDate = selectDate,
                     onSelectTask = onSelectTask,
                     onSelectBlock = onSelectBlock,
                 )
@@ -210,7 +209,7 @@ private fun CalendarHeader(
                 .padding(3.dp),
             horizontalArrangement = Arrangement.spacedBy(2.dp),
         ) {
-            CalView.entries.forEach { item ->
+            listOf(CalView.Month, CalView.Week).forEach { item ->
                 val selected = item == view
                 Box(
                     Modifier
@@ -403,66 +402,6 @@ private fun WeekBody(
         Box(
             Modifier
                 .padding(start = 14.dp, end = 14.dp, top = 10.dp)
-                .fillMaxWidth()
-                .height(1.dp)
-                .background(palette.primary.at(0x18)),
-        )
-        DayAgenda(
-            date = activeDate,
-            tasks = tasks,
-            blocks = blocks[activeDate].orEmpty(),
-            today = today,
-            pending = pending,
-            selectedTaskId = selectedTaskId,
-            selectedBlockId = selectedBlockId,
-            onSelectTask = onSelectTask,
-            onSelectBlock = { onSelectBlock(activeDate, it) },
-            modifier = Modifier.weight(1f),
-        )
-    }
-}
-
-@Composable
-private fun DayBody(
-    activeDate: LocalDate,
-    today: LocalDate,
-    tasks: List<Task>,
-    blocks: Map<LocalDate, List<TimeBlock>>,
-    pending: FabAction?,
-    selectedTaskId: Long?,
-    selectedBlockId: Long?,
-    onDate: (LocalDate) -> Unit,
-    onSelectTask: (Task) -> Unit,
-    onSelectBlock: (LocalDate, TimeBlock) -> Unit,
-) {
-    val palette = LocalPalette.current
-    Column(Modifier.fillMaxSize()) {
-        Row(
-            Modifier.padding(horizontal = 20.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            CircleNav(onClick = { onDate(activeDate.minusDays(1)) }) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Previous day", tint = palette.primary)
-            }
-            Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    activeDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.US),
-                    style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 0.08.sp),
-                    color = palette.textMuted,
-                )
-                Text(
-                    activeDate.dayOfMonth.toString(),
-                    style = appStyle(22.sp, FontWeight.Bold),
-                    color = palette.text,
-                )
-            }
-            CircleNav(onClick = { onDate(activeDate.plusDays(1)) }) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "Next day", tint = palette.primary)
-            }
-        }
-        Box(
-            Modifier
-                .padding(horizontal = 20.dp, vertical = 10.dp)
                 .fillMaxWidth()
                 .height(1.dp)
                 .background(palette.primary.at(0x18)),

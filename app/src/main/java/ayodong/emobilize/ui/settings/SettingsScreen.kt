@@ -178,10 +178,11 @@ fun SettingsScreen(
             SettingsCard {
                 SettingHeading("Default view", "Choose the view shown when you open Calendar")
                 ChoiceRow {
-                    listOf(CalView.Week, CalView.Day, CalView.Month).forEach { view ->
+                    listOf(CalView.Week, CalView.Month).forEach { view ->
+                        val stored = draftSettings.defaultCalendarView
                         OptionChip(
                             label = view.name,
-                            selected = draftSettings.defaultCalendarView == view,
+                            selected = stored == view || (view == CalView.Week && stored == CalView.Day),
                             onClick = { draftSettings = draftSettings.copy(defaultCalendarView = view) },
                         )
                     }
