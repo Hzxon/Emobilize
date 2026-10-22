@@ -13,6 +13,7 @@ data class TimeBlock(
     val start: Float,
     val end: Float,
     val category: Category,
+    val reminder: ReminderOption = ReminderOption.None,
 )
 
 fun weekOf(date: LocalDate, firstDay: DayOfWeek = DayOfWeek.MONDAY): List<LocalDate> {
@@ -82,7 +83,16 @@ fun placeSchedule(
 ): Map<LocalDate, List<TimeBlock>> {
     val exists = blocks.values.any { list -> list.any { it.id == block.id } }
     return if (exists) {
-        replaceBlock(blocks, block.id, block.title, block.category, block.start, block.end, date)
+        replaceBlock(
+            blocks,
+            block.id,
+            block.title,
+            block.category,
+            block.start,
+            block.end,
+            date,
+            block.reminder,
+        )
     } else {
         blocks + (date to (blocks[date].orEmpty() + block))
     }
@@ -96,12 +106,19 @@ fun replaceBlock(
     start: Float,
     end: Float,
     target: LocalDate,
+    reminder: ReminderOption = ReminderOption.None,
 ): Map<LocalDate, List<TimeBlock>> {
     var updated: TimeBlock? = null
     val stripped = blocks.mapValues { (_, list) ->
         list.filter { block ->
             if (block.id == id) {
-                updated = block.copy(title = title, category = category, start = start, end = end)
+                updated = block.copy(
+                    title = title,
+                    category = category,
+                    start = start,
+                    end = end,
+                    reminder = reminder,
+                )
                 false
             } else {
                 true

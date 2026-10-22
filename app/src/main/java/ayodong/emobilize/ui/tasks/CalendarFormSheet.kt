@@ -31,6 +31,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -40,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import ayodong.emobilize.domain.model.Category
 import ayodong.emobilize.domain.model.EventType
 import ayodong.emobilize.domain.model.Priority
+import ayodong.emobilize.domain.model.ReminderOption
 import ayodong.emobilize.domain.model.ScheduleMode
 import ayodong.emobilize.ui.theme.AppFont
 import ayodong.emobilize.ui.theme.LocalPalette
@@ -160,6 +163,10 @@ fun CalendarFormSheet(
                     EventType.Event -> EventFields(draft, categories)
                     EventType.Task -> TaskFields(draft, categories)
                     EventType.RegularSchedule -> ScheduleFields(draft)
+                }
+                if (draft.eventType == EventType.Event || draft.eventType == EventType.RegularSchedule) {
+                    Spacer(Modifier.height(18.dp))
+                    ReminderPicker(draft)
                 }
                 Spacer(Modifier.height(22.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -316,6 +323,44 @@ private fun ScheduleFields(draft: TaskDraft) {
             style = appStyle(10.sp),
             color = palette.danger,
         )
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ReminderPicker(draft: TaskDraft) {
+    val palette = LocalPalette.current
+    SectionLabel("Reminder")
+    FlowRow(
+        modifier = Modifier.padding(top = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        ReminderOption.entries.forEach { option ->
+            val active = draft.reminder == option
+            val shape = RoundedCornerShape(ShadcnRadius.md)
+            Box(
+                modifier = Modifier
+                    .heightIn(min = 36.dp)
+                    .clip(shape)
+                    .background(if (active) palette.scheme.primary else Color.Transparent)
+                    .border(
+                        1.dp,
+                        if (active) palette.scheme.primary else palette.scheme.border,
+                        shape,
+                    )
+                    .clickable { draft.reminder = option }
+                    .semantics { selected = active }
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    option.label,
+                    style = appStyle(12.sp, FontWeight.Bold),
+                    color = if (active) palette.scheme.primaryForeground else palette.scheme.mutedForeground,
+                )
+            }
+        }
     }
 }
 

@@ -89,19 +89,11 @@ class TasksViewModel(
         private set
     var appSettings by mutableStateOf(getAppSettings())
         private set
-    var showSettings by mutableStateOf(false)
-        private set
     var selectedBlockId by mutableStateOf<Long?>(null)
         private set
     var pendingAction by mutableStateOf<FabAction?>(null)
         private set
     var selectedTaskId by mutableStateOf<Long?>(null)
-        private set
-    var showAdd by mutableStateOf(false)
-        private set
-    var showCalendar by mutableStateOf(false)
-        private set
-    var showEdit by mutableStateOf(false)
         private set
     var editingId by mutableStateOf<Long?>(null)
         private set
@@ -109,9 +101,6 @@ class TasksViewModel(
         private set
     var calendarBlockId by mutableStateOf<Long?>(null)
         private set
-
-    val calendarEditing: Boolean
-        get() = calendarTaskId != null || calendarBlockId != null
 
     val addDraft = TaskDraft()
     val editDraft = TaskDraft()
@@ -138,36 +127,35 @@ class TasksViewModel(
         cancelPending()
     }
 
-    fun showBlockEditor(block: TimeBlock, date: LocalDate) {
-        val iso = isoDate(date)
-        resetAddDraft(EventType.RegularSchedule)
-        addDraft.name = block.title
-        addDraft.category = block.category
-        addDraft.includeSchedule = true
-        addDraft.scheduleMode = ScheduleMode.Range
-        addDraft.date = iso
-        addDraft.time = hoursToInput(block.start)
-        addDraft.startDate = iso
-        addDraft.startTime = hoursToInput(block.start)
-        addDraft.endDate = iso
-        addDraft.endTime = hoursToInput(block.end)
-        calendarTaskId = null
-        calendarBlockId = block.id
+    private var addPrepared = false
+    private var calendarAddPrepared = false
+
+    fun prepareAdd() {
+        if (addPrepared) return
+        resetAddDraft(EventType.Task)
         pendingAction = null
         selectedTaskId = null
-        showCalendar = true
+        addPrepared = true
     }
 
-    fun beginCalendarAdd() {
+    fun closeAdd() {
+        addPrepared = false
+    }
+
+    fun prepareCalendarAdd(): Boolean {
+        if (calendarAddPrepared && calendarTaskId == null && calendarBlockId == null) return true
         resetAddDraft(EventType.Event)
         calendarTaskId = null
         calendarBlockId = null
         pendingAction = null
         selectedTaskId = null
-        showCalendar = true
+        calendarAddPrepared = true
+        return true
     }
 
-    fun beginCalendarEdit(task: Task) {
+    fun loadCalendarTask(taskId: Long): Boolean {
+        if (calendarTaskId == taskId) return true
+        val task = tasks.find { it.id == taskId } ?: return false
         val date = deadlineToInputDate(task.deadline)
         val startTime = task.range?.startTime ?: displayTimeToInput(task.time).ifBlank { "09:00" }
         resetAddDraft(task.eventType)
@@ -182,21 +170,78 @@ class TasksViewModel(
         addDraft.startTime = startTime
         addDraft.endDate = task.range?.endDate ?: date
         addDraft.endTime = task.range?.endTime ?: displayTimeToInput(task.eventEndTime).ifBlank { startTime }
+        addDraft.reminder = task.reminder
         calendarTaskId = task.id
         calendarBlockId = null
         pendingAction = null
         selectedTaskId = null
-        showCalendar = true
+        calendarAddPrepared = false
+        return true
+    }
+
+    fun loadCalendarBlock(blockId: Long, dateIso: String): Boolean {
+        if (calendarBlockId == blockId) return true
+        val date = runCatching { LocalDate.parse(dateIso) }.getOrNull() ?: return false
+        val block = blocks[date]?.find { it.id == blockId } ?: return false
+        val iso = isoDate(date)
+        resetAddDraft(EventType.RegularSchedule)
+        addDraft.name = block.title
+        addDraft.category = block.category
+        addDraft.includeSchedule = true
+        addDraft.scheduleMode = ScheduleMode.Range
+        addDraft.date = iso
+        addDraft.time = hoursToInput(block.start)
+        addDraft.startDate = iso
+        addDraft.startTime = hoursToInput(block.start)
+        addDraft.endDate = iso
+        addDraft.endTime = hoursToInput(block.end)
+        addDraft.reminder = block.reminder
+        calendarTaskId = null
+        calendarBlockId = block.id
+        pendingAction = null
+        selectedTaskId = null
+        calendarAddPrepared = false
+        return true
+    }
+
+    fun closeCalendarForm() {
+        calendarAddPrepared = false
+        calendarTaskId = null
+        calendarBlockId = null
+    }
+
+    fun loadTaskEdit(taskId: Long): Boolean {
+        if (editingId == taskId) return true
+        val task = tasks.find { it.id == taskId } ?: return false
+        val date = deadlineToInputDate(task.deadline)
+        editDraft.name = task.name
+        editDraft.category = task.category
+        editDraft.priority = task.priority
+        editDraft.includeSchedule = task.range != null || task.deadline.isNotBlank()
+        editDraft.scheduleMode = if (task.range != null) ScheduleMode.Range else ScheduleMode.Deadline
+        editDraft.date = if (task.deadline.isBlank()) "" else date
+        editDraft.time = displayTimeToInput(task.time)
+        editDraft.startDate = task.range?.startDate ?: date
+        editDraft.startTime = task.range?.startTime ?: "09:00"
+        editDraft.endDate = task.range?.endDate ?: date
+        editDraft.endTime = task.range?.endTime ?: displayTimeToInput(task.time).ifBlank { "17:00" }
+        editDraft.eventType = task.eventType
+        editDraft.eventEndTime = task.eventEndTime
+        editDraft.reminder = task.reminder
+        editingId = task.id
+        pendingAction = null
+        selectedTaskId = null
+        return true
+    }
+
+    fun closeEdit() {
+        editingId = null
     }
 
     fun onFabAction(action: FabAction) {
-        if (action == FabAction.Add) {
-            resetAddDraft(EventType.Task)
-            showAdd = true
-        } else {
-            pendingAction = action
-            selectedTaskId = null
-        }
+        if (action == FabAction.Add) return
+        pendingAction = action
+        selectedTaskId = null
     }
 
     fun selectTask(id: Long) {
@@ -224,30 +269,6 @@ class TasksViewModel(
             pendingAction == FabAction.Delete && id != null -> {
                 deleteTask(id)
                 reloadTasks()
-                pendingAction = null
-                selectedTaskId = null
-            }
-            pendingAction == FabAction.Edit && id != null -> {
-                val task = tasks.find { it.id == id }
-                if (task != null) {
-                    val date = deadlineToInputDate(task.deadline)
-                    editDraft.name = task.name
-                    editDraft.category = task.category
-                    editDraft.priority = task.priority
-                    editDraft.includeSchedule = task.range != null || task.deadline.isNotBlank()
-                    editDraft.scheduleMode = if (task.range != null) ScheduleMode.Range else ScheduleMode.Deadline
-                    editDraft.date = if (task.deadline.isBlank()) "" else date
-                    editDraft.time = displayTimeToInput(task.time)
-                    editDraft.startDate = task.range?.startDate ?: date
-                    editDraft.startTime = task.range?.startTime ?: "09:00"
-                    editDraft.endDate = task.range?.endDate ?: date
-                    editDraft.endTime = task.range?.endTime ?: displayTimeToInput(task.time).ifBlank { "17:00" }
-                    editDraft.eventType = task.eventType
-                    editDraft.eventEndTime = task.eventEndTime
-                    editDraft.reminder = task.reminder
-                    editingId = task.id
-                    showEdit = true
-                }
                 pendingAction = null
                 selectedTaskId = null
             }
@@ -285,10 +306,10 @@ class TasksViewModel(
         }
     }
 
-    fun submitCalendar() {
-        if (!canSubmitCalendar(addDraft)) return
+    fun submitCalendar(): Boolean {
+        if (!canSubmitCalendar(addDraft)) return false
         if (addDraft.eventType == EventType.RegularSchedule) {
-            val date = runCatching { LocalDate.parse(addDraft.startDate) }.getOrNull() ?: return
+            val date = runCatching { LocalDate.parse(addDraft.startDate) }.getOrNull() ?: return false
             placeTimeBlock(
                 TimeBlock(
                     id = calendarBlockId ?: System.currentTimeMillis(),
@@ -296,6 +317,7 @@ class TasksViewModel(
                     start = inputToHours(addDraft.startTime),
                     end = inputToHours(addDraft.endTime),
                     category = addDraft.category ?: workCategory(),
+                    reminder = addDraft.reminder,
                 ),
                 date,
             )
@@ -306,32 +328,23 @@ class TasksViewModel(
             if (calendarTaskId == null) addTask(task) else updateTask(task)
             reloadTasks()
         }
-        dismissCalendar()
+        return true
     }
 
-    fun submitAdd() {
-        if (addDraft.name.isBlank()) return
-        if (addDraft.includeSchedule && addDraft.scheduleMode == ScheduleMode.Range && !addDraft.rangeValid()) return
+    fun submitAdd(): Boolean {
+        if (addDraft.name.isBlank()) return false
+        if (addDraft.includeSchedule && addDraft.scheduleMode == ScheduleMode.Range && !addDraft.rangeValid()) return false
         addTask(draftToTask(addDraft, System.currentTimeMillis()))
         reloadTasks()
-        showAdd = false
+        return true
     }
 
-    fun submitEdit() {
-        val id = editingId ?: return
-        if (!canSubmit(editDraft)) return
+    fun submitEdit(): Boolean {
+        val id = editingId ?: return false
+        if (!canSubmit(editDraft)) return false
         updateTask(draftToTask(editDraft, id))
         reloadTasks()
-        showEdit = false
-        editingId = null
-    }
-
-    fun openSettings() {
-        showSettings = true
-    }
-
-    fun dismissSettings() {
-        showSettings = false
+        return true
     }
 
     fun updateCategory(category: Category) {
@@ -356,21 +369,12 @@ class TasksViewModel(
         appSettings = getAppSettings()
     }
 
-    fun dismissAdd() {
-        showAdd = false
-    }
-
     private fun workCategory(): Category = categories.find { it.id == Category.Work.id } ?: categories.first()
 
     private fun defaultTaskCategory(): Category? = appSettings.defaultCategoryId?.let { id ->
         categories.find { it.id == id }
     }
 
-    fun dismissCalendar() {
-        showCalendar = false
-        calendarTaskId = null
-        calendarBlockId = null
-    }
 
     private fun resetAddDraft(type: EventType) {
         val today = isoDate(LocalDate.now())
@@ -389,11 +393,6 @@ class TasksViewModel(
         addDraft.eventType = type
         addDraft.eventEndTime = null
         addDraft.reminder = ReminderOption.None
-    }
-
-    fun dismissEdit() {
-        showEdit = false
-        editingId = null
     }
 
     private fun reloadTasks() {
@@ -451,6 +450,7 @@ class TasksViewModel(
                 priority = draft.priority,
                 eventType = EventType.Event,
                 eventEndTime = draft.endTime.takeIf { it.isNotBlank() }?.let(::formatInputTime),
+                reminder = draft.reminder,
             )
         }
         return draftToTask(draft, id).copy(eventType = EventType.Task, eventEndTime = null)

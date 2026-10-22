@@ -3,6 +3,7 @@ package ayodong.emobilize.ui.notifications
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,6 +38,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -46,7 +48,6 @@ import ayodong.emobilize.R
 import ayodong.emobilize.domain.model.Task
 import ayodong.emobilize.ui.theme.AppMetrics
 import ayodong.emobilize.ui.theme.LocalPalette
-import ayodong.emobilize.ui.theme.ShadcnRadius
 import ayodong.emobilize.ui.theme.appStyle
 
 @Composable
@@ -55,9 +56,10 @@ fun ExpandableReminderCard(
     onMarkDone: () -> Unit,
     onReschedule: () -> Unit,
     modifier: Modifier = Modifier,
+    initiallyExpanded: Boolean = false,
 ) {
     val palette = LocalPalette.current
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(initiallyExpanded) }
 
     val rotationAngle by animateFloatAsState(
         targetValue = if (expanded) 180f else 0f,
@@ -83,20 +85,14 @@ fun ExpandableReminderCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 // 1. Logo Emobilize
-                Box(
+                Image(
+                    painter = painterResource(id = R.drawable.ic_emobilize_logo),
+                    contentDescription = "Emobilize Logo",
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(44.dp)
-                        .clip(RoundedCornerShape(ShadcnRadius.md))
-                        .background(palette.scheme.primary),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_emobilize_logo),
-                        contentDescription = "Emobilize Logo",
-                        tint = palette.scheme.primaryForeground,
-                        modifier = Modifier.size(24.dp),
-                    )
-                }
+                        .clip(RoundedCornerShape(12.dp)),
+                )
 
                 Spacer(Modifier.width(12.dp))
 

@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ayodong.emobilize.domain.model.FabAction
 import ayodong.emobilize.domain.model.FilterKey
+import ayodong.emobilize.domain.model.ReminderOption
 import ayodong.emobilize.domain.model.Task
 import ayodong.emobilize.domain.model.TaskStatus
 import ayodong.emobilize.domain.model.deadlineRank
@@ -66,6 +67,7 @@ private val filters = listOf(
 @Composable
 fun TasksScreen(
     viewModel: TasksViewModel,
+    onEditTask: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val palette = LocalPalette.current
@@ -195,7 +197,10 @@ fun TasksScreen(
                     .clip(shape)
                     .background(color.copy(alpha = 0.12f))
                     .border(1.5.dp, color.copy(alpha = 0.40f), shape)
-                    .clickable(onClick = viewModel::confirmAction),
+                    .clickable {
+                        val id = viewModel.selectedTaskId ?: return@clickable
+                        if (delete) viewModel.confirmAction() else onEditTask(id)
+                    },
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
@@ -381,6 +386,16 @@ private fun TaskCard(
                 task.priority?.let { level ->
                     Spacer(Modifier.height(6.dp))
                     RoleBadge(level.name, palette.priorityColor(level))
+                }
+                if (task.reminder != ReminderOption.None) {
+                    Spacer(Modifier.height(if (task.priority == null) 6.dp else 4.dp))
+                    Text(
+                        text = task.reminder.label,
+                        style = appStyle(12.sp, FontWeight.Medium),
+                        color = if (isDone) palette.textSubtle else palette.textMuted,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
                 }
             }
             if (task.range != null || task.deadline.isNotBlank()) {

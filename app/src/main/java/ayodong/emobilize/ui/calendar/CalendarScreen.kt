@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import ayodong.emobilize.domain.model.CalView
 import ayodong.emobilize.domain.model.Category
 import ayodong.emobilize.domain.model.FabAction
+import ayodong.emobilize.domain.model.ReminderOption
 import ayodong.emobilize.domain.model.Task
 import ayodong.emobilize.domain.model.TimeBlock
 import ayodong.emobilize.domain.model.formatBlockTime
@@ -549,6 +550,7 @@ private data class AgendaCard(
     val category: Category?,
     val detail: String?,
     val whenLabel: String?,
+    val reminder: String?,
     val sort: Float,
     val selected: Boolean,
     val onClick: (() -> Unit)?,
@@ -578,6 +580,7 @@ private fun DayAgenda(
                     category = block.category,
                     detail = null,
                     whenLabel = "${formatBlockTime(block.start)} to ${formatBlockTime(block.end)}",
+                    reminder = block.reminder.reminderLabel(),
                     sort = block.start,
                     selected = block.id == selectedBlockId,
                     onClick = { onSelectBlock(block) },
@@ -593,6 +596,7 @@ private fun DayAgenda(
                     category = task.category,
                     detail = task.priority?.name,
                     whenLabel = taskWhenLabel(task),
+                    reminder = task.reminder.reminderLabel(),
                     sort = taskSort(task),
                     selected = picked,
                     onClick = if (choosing) {
@@ -680,6 +684,16 @@ private fun AgendaRow(card: AgendaCard, pending: FabAction?, dimmed: Boolean) {
                         maxLines = 2,
                     )
                 }
+                if (card.reminder != null) {
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        card.reminder,
+                        style = appStyle(12.sp, FontWeight.Medium),
+                        color = palette.textMuted,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
         }
         Box(Modifier.matchParentSize()) {
@@ -692,6 +706,9 @@ private fun AgendaRow(card: AgendaCard, pending: FabAction?, dimmed: Boolean) {
         }
     }
 }
+
+private fun ReminderOption.reminderLabel(): String? =
+    takeIf { it != ReminderOption.None }?.label
 
 private fun taskWhenLabel(task: Task): String? {
     val range = task.range

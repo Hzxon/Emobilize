@@ -1,5 +1,7 @@
 package ayodong.emobilize.ui.theme
 
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Shapes
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import kotlin.math.abs
@@ -115,6 +117,14 @@ object ShadcnRadius {
     val lg = 8.dp
     val xl = 12.dp
 }
+
+val AppShapes = Shapes(
+    extraSmall = RoundedCornerShape(ShadcnRadius.sm),
+    small = RoundedCornerShape(ShadcnRadius.md),
+    medium = RoundedCornerShape(ShadcnRadius.lg),
+    large = RoundedCornerShape(ShadcnRadius.xl),
+    extraLarge = RoundedCornerShape(ShadcnRadius.xl + 4.dp),
+)
 
 /** Tailwind spacing scale used by shadcn layouts. */
 object ShadcnSpace {
