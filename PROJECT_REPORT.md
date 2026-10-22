@@ -134,7 +134,7 @@ Berdasarkan pemetaan komunitas Graphify, basis kode dibagi menjadi domain tanggu
 ### 4. Christian Pratama / Anggota ke-4 (QA & Design System / Component Specialist)
 - **Interactive Notification Reminder Card (`ExpandableReminderCard.kt`)**: Mengembangkan komponen kartu pengingat notifikasi interaktif yang dapat di-expand/collapse dengan informasi deadline, countdown, tombol aksi instan (*Mark as done*, *Reschedule*), dan diferensiasi status warna (kuning untuk pengingat aktif, merah untuk deadline terlewat).
 - **Brand Identity & Vector Assets**: Merancang aset vektor monogram logo "E" modern (`ic_emobilize_logo.xml`) dan mengintegrasikannya ke ikon launcher aplikasi (`ic_launcher_foreground.xml`) serta layar splash (`SplashScreen.kt`).
-- **Design System Audit & Visual QA (`Previews.kt`, `DESIGN.md`)**: Memastikan kepatuhan token desain Shadcn (warna netral, Montserrat typography via `appStyle()`, dan `ShadcnRadius`), serta menyusun kumpulan `@Preview` multi-konfigurasi untuk validasi UI instan di Android Studio.
+- **Design System Audit & Visual QA (`Previews.kt`)**: Memastikan kepatuhan token desain Shadcn (warna netral, Montserrat typography via `appStyle()`, dan `ShadcnRadius`), serta menyusun kumpulan `@Preview` multi-konfigurasi untuk validasi UI instan di Android Studio.
 
 ---
 
