@@ -142,7 +142,7 @@ fun TaskFormSheet(
                     singleLine = false,
                     minLines = 3,
                 )
-                Spacer(Modifier.height(14.dp))
+                Spacer(Modifier.height(24.dp))
                 SectionLabel("Category")
                 FlowRow(
                     modifier = Modifier.padding(top = 8.dp),

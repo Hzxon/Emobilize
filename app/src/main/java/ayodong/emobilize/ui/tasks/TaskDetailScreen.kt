@@ -74,37 +74,48 @@ fun TaskDetailScreen(
                     .background(palette.scheme.popover)
                     .border(1.dp, palette.scheme.border, shape)
                     .clickable(interactionSource = panelSource, indication = null) {}
-                    .verticalScroll(rememberScrollState())
-                    .padding(20.dp),
+                    .padding(horizontal = 20.dp),
             ) {
-                when {
-                    !lookedUp -> Text(
-                        "Loading task",
-                        style = appStyle(16.sp, FontWeight.Medium),
-                        color = palette.text,
-                    )
-                    task == null -> {
-                        Text(
-                            "This task is no longer here.",
-                            style = appStyle(20.sp, FontWeight.SemiBold, lineHeight = 28.sp),
+                Column(
+                    Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                        .padding(top = 20.dp),
+                ) {
+                    when {
+                        !lookedUp -> Text(
+                            "Loading task",
+                            style = appStyle(16.sp, FontWeight.Medium),
                             color = palette.text,
                         )
-                        Spacer(Modifier.height(8.dp))
-                        Text(
-                            "It may have been deleted.",
-                            style = appStyle(14.sp, FontWeight.Medium),
-                            color = palette.textMuted,
+                        task == null -> {
+                            Text(
+                                "This task is no longer here.",
+                                style = appStyle(20.sp, FontWeight.SemiBold, lineHeight = 28.sp),
+                                color = palette.text,
+                            )
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                "It may have been deleted.",
+                                style = appStyle(14.sp, FontWeight.Medium),
+                                color = palette.textMuted,
+                            )
+                        }
+                        else -> TaskDetailBody(
+                            task = task,
+                            done = task.id in viewModel.done,
+                            inProgress = task.id in viewModel.inProgress,
                         )
-                        Spacer(Modifier.height(20.dp))
+                    }
+                }
+                if (lookedUp) {
+                    Column(Modifier.padding(top = 16.dp, bottom = 20.dp)) {
+                        if (task != null) {
+                            DetailButton(label = "Edit task", filled = true, onClick = onEdit)
+                            Spacer(Modifier.height(8.dp))
+                        }
                         DetailButton(label = "Close", filled = false, onClick = onBack)
                     }
-                    else -> TaskDetailBody(
-                        task = task,
-                        done = task.id in viewModel.done,
-                        inProgress = task.id in viewModel.inProgress,
-                        onBack = onBack,
-                        onEdit = onEdit,
-                    )
                 }
             }
         }
@@ -116,8 +127,6 @@ private fun TaskDetailBody(
     task: Task,
     done: Boolean,
     inProgress: Boolean,
-    onBack: () -> Unit,
-    onEdit: () -> Unit,
 ) {
     val palette = LocalPalette.current
     val status = when {
@@ -154,10 +163,6 @@ private fun TaskDetailBody(
     DetailRow("Schedule", schedule ?: "None")
     DetailRow("Reminder", if (task.reminder == ReminderOption.None) "None" else task.reminder.label)
     DetailRow("Estimate", task.estimateMinutes?.let { "$it minutes" } ?: "None")
-    Spacer(Modifier.height(20.dp))
-    DetailButton(label = "Edit task", filled = true, onClick = onEdit)
-    Spacer(Modifier.height(8.dp))
-    DetailButton(label = "Close", filled = false, onClick = onBack)
 }
 
 @Composable

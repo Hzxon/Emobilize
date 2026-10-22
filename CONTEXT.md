@@ -107,7 +107,7 @@ Filter All, Today, Tomorrow, Later. Kartu menampilkan garis kategori, badge prio
 
 ### Add di tab Tasks
 
-`AddTaskCard`. Judul langsung fokus dan keyboard terbuka. Tiga ikon opsional: Category, Priority, Schedule. Schedule berisi Deadline atau Time range. Ketuk pilihan yang sama untuk menghapusnya. Close, ketuk luar, atau back menyimpan jika judul terisi. Judul kosong hanya menutup. Time range tidak valid menahan kartu terbuka.
+`AddTaskCard`. Judul langsung fokus dan keyboard terbuka. Tiga ikon opsional: Category, Priority, Schedule. Schedule berisi Deadline atau Time range. Ketuk pilihan yang sama untuk menghapusnya. Tombol Add task menyimpan jika judul terisi. Close, ketuk luar, atau back menutup tanpa menyimpan. Time range tidak valid membuat Add task membuka panel Schedule dan tidak menyimpan.
 
 ### Edit tugas
 

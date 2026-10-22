@@ -154,6 +154,7 @@ fun AddTaskCard(
                     minLines = 3,
                     modifier = Modifier.padding(end = 8.dp),
                 )
+                Spacer(Modifier.height(16.dp))
                 when (option) {
                     AddOption.Category -> CategoryOptions(draft, categories)
                     AddOption.Priority -> PriorityOptions(draft)

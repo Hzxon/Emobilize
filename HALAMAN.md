@@ -7,9 +7,8 @@ Teks antarmuka yang tampil ke pengguna berbahasa Inggris. Nama di bawah mengikut
 ## Alur yang benar-benar terbuka
 
 ```
-Splash
-  -> kerangka aplikasi
-       Tasks          (tab kiri)
+Kerangka aplikasi
+  Tasks          (tab kiri)
        Calendar       (tab kanan)
        Settings       (ikon gear)
        Add task       (radial Add di tab Tasks)
@@ -24,7 +23,7 @@ Splash
 
 File: `ui/EmobilizeApp.kt`, composable `EmobilizeApp`.
 
-Setelah splash selesai, layar punya tiga lapis yang selalu ada:
+Layar punya tiga lapis yang selalu ada:
 
 1. Bar atas: ruang kosong di kiri, tombol gear bulat 44 dp di kanan. Konten deskripsi: `Settings`. Mengetuknya menutup radial menu dan membuka Settings.
 2. Isi tab: `TasksScreen` atau `CalendarScreen`.
@@ -42,14 +41,6 @@ Tombol back sistem, dari yang paling atas:
 4. Tutup sheet edit tugas.
 5. Tutup radial menu.
 6. Batalkan pilihan blok dan aksi tertunda (Edit, Delete, Update).
-
-## Splash
-
-File: `ui/splash/SplashScreen.kt`.
-
-Layar penuh warna `surface`. Di tengah: kotak logo 72 dp, sudut 20 dp, isi ikon `ic_emobilize_logo` 42 dp, lalu judul `Emobilize` (30 sp, bold).
-
-Muncul dengan fade 420 ms, lalu menunggu 900 ms, lalu memanggil `onFinished`. Ketuk di mana saja pada layar juga langsung selesai. Tidak ada tombol lewati yang tertulis.
 
 ## Tasks
 
@@ -126,11 +117,11 @@ Ketuk ikon yang sama untuk menutup panel pilihan itu.
   - Deadline: tanggal dan jam. Teks bantuan: `Date and time are optional`.
   - Time range: baris `FROM` dan `TO`. Jika tidak valid: `End time must be after start time`.
 
-Tombol `Close`, ketuk di luar kartu, atau back:
+Tombol `Add task` ada di bawah baris ikon. Tinggi 44 dp, sudut `lg`, isi `primary`, teks bold. Tombol mati (latar `muted`) selama judul kosong.
 
-- Judul kosong: tutup tanpa menyimpan.
-- Time range aktif tetapi tidak valid: kartu tetap terbuka dan panel Schedule dibuka.
-- Selain itu: simpan tugas baru, lalu tutup.
+- Judul terisi dan jadwal valid: `Add task` menyimpan, lalu menutup.
+- Time range aktif tetapi tidak valid: `Add task` membuka panel Schedule dan tidak menyimpan.
+- `Close`, ketuk di luar kartu, atau back menutup tanpa menyimpan.
 
 Kategori dan prioritas awal mengikuti Settings (`Default category`, `Default priority`). Keduanya boleh kosong.
 

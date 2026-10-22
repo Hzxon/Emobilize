@@ -1,6 +1,10 @@
 package ayodong.emobilize.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -10,6 +14,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -26,6 +31,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
@@ -259,10 +266,11 @@ private fun CalendarFormDestination(
 @Composable
 private fun MainShell(
     navController: NavHostController,
-    tab: NavTab,
+    initialTab: NavTab,
     viewModel: TasksViewModel,
 ) {
     var menuOpen by rememberSaveable { mutableStateOf(false) }
+    var tab by rememberSaveable { mutableStateOf(initialTab) }
     val colors = LocalPalette.current
     val overlayOpen = navController.currentDestination?.route != AppRoute.Tasks &&
         navController.currentDestination?.route != AppRoute.Calendar
@@ -276,6 +284,15 @@ private fun MainShell(
                 viewModel.cancelPending()
             }
         }
+    }
+    BackHandler(
+        enabled = !overlayOpen &&
+            tab == NavTab.Calendar &&
+            !menuOpen &&
+            viewModel.pendingAction == null &&
+            viewModel.selectedBlockId == null,
+    ) {
+        tab = NavTab.Tasks
     }
     Box(
         Modifier
@@ -314,7 +331,8 @@ private fun MainShell(
                     .weight(1f)
                     .fillMaxSize(),
             ) {
-                if (tab == NavTab.Tasks) {
+                val onTasks = tab == NavTab.Tasks
+                TabPage(visible = onTasks, hiddenShift = (-16).dp) {
                     TasksScreen(
                         viewModel = viewModel,
                         onOpenTask = { taskId ->
@@ -324,7 +342,8 @@ private fun MainShell(
                             navController.navigate(AppRoute.editTask(taskId))
                         },
                     )
-                } else {
+                }
+                TabPage(visible = !onTasks, hiddenShift = 16.dp) {
                     CalendarScreen(
                         tasks = viewModel.tasks,
                         blocks = viewModel.blocks,
@@ -383,7 +402,7 @@ private fun MainShell(
                     if (next == NavTab.Calendar && viewModel.pendingAction == FabAction.Update) {
                         viewModel.cancelPending()
                     }
-                    navController.openTab(if (next == NavTab.Calendar) AppRoute.Calendar else AppRoute.Tasks)
+                    tab = next
                 },
             )
         }
@@ -416,15 +435,29 @@ private fun NavHostController.openTasks() {
     }
 }
 
-private fun NavHostController.openTab(route: String) {
-    if (currentDestination?.route == route) return
-    if (route == AppRoute.Tasks) {
-        popBackStack(AppRoute.Tasks, inclusive = false)
-        return
-    }
-    navigate(route) {
-        popUpTo(AppRoute.Tasks) { saveState = true }
-        launchSingleTop = true
-        restoreState = true
+@Composable
+private fun TabPage(
+    visible: Boolean,
+    hiddenShift: Dp,
+    content: @Composable () -> Unit,
+) {
+    val alpha by animateFloatAsState(
+        targetValue = if (visible) 1f else 0f,
+        animationSpec = tween(durationMillis = 240, easing = FastOutSlowInEasing),
+        label = "tabAlpha",
+    )
+    val shift by animateDpAsState(
+        targetValue = if (visible) 0.dp else hiddenShift,
+        animationSpec = tween(durationMillis = 240, easing = FastOutSlowInEasing),
+        label = "tabShift",
+    )
+    Box(
+        Modifier
+            .fillMaxSize()
+            .zIndex(if (visible) 1f else 0f)
+            .offset(x = shift)
+            .graphicsLayer { this.alpha = alpha },
+    ) {
+        content()
     }
 }
