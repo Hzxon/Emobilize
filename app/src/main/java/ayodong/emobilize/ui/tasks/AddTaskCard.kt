@@ -54,6 +54,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -92,7 +93,7 @@ fun AddTaskCard(
 
     fun confirm() {
         showErrors = true
-        val blocked = draft.titleError() != null || draft.descriptionError() != null
+        val blocked = draft.titleError() != null || draft.descriptionError() != null || draft.minutesError() != null
         val rangeBlocked = draft.includeSchedule &&
             draft.scheduleMode == ScheduleMode.Range &&
             !draft.rangeValid()
@@ -152,6 +153,15 @@ fun AddTaskCard(
                     keyboardType = KeyboardType.Text,
                     singleLine = false,
                     minLines = 3,
+                    modifier = Modifier.padding(end = 8.dp),
+                )
+                FormField(
+                    value = draft.minutes,
+                    onValueChange = { draft.minutes = it },
+                    label = "Estimate (minutes)",
+                    error = draft.minutesError(),
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done,
                     modifier = Modifier.padding(end = 8.dp),
                 )
                 Spacer(Modifier.height(16.dp))

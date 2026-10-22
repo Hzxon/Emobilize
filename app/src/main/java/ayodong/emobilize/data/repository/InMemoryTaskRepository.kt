@@ -9,7 +9,7 @@ import ayodong.emobilize.domain.repository.TaskRepository
 class InMemoryTaskRepository : TaskRepository {
     private var tasks = sampleTasks()
     private var doneIds = setOf(1L)
-    private var progressIds = setOf<Long>()
+    private var progressIds = setOf(4L, 7L)
 
     override fun board(): TaskBoard = TaskBoard(tasks, doneIds, progressIds)
 

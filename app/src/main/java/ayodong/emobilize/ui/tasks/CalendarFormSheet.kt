@@ -202,6 +202,8 @@ fun CalendarFormSheet(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun EventFields(draft: TaskDraft, categories: List<Category>) {
+    val palette = LocalPalette.current
+    val timeError = draft.eventTimeError()
     SectionLabel("Date & Time")
     Row(
         modifier = Modifier.padding(top = 10.dp),
@@ -212,6 +214,7 @@ private fun EventFields(draft: TaskDraft, categories: List<Category>) {
             value = draft.startTime,
             onValue = { draft.startTime = it },
             allowClear = true,
+            valid = timeError == null,
             placeholder = "Start",
             modifier = Modifier.weight(1f),
         )
@@ -219,8 +222,17 @@ private fun EventFields(draft: TaskDraft, categories: List<Category>) {
             value = draft.endTime,
             onValue = { draft.endTime = it },
             allowClear = true,
+            valid = timeError == null,
             placeholder = "End",
             modifier = Modifier.weight(1f),
+        )
+    }
+    if (timeError != null) {
+        Text(
+            timeError,
+            modifier = Modifier.padding(top = 5.dp),
+            style = appStyle(10.sp),
+            color = palette.danger,
         )
     }
     Spacer(Modifier.height(18.dp))
