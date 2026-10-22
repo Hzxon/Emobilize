@@ -1,8 +1,8 @@
 # Emobilize — Mobile Task & Schedule Management
 ## Comprehensive Project Report & Architecture Analysis
 
-> **Sumber Analisis**: Laporan ini disusun berdasarkan analisis arsitektur basis kode dan graf pengetahuan terverifikasi **Graphify** (`graphify-out/graph.json` dan `graphify-out/GRAPH_REPORT.md`).  
-> **Status Basis Kode**: 1041+ node, 2400+ relasi edge, 45 komunitas arsitektur, 0 siklus impor (*zero circular dependencies*).
+> **Sumber Analisis**: Laporan ini disusun berdasarkan analisis arsitektur basis kode dan graf pengetahuan terverifikasi **Graphify** (`graphify-out/graph.json` dan `graphify-out/GRAPH_REPORT.md`, snapshot commit `192a0f82`).  
+> **Status Basis Kode**: 1001 node, 2680 edge, 55 komunitas arsitektur, 0 siklus impor (*zero circular dependencies*). Deskripsi fitur di bawah mengikuti cabang `tasks-radial-menu` sampai commit `93d523a`.
 
 ---
 
@@ -14,22 +14,24 @@
 ┌────────────────────────────────────────────────────────────────────────┐
 │                        PRESENTATION / UI LAYER                         │
 │  EmobilizeApp (NavHost / AppRoute) • RadialDock • RadialMenu           │
-│  TasksScreen • CalendarScreen • SettingsScreen • TaskDetailScreen      │
-│  ExpandableReminderCard (Push Notif) • AddTaskCard • TaskFormSheet     │
+│  SplashScreen • AuthScreen • TasksScreen • TaskDetailScreen            │
+│  CalendarScreen • SettingsScreen • ReminderScreen                      │
+│  ExpandableReminderCard • AddTaskCard • TaskFormSheet                  │
+│  TasksViewModel • AuthViewModel                                        │
 └───────────────────────────────────┬────────────────────────────────────┘
-                                    │ consumes via StateFlow / State
+                                    │ consumes via Compose state
 ┌───────────────────────────────────▼────────────────────────────────────┐
 │                             DOMAIN LAYER                               │
 │  Models: Task, Calendar, TimeBlock, Category, Priority, ReminderOption │
-│  UseCases: TaskUseCases.kt (Add, Update, Delete, SetStatus)            │
-│            ScheduleUseCases.kt (PlaceBlock, DeleteBlock, etc.)         │
-│            Category & Settings UseCases                                │
+│          AppSettings (termasuk notificationsEnabled)                   │
+│  UseCases: Task, Schedule, Auth, Category & Settings                   │
 └───────────────────────────────────▲────────────────────────────────────┘
                                     │ implemented by
 ┌───────────────────────────────────┴────────────────────────────────────┐
 │                           DATA & DI LAYER                              │
 │  AppContainer (Composition Root)                                       │
-│  InMemoryTaskRepository • InMemoryScheduleRepository • SampleData     │
+│  InMemoryTaskRepository • InMemoryScheduleRepository • SampleData      │
+│  PreferencesAppSettingsRepository (SharedPreferences)                  │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -42,18 +44,24 @@
    - Filter cepat: *All*, *Today*, *Tomorrow*, *Later*.
    - Tingkat prioritas (*High*, *Medium*, *Low*) dan penetapan rentang jadwal (*DateRange*).
    - Layar detail interaktif dengan *segmented control* status, ringkasan deadline, dan pemilihan pengingat.
-3. **Calendar & Schedule Blocking (`CalendarScreen`, `DayAgenda`)**:
-   - Kalender dinamis mingguan/bulanan dengan pemblokiran waktu kerja (*time blocking*).
-   - Tampilan agenda harian yang sinkron dengan deadline tugas dan acara harian.
-4. **Rich Push Notification & Reminder System (`ExpandableReminderCard`)**:
-   - Komponen kartu notifikasi interaktif yang dapat diperluas (*expand/collapse*).
-   - Memuat logo monogram resmi "E", nama aplikasi, nama tugas, dan indikator batas waktu.
+3. **Calendar & Schedule Blocking (`CalendarScreen`)**:
+   - Header hanya menawarkan **Month** dan **Week**. Nilai tersimpan `CalView.Day` ditampilkan sebagai Week.
+   - Panah bulan dan tahun di atas menggeser `YearMonth` sekaligus tanggal aktif, sehingga grid dan agenda di bawah ikut berpindah.
+   - Tampilan agenda harian tetap sinkron dengan deadline tugas dan blok waktu. Acara (*Event*) dibuka lewat form kalender, bukan form tugas.
+4. **In-app Push Notification UI (`ReminderScreen`, `ExpandableReminderCard`)**:
+   - Lonceng di header membuka rute `reminders`. Judul layar adalah **"Push Notification UI"**.
+   - Kartu dapat diperluas (*expand/collapse*), memuat logo monogram "E", nama tugas, dan label jatuh tempo. Tugas selesai disembunyikan.
    - **Skema Warna Status Waktu**:
-     - 🟡 **Kuning / Amber** (`palette.prioMedium`): Pengingat aktif beberapa menit/jam sebelum deadline (`"Due in 30 mins • 04:00 PM"`).
-     - 🔴 **Merah** (`palette.prioHigh`): Batas waktu tercapai atau terlewat (`"Deadline passed • 02:00 PM"`).
-   - Outline kartu bersih dan netral (`palette.scheme.border`), bebas dari outline warna kuning/ungu yang mengganggu.
-   - Aksi instan langsung di kartu: *Mark as done* dan *Reschedule*.
-5. **Standardized Design System (Shadcn + Montserrat)**:
+     - 🟡 **Kuning / Amber** (`palette.prioMedium`): pengingat masih berjalan (`"Due in 30 mins • 04:00 PM"`).
+     - 🔴 **Merah** (`palette.prioHigh`): batas waktu terlewat (`"Deadline passed • 02:00 PM"`).
+   - Aksi di kartu: *Mark as done* mengubah status lokal menjadi Done; *Reschedule* membuka editor tugas atau kalender.
+   - Switch **Push notifications** ada di Settings, bagian NOTIFICATIONS, dan tersimpan di `AppSettings.notificationsEnabled` lewat SharedPreferences. Perubahan berlaku setelah **Save Changes**. Saat mati, layar pengingat menampilkan "Notifications are off. Turn them on to preview reminders."
+   - Ini mockup di dalam aplikasi. Tidak ada `NotificationManager`, saluran notifikasi, alarm, FCM, atau backend.
+5. **Form, keyboard, dan validasi**:
+   - Auth memakai `KeyboardType.Email` dan `KeyboardType.Password`, dengan cek format email dan field wajib.
+   - Form tugas punya **Estimate (minutes)** dengan `KeyboardType.Number`. Kosong diizinkan; selain angka ditolak; nilai di luar 1–1440 ditolak dan submit diblokir.
+   - Event menolak penyimpanan bila waktu selesai tidak setelah waktu mulai.
+6. **Standardized Design System (Shadcn + Montserrat)**:
    - Token palet `NeutralLight` dan `NeutralDark` dari registry `@shadcn/theme-neutral`.
    - Tipografi terstandarisasi menggunakan font **Montserrat** melalui fungsi `appStyle()`.
    - Kurva bentuk terukur mengikuti rasio `ShadcnRadius` (sm: 4dp, md: 6dp, lg: 8dp, xl: 12dp).
@@ -90,8 +98,9 @@ Berdasarkan pemetaan komunitas Graphify, basis kode dibagi menjadi domain tanggu
 ### 2. Sistem Kerja Kelompok (*Working System*)
 - **Branching Strategy**: Menggunakan model *feature branch* terpusat pada cabang `tasks-radial-menu` yang terhubung ke repositori GitHub upstream.
 - **Single Source of Truth (SSOT)**:
-  - Seluruh mutasi state ditangani oleh `TasksViewModel` dan disuntikkan secara terpusat melalui `AppContainer`.
-  - Tidak ada Composable anak yang menyimpan state data lokal tak tersinkronisasi.
+  - Mutasi tugas dan jadwal lewat `TasksViewModel`; akun lokal lewat `AuthViewModel`. Keduanya disuntikkan dari `AppContainer`.
+  - Settings memakai draf di layar dan baru menulis `AppSettings` saat **Save Changes**, termasuk sakelar notifikasi.
+  - Tugas dan blok waktu hidup di memori proses. Preferensi aplikasi hidup di SharedPreferences. Data sampel hilang saat proses ditutup.
 - **Audit Kode & Knowledge Graph (Graphify)**:
   - Pemantauan berkala menggunakan Graphify untuk menjaga kohesi modul, memastikan tidak ada siklus impor (*zero import cycles*), dan memantau konektivitas *God Nodes*.
 - **Quality Assurance & Verification**:
@@ -107,9 +116,12 @@ Berdasarkan pemetaan komunitas Graphify, basis kode dibagi menjadi domain tanggu
 - **Core Task Management (`TasksScreen.kt` & `TasksViewModel.kt`)**: Membangun antarmuka daftar tugas dengan filter waktu (*Today, Tomorrow, Later*), pengelompokan status (*To-do, Progress, Done*), dan manajemen seleksi tugas.
 - **Physics-based Radial Menu (`RadialMenu.kt`, `RadialDock.kt`)**: Mengimplementasikan menu aksi radial melingkar dengan animasi pegas dinamis (*spring physics*), transisi rotasi ikon, dan deteksi gestur sentuh.
 - **Task Detail & Form Interfaces (`TaskDetailScreen.kt`, `AddTaskCard.kt`)**: Merancang form pembuatan tugas cepat dan layar detail tugas terstruktur dengan kontrol segmentasi status dan deadline countdown.
+- **Reminder route (`ReminderScreen.kt`)**: Menampilkan kartu pengingat dari lonceng header, memakai tugas lokal saja, dengan judul **Push Notification UI**.
+- **Calendar Month/Week (`CalendarScreen.kt`)**: Menghapus pilihan Day dari header dan mengikat panah bulan/tahun ke grid serta tanggal aktif.
+- **Settings switch**: Memindahkan sakelar push notification dari layar pengingat ke Settings dan mengikatnya ke `appSettings.notificationsEnabled`.
 
 ### 2. Stevent Richardo (Domain & Settings Engineer)
-- **Settings Screen & Category Editor (`SettingsScreen.kt`)**: Membangun antarmuka pengaturan preferensi aplikasi (opsi tema System/Light/Dark, awal hari kalender) serta editor palet warna dan nama kategori (*Study, Work, Health, Personal, University*).
+- **Settings Screen & Category Editor (`SettingsScreen.kt`)**: Membangun antarmuka pengaturan preferensi aplikasi (opsi tema System/Light/Dark, awal hari kalender Week/Month) serta editor palet warna dan nama kategori (*Study, Work, Health, Personal, University*). Bagian NOTIFICATIONS sekarang menyimpan sakelar push notification bersama preferensi lain.
 - **Domain Use Cases (`TaskUseCases.kt`, `ScheduleUseCases.kt`)**: Membangun lapisan use case untuk operasi data terisolasi (`GetTasksUseCase`, `AddTaskUseCase`, `UpdateTaskUseCase`, `DeleteTaskUseCase`, `SetTaskStatusUseCase`, `PlaceTimeBlockUseCase`, `DeleteTimeBlockUseCase`).
 - **Schedule Calculation & Validation**: Mengembangkan algoritma kalkulasi rank deadline (`deadlineRank()`), logika validasi rentang waktu (`rangeIsValid()`), dan deteksi tugas terlewat (`isOverdue()`).
 
@@ -117,6 +129,7 @@ Berdasarkan pemetaan komunitas Graphify, basis kode dibagi menjadi domain tanggu
 - **Git Repository & Branch Management**: Menyiapkan dan merapikan repositori GitHub (`Hzxon/Emobilize`), membersihkan redundansi konfigurasi `.gitignore`, dan menjaga kebersihan riwayat commit tim.
 - **Build Environment & Gradle Engineering**: Mengonfigurasi modul Gradle Android (`compileSdk 37`, `minSdk 28`, Java 17), memastikan kompatibilitas plugin Kotlin, dan mengonfigurasi skrip automasi pengujian build (`ci.yml`).
 - **In-Memory Data Repositories (`InMemoryTaskRepository.kt`, `InMemoryScheduleRepository.kt`)**: Mengimplementasikan abstraksi repositori thread-safe berbasis in-memory untuk menyimpan data tugas dan jadwal agenda, lengkap dengan data *bootstrap* (`SampleData.kt`).
+- **Midterm sample and form rules**: Menambah field estimasi menit, data sampel yang lebih lengkap, lalu menghapus `ReminderOption` bawaan agar kartu tugas dan blok kalender tidak menampilkan label pengingat saat pertama dibuka. Tap pada tab yang tersembunyi juga dihentikan.
 
 ### 4. Christian Pratama / Anggota ke-4 (QA & Design System / Component Specialist)
 - **Interactive Notification Reminder Card (`ExpandableReminderCard.kt`)**: Mengembangkan komponen kartu pengingat notifikasi interaktif yang dapat di-expand/collapse dengan informasi deadline, countdown, tombol aksi instan (*Mark as done*, *Reschedule*), dan diferensiasi status warna (kuning untuk pengingat aktif, merah untuk deadline terlewat).
@@ -130,16 +143,18 @@ Berdasarkan pemetaan komunitas Graphify, basis kode dibagi menjadi domain tanggu
 Berdasarkan ekstraksi AST dan topologi graf:
 
 1. **Top God Nodes (Abstraksi Paling Terhubung)**:
-   - `TasksViewModel` (60 relasi edge) — Pusat orkestrasi data & state UI.
-   - `appStyle()` (57 relasi edge) — Fondasi tipografi konsisten Montserrat.
-   - `TimeBlock` (27 relasi edge) — Entitas inti jadwal kalender.
-   - `AppContainer` (25 relasi edge) — Pusat injeksi dependensi manual.
-   - `FabAction` (25 relasi edge) — Enum pemicu aksi menu radial.
+   - `appStyle()` (66 edge) — Fondasi tipografi Montserrat.
+   - `TasksViewModel` (63 edge) — Pusat orkestrasi data dan state tugas.
+   - `TimeBlock` (27 edge) — Entitas inti jadwal kalender.
+   - `AppContainer` (26 edge) — Pusat injeksi dependensi manual.
+   - `FabAction` (26 edge) — Enum pemicu aksi menu radial.
+   - `AppSettings` (24 edge) — Preferensi yang ikut menyimpan sakelar notifikasi.
 2. **Kesehatan Arsitektur (Architectural Health)**:
-   - **Import Cycles**: 0 (Bebas dari dependensi melingkar).
-   - **Separation Level**: Sangat tinggi, modul UI tidak pernah mengakses repositori data secara langsung, melainkan melalui use cases dan ViewModel.
+   - **Import Cycles**: 0 (bebas dari dependensi melingkar).
+   - **Separation Level**: Modul UI tidak mengakses repositori secara langsung. Tugas lewat use case dan `TasksViewModel`; akun lewat `AuthViewModel`; preferensi lewat repository SharedPreferences.
+   - Snapshot graf ini dibuat dari commit `192a0f82`. Hyperedge lama yang menandai Auth dan kartu pengingat sebagai "belum dipasang" sudah kedaluwarsa: keduanya punya rute di `NavHost`.
 3. **Komunitas Utama**:
-   - `App navigation shell`, `Task domain model`, `Design system tokens`, `AddTaskCard.kt`, `Radial menu drawing`, `Bottom dock`, `SettingsScreen.kt`, `In-memory task store`.
+   - `EmobilizeApp`, `TasksViewModel.kt`, `Task.kt`, `Design system tokens`, `Add task card`, `Radial dock menu`, `Settings and theme`, `In-memory task store`, `App settings prefs`, `ExpandableReminderCard`, `Auth account store`.
 
 ---
-*Dokumen ini diperbarui secara otomatis menggunakan analisis Graphify pada 22 Oktober 2026.*
+*Dokumen ini diperbarui pada 22 Oktober 2026 dari snapshot Graphify commit `192a0f82` dan kondisi cabang `tasks-radial-menu` pada commit `93d523a`.*
