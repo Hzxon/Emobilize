@@ -297,6 +297,11 @@ class TasksViewModel(
         selectedTaskId = null
     }
 
+    fun markDone(id: Long) {
+        setTaskStatus(id, TaskStatus.Done)
+        reloadTasks()
+    }
+
     fun canSubmit(draft: TaskDraft): Boolean {
         if (draft.titleError() != null) return false
         if (!draft.includeSchedule) return true

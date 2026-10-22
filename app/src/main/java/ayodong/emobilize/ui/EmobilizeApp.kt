@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -53,6 +54,7 @@ import ayodong.emobilize.ui.calendar.CalendarScreen
 import ayodong.emobilize.ui.dock.BottomDock
 import ayodong.emobilize.ui.dock.RadialMenu
 import ayodong.emobilize.ui.navigation.AppRoute
+import ayodong.emobilize.ui.notifications.ReminderScreen
 import ayodong.emobilize.ui.settings.SettingsScreen
 import ayodong.emobilize.ui.splash.SplashScreen
 import ayodong.emobilize.ui.tasks.AddTaskCard
@@ -126,6 +128,18 @@ fun EmobilizeApp(viewModel: TasksViewModel, authViewModel: AuthViewModel) {
                     taskId = taskId,
                     onBack = { navController.leave() },
                     onEdit = { navController.navigate(AppRoute.editTask(taskId)) },
+                )
+            }
+            dialog(AppRoute.Reminders, dialogProperties = overlayDialog) {
+                ReminderScreen(
+                    tasks = viewModel.tasks,
+                    doneIds = viewModel.done,
+                    onBack = { navController.leave() },
+                    onMarkDone = viewModel::markDone,
+                    onReschedule = { taskId ->
+                        navController.leave()
+                        navController.navigate(AppRoute.editTask(taskId))
+                    },
                 )
             }
             dialog(AppRoute.Settings, dialogProperties = overlayDialog) {
@@ -308,6 +322,23 @@ private fun MainShell(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Spacer(Modifier.weight(1f))
+                Box(
+                    Modifier
+                        .size(44.dp)
+                        .clip(CircleShape)
+                        .clickable {
+                            menuOpen = false
+                            navController.navigate(AppRoute.Reminders) { launchSingleTop = true }
+                        },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Notifications,
+                        contentDescription = "Reminders",
+                        tint = colors.text,
+                        modifier = Modifier.size(22.dp),
+                    )
+                }
                 Box(
                     Modifier
                         .size(44.dp)

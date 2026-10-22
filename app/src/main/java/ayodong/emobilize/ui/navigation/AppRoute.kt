@@ -7,6 +7,7 @@ object AppRoute {
     const val TaskDetail = "detail/{taskId}"
     const val Calendar = "calendar"
     const val Settings = "settings"
+    const val Reminders = "reminders"
     const val AddTask = "add"
     const val EditTask = "task/{taskId}"
     const val CalendarAdd = "calendar/add"
