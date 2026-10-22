@@ -25,7 +25,7 @@ class LoginUseCase(private val auth: AuthRepository) {
     }
 }
 
-private fun isEmail(value: String): Boolean {
+internal fun isEmail(value: String): Boolean {
     val at = value.indexOf('@')
     val dot = value.lastIndexOf('.')
     return at > 0 && dot > at + 1 && dot < value.lastIndex

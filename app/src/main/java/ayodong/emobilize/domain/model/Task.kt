@@ -78,6 +78,8 @@ data class Task(
     val eventType: EventType = EventType.Task,
     val eventEndTime: String? = null,
     val reminder: ReminderOption = ReminderOption.None,
+    val description: String = "",
+    val estimateMinutes: Int? = null,
 )
 
 private val monthDay: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d", Locale.US)

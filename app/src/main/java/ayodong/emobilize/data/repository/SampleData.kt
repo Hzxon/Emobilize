@@ -13,9 +13,9 @@ import java.time.LocalDate
 internal fun sampleTasks(today: LocalDate = LocalDate.now()): List<Task> {
     val later = isoDate(today.plusDays(2))
     return listOf(
-        Task(1, "Read research paper", Category.Study, "Today", "10:30 AM", FilterKey.Today, Priority.High),
-        Task(2, "Finish backend API", Category.Work, "Today", "4:00 PM", FilterKey.Today, Priority.High),
-        Task(3, "Gym", Category.Health, "Tomorrow", "6:00 PM", FilterKey.Tomorrow, Priority.Medium),
+        Task(1, "Read research paper", Category.Study, "Today", "10:30 AM", FilterKey.Today, Priority.High, description = "Read the method section and write three notes.", estimateMinutes = 90),
+        Task(2, "Finish backend API", Category.Work, "Today", "4:00 PM", FilterKey.Today, Priority.High, description = "Ship the task list endpoint and check the error cases."),
+        Task(3, "Gym", Category.Health, "Tomorrow", "6:00 PM", FilterKey.Tomorrow, Priority.Medium, description = "Strength session, then a short stretch."),
         Task(
             4,
             "Design portfolio draft",
@@ -24,8 +24,9 @@ internal fun sampleTasks(today: LocalDate = LocalDate.now()): List<Task> {
             "11:00 AM",
             FilterKey.Later,
             Priority.Medium,
+            description = "Lay out the first three case studies.",
         ),
-        Task(5, "Buy groceries", Category.Work, "Today", null, FilterKey.Today, Priority.Low),
+        Task(5, "Buy groceries", Category.Work, "Today", null, FilterKey.Today, Priority.Low, description = "Rice, eggs, and fruit for the week."),
     )
 }
 

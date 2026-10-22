@@ -3,7 +3,6 @@ package ayodong.emobilize.ui.notifications
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,20 +32,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ayodong.emobilize.R
 import ayodong.emobilize.domain.model.Task
 import ayodong.emobilize.ui.theme.AppMetrics
+import ayodong.emobilize.ui.theme.EmobilizeLogo
 import ayodong.emobilize.ui.theme.LocalPalette
 import ayodong.emobilize.ui.theme.appStyle
 
@@ -57,6 +53,8 @@ fun ExpandableReminderCard(
     onReschedule: () -> Unit,
     modifier: Modifier = Modifier,
     initiallyExpanded: Boolean = false,
+    isOverdue: Boolean = false,
+    dueLabel: String? = null,
 ) {
     val palette = LocalPalette.current
     var expanded by remember { mutableStateOf(initiallyExpanded) }
@@ -66,12 +64,17 @@ fun ExpandableReminderCard(
         label = "chevronRotation",
     )
 
-    val accentColor = palette.scheme.chart4
+    val statusColor = if (isOverdue) palette.prioHigh else palette.prioMedium
+    val displayText = dueLabel ?: if (isOverdue) {
+        "Deadline passed • ${task.time ?: task.deadline}"
+    } else {
+        "Due in 30 mins • ${task.time ?: "Scheduled time"}"
+    }
 
     Card(
         shape = RoundedCornerShape(AppMetrics.cardRadius),
         colors = CardDefaults.cardColors(containerColor = palette.card),
-        border = BorderStroke(1.dp, accentColor.copy(alpha = 0.5f)),
+        border = BorderStroke(1.dp, palette.scheme.border),
         modifier = modifier
             .fillMaxWidth()
             .animateContentSize()
@@ -85,14 +88,7 @@ fun ExpandableReminderCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 // 1. Logo Emobilize
-                Image(
-                    painter = painterResource(id = R.drawable.ic_emobilize_logo),
-                    contentDescription = "Emobilize Logo",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(44.dp)
-                        .clip(RoundedCornerShape(12.dp)),
-                )
+                EmobilizeLogo(Modifier.size(44.dp))
 
                 Spacer(Modifier.width(12.dp))
 
@@ -124,21 +120,21 @@ fun ExpandableReminderCard(
                             val radius = size.minDimension / 2f - stroke / 2f
                             val center = Offset(size.width / 2f, size.height / 2f)
                             drawCircle(
-                                color = accentColor,
+                                color = statusColor,
                                 radius = radius,
                                 center = center,
                                 style = Stroke(width = stroke),
                             )
                             // Clock hands (hour & minute)
                             drawLine(
-                                color = accentColor,
+                                color = statusColor,
                                 start = center,
                                 end = Offset(center.x, center.y - radius * 0.55f),
                                 strokeWidth = stroke,
                                 cap = StrokeCap.Round,
                             )
                             drawLine(
-                                color = accentColor,
+                                color = statusColor,
                                 start = center,
                                 end = Offset(center.x + radius * 0.45f, center.y),
                                 strokeWidth = stroke,
@@ -147,9 +143,9 @@ fun ExpandableReminderCard(
                         }
                         Spacer(Modifier.width(5.dp))
                         Text(
-                            text = "Due in 30 mins • ${task.time ?: "Scheduled time"}",
-                            style = appStyle(12.sp, FontWeight.Normal),
-                            color = palette.textMuted,
+                            text = displayText,
+                            style = appStyle(12.sp, FontWeight.Medium),
+                            color = statusColor,
                             lineHeight = 14.sp,
                         )
                     }

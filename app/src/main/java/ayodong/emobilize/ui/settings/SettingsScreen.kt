@@ -43,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ayodong.emobilize.domain.model.AppSettings
@@ -51,6 +52,7 @@ import ayodong.emobilize.domain.model.Category
 import ayodong.emobilize.domain.model.Priority
 import ayodong.emobilize.domain.model.ThemeMode
 import ayodong.emobilize.domain.model.WeekStart
+import ayodong.emobilize.ui.form.FormField
 import ayodong.emobilize.ui.theme.AppFont
 import ayodong.emobilize.ui.theme.AppMetrics
 import ayodong.emobilize.ui.theme.LocalPalette
@@ -342,35 +344,15 @@ private fun CategoryEditor(
     val shape = RoundedCornerShape(ShadcnRadius.lg)
     if (expanded) {
         SettingsCard {
-            BasicTextField(
+            FormField(
                 value = name,
                 onValueChange = { next ->
                     name = next
-                    onCategory(category.copy(name = next))
+                    if (next.isNotBlank()) onCategory(category.copy(name = next.trim()))
                 },
-                singleLine = true,
-                textStyle = TextStyle(
-                    fontFamily = AppFont,
-                    color = palette.text,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                ),
-                cursorBrush = SolidColor(palette.primary),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(44.dp)
-                    .clip(shape)
-                    .background(palette.scheme.background)
-                    .border(1.dp, palette.scheme.input, shape)
-                    .padding(horizontal = 12.dp),
-                decorationBox = { inner ->
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
-                        if (name.isEmpty()) {
-                            Text("Category name", style = appStyle(16.sp, FontWeight.Medium), color = palette.textMuted)
-                        }
-                        inner()
-                    }
-                },
+                label = "Category name",
+                error = if (name.isBlank()) "Enter a category name" else null,
+                keyboardType = KeyboardType.Text,
             )
             Spacer(Modifier.height(12.dp))
             Text("Color", style = appStyle(13.sp, FontWeight.Medium), color = palette.textMuted)
@@ -381,7 +363,9 @@ private fun CategoryEditor(
                         Modifier
                             .size(44.dp)
                             .clip(CircleShape)
-                            .clickable { onCategory(category.copy(name = name, color = color)) },
+                            .clickable {
+                                if (name.isNotBlank()) onCategory(category.copy(name = name.trim(), color = color))
+                            },
                         contentAlignment = Alignment.Center,
                     ) {
                         Box(

@@ -67,6 +67,7 @@ private val filters = listOf(
 @Composable
 fun TasksScreen(
     viewModel: TasksViewModel,
+    onOpenTask: (Long) -> Unit,
     onEditTask: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -176,7 +177,10 @@ fun TasksScreen(
                         isSelected = viewModel.selectedTaskId == task.id,
                         pending = viewModel.pendingAction,
                         overdue = task.id !in doneIds && isOverdue(task, nowHours),
-                        onClick = { viewModel.selectTask(task.id) },
+                        onClick = {
+                            if (viewModel.pendingAction == null) onOpenTask(task.id)
+                            else viewModel.selectTask(task.id)
+                        },
                     )
                 }
                 item(key = "gap-$status") { Spacer(Modifier.height(2.dp)) }
@@ -361,7 +365,7 @@ private fun TaskCard(
             .clip(shape)
             .background(background)
             .border(if (isSelected) 2.dp else 1.dp, borderColor, shape)
-            .then(if (pending != null) Modifier.clickable(onClick = onClick) else Modifier),
+            .then(Modifier.clickable(onClick = onClick)),
     ) {
             Row(
                 modifier = Modifier

@@ -54,12 +54,15 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ayodong.emobilize.domain.model.Category
 import ayodong.emobilize.domain.model.Priority
 import ayodong.emobilize.domain.model.ScheduleMode
+import ayodong.emobilize.ui.form.FormField
 import ayodong.emobilize.ui.theme.AppFont
+import ayodong.emobilize.ui.theme.AppMetrics
 import ayodong.emobilize.ui.theme.LocalPalette
 import ayodong.emobilize.ui.theme.ShadcnRadius
 import ayodong.emobilize.ui.theme.appStyle
@@ -84,14 +87,17 @@ fun AddTaskCard(
     val scrimSource = remember { MutableInteractionSource() }
     val cardSource = remember { MutableInteractionSource() }
     var option by remember { mutableStateOf<AddOption?>(null) }
+    var showErrors by remember { mutableStateOf(false) }
     val shape = RoundedCornerShape(16.dp)
 
-    fun close() {
+    fun confirm() {
+        showErrors = true
+        val blocked = draft.titleError() != null || draft.descriptionError() != null
         val rangeBlocked = draft.includeSchedule &&
             draft.scheduleMode == ScheduleMode.Range &&
             !draft.rangeValid()
         when {
-            draft.name.isBlank() -> onDismiss()
+            blocked -> if (rangeBlocked) option = AddOption.Schedule
             rangeBlocked -> option = AddOption.Schedule
             else -> onSubmit()
         }
@@ -101,7 +107,7 @@ fun AddTaskCard(
         focusRequester.requestFocus()
         keyboard?.show()
     }
-    BackHandler(onBack = ::close)
+    BackHandler(onBack = onDismiss)
 
     Box(
         Modifier
@@ -109,7 +115,7 @@ fun AddTaskCard(
             .background(palette.modalBg)
             .imePadding()
             .navigationBarsPadding()
-            .clickable(interactionSource = scrimSource, indication = null, onClick = ::close),
+            .clickable(interactionSource = scrimSource, indication = null, onClick = onDismiss),
     ) {
         BoxWithConstraints(
             Modifier
@@ -126,31 +132,27 @@ fun AddTaskCard(
                     .background(palette.scheme.popover)
                     .border(1.dp, palette.scheme.border, shape)
                     .verticalScroll(rememberScrollState())
-                    .padding(start = 16.dp, end = 8.dp, top = 14.dp, bottom = 6.dp),
+                    .padding(start = 16.dp, end = 8.dp, top = 14.dp, bottom = 14.dp),
             ) {
-                BasicTextField(
+                FormField(
                     value = draft.name,
                     onValueChange = { draft.name = it },
-                    singleLine = true,
-                    textStyle = TextStyle(
-                        fontFamily = AppFont,
-                        color = palette.text,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Normal,
-                    ),
-                    cursorBrush = SolidColor(palette.primary),
+                    label = "Title",
+                    error = if (showErrors) draft.titleError() else null,
+                    keyboardType = KeyboardType.Text,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(end = 8.dp, bottom = 8.dp)
+                        .padding(end = 8.dp)
                         .focusRequester(focusRequester),
-                    decorationBox = { inner ->
-                        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterStart) {
-                            if (draft.name.isEmpty()) {
-                                Text("Title", style = appStyle(16.sp), color = palette.textMuted)
-                            }
-                            inner()
-                        }
-                    },
+                )
+                FormField(
+                    value = draft.description,
+                    onValueChange = { draft.description = it },
+                    label = "Description",
+                    error = if (showErrors) draft.descriptionError() else null,
+                    keyboardType = KeyboardType.Text,
+                    singleLine = false,
+                    minLines = 3,
+                    modifier = Modifier.padding(end = 8.dp),
                 )
                 when (option) {
                     AddOption.Category -> CategoryOptions(draft, categories)
@@ -192,10 +194,27 @@ fun AddTaskCard(
                         modifier = Modifier
                             .heightIn(min = 44.dp)
                             .clip(RoundedCornerShape(ShadcnRadius.lg))
-                            .clickable(onClick = ::close)
+                            .clickable(onClick = onDismiss)
                             .padding(horizontal = 10.dp, vertical = 12.dp),
                         style = appStyle(15.sp, FontWeight.Medium),
                         color = palette.text,
+                    )
+                }
+                Spacer(Modifier.height(8.dp))
+                Box(
+                    Modifier
+                        .padding(end = 8.dp)
+                        .fillMaxWidth()
+                        .height(AppMetrics.actionHeight)
+                        .clip(RoundedCornerShape(AppMetrics.actionRadius))
+                        .background(palette.scheme.primary)
+                        .clickable(onClick = ::confirm),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        "Add task",
+                        style = appStyle(14.sp, FontWeight.Bold),
+                        color = palette.scheme.primaryForeground,
                     )
                 }
             }

@@ -8,6 +8,7 @@ import ayodong.emobilize.domain.model.AuthError
 import ayodong.emobilize.domain.model.AuthOutcome
 import ayodong.emobilize.domain.usecase.LoginUseCase
 import ayodong.emobilize.domain.usecase.RegisterAccountUseCase
+import ayodong.emobilize.domain.usecase.isEmail
 
 enum class AuthPage { Login, Register }
 
@@ -23,43 +24,97 @@ class AuthViewModel(
     var email by mutableStateOf("")
     var password by mutableStateOf("")
     var confirm by mutableStateOf("")
-    var error by mutableStateOf<String?>(null)
+    var nameError by mutableStateOf<String?>(null)
+        private set
+    var emailError by mutableStateOf<String?>(null)
+        private set
+    var passwordError by mutableStateOf<String?>(null)
+        private set
+    var confirmError by mutableStateOf<String?>(null)
         private set
 
     fun showLogin() {
         page = AuthPage.Login
         password = ""
         confirm = ""
-        error = null
+        clearErrors()
     }
 
     fun showRegister() {
         page = AuthPage.Register
         password = ""
         confirm = ""
-        error = null
+        clearErrors()
+    }
+
+    fun updateName(value: String) {
+        name = value
+        nameError = null
+    }
+
+    fun updateEmail(value: String) {
+        email = value
+        emailError = null
+    }
+
+    fun updatePassword(value: String) {
+        password = value
+        passwordError = null
+    }
+
+    fun updateConfirm(value: String) {
+        confirm = value
+        confirmError = null
     }
 
     fun submitLogin() {
+        emailError = emailProblem(email)
+        passwordError = if (password.isEmpty()) "Enter your password" else null
+        if (emailError != null || passwordError != null) return
         when (val outcome = login(email, password)) {
             is AuthOutcome.Success -> signedIn = true
-            is AuthOutcome.Failure -> error = message(outcome.error)
+            is AuthOutcome.Failure -> passwordError = message(outcome.error)
         }
     }
 
     fun submitRegister() {
-        if (password != confirm) {
-            error = "Passwords do not match"
-            return
+        nameError = if (name.isBlank()) "Enter your name" else null
+        emailError = emailProblem(email)
+        passwordError = when {
+            password.isEmpty() -> "Enter your password"
+            password.length < 6 -> "Use at least 6 characters"
+            else -> null
         }
+        confirmError = when {
+            confirm.isEmpty() -> "Confirm your password"
+            confirm != password -> "Passwords do not match"
+            else -> null
+        }
+        if (nameError != null || emailError != null || passwordError != null || confirmError != null) return
         when (val outcome = register(name, email, password)) {
             is AuthOutcome.Success -> signedIn = true
-            is AuthOutcome.Failure -> error = message(outcome.error)
+            is AuthOutcome.Failure -> when (outcome.error) {
+                AuthError.EmailTaken -> emailError = message(outcome.error)
+                AuthError.InvalidName -> nameError = message(outcome.error)
+                AuthError.InvalidEmail -> emailError = message(outcome.error)
+                AuthError.ShortPassword -> passwordError = message(outcome.error)
+                AuthError.WrongCredentials -> passwordError = message(outcome.error)
+            }
         }
     }
 
-    fun clearError() {
-        error = null
+    private fun clearErrors() {
+        nameError = null
+        emailError = null
+        passwordError = null
+        confirmError = null
+    }
+
+    private fun emailProblem(value: String): String? {
+        val trimmed = value.trim()
+        if (trimmed.isEmpty()) return "Enter your email"
+        if (!isEmail(trimmed)) return "Enter a valid email"
+        return null
     }
 
     private fun message(error: AuthError): String = when (error) {

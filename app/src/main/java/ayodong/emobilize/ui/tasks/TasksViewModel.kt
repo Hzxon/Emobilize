@@ -55,8 +55,14 @@ class TaskDraft {
     var endTime by mutableStateOf("10:00")
     var eventType by mutableStateOf(EventType.Task)
     var eventEndTime by mutableStateOf<String?>(null)
+    var minutes by mutableStateOf("")
+    var description by mutableStateOf("")
 
     fun rangeValid(): Boolean = rangeIsValid(startDate, startTime, endDate, endTime)
+
+    fun titleError(): String? = if (name.isBlank()) "Enter a title" else null
+
+    fun descriptionError(): String? = if (description.isBlank()) "Enter a description" else null
 }
 
 class TasksViewModel(
@@ -160,6 +166,7 @@ class TasksViewModel(
         val startTime = task.range?.startTime ?: displayTimeToInput(task.time).ifBlank { "09:00" }
         resetAddDraft(task.eventType)
         addDraft.name = task.name
+        addDraft.description = task.description
         addDraft.category = task.category
         addDraft.priority = task.priority
         addDraft.includeSchedule = true
@@ -171,6 +178,7 @@ class TasksViewModel(
         addDraft.endDate = task.range?.endDate ?: date
         addDraft.endTime = task.range?.endTime ?: displayTimeToInput(task.eventEndTime).ifBlank { startTime }
         addDraft.reminder = task.reminder
+        addDraft.minutes = task.estimateMinutes?.toString().orEmpty()
         calendarTaskId = task.id
         calendarBlockId = null
         pendingAction = null
@@ -215,6 +223,7 @@ class TasksViewModel(
         val task = tasks.find { it.id == taskId } ?: return false
         val date = deadlineToInputDate(task.deadline)
         editDraft.name = task.name
+        editDraft.description = task.description
         editDraft.category = task.category
         editDraft.priority = task.priority
         editDraft.includeSchedule = task.range != null || task.deadline.isNotBlank()
@@ -228,6 +237,7 @@ class TasksViewModel(
         editDraft.eventType = task.eventType
         editDraft.eventEndTime = task.eventEndTime
         editDraft.reminder = task.reminder
+        editDraft.minutes = task.estimateMinutes?.toString().orEmpty()
         editingId = task.id
         pendingAction = null
         selectedTaskId = null
@@ -288,7 +298,7 @@ class TasksViewModel(
     }
 
     fun canSubmit(draft: TaskDraft): Boolean {
-        if (draft.name.isBlank()) return false
+        if (draft.titleError() != null) return false
         if (!draft.includeSchedule) return true
         return if (draft.scheduleMode == ScheduleMode.Deadline) {
             draft.date.isNotBlank()
@@ -298,7 +308,7 @@ class TasksViewModel(
     }
 
     fun canSubmitCalendar(draft: TaskDraft): Boolean {
-        if (draft.name.isBlank()) return false
+        if (draft.titleError() != null) return false
         return when (draft.eventType) {
             EventType.Event -> draft.date.isNotBlank()
             EventType.Task -> canSubmit(draft)
@@ -332,7 +342,7 @@ class TasksViewModel(
     }
 
     fun submitAdd(): Boolean {
-        if (addDraft.name.isBlank()) return false
+        if (addDraft.titleError() != null || addDraft.descriptionError() != null) return false
         if (addDraft.includeSchedule && addDraft.scheduleMode == ScheduleMode.Range && !addDraft.rangeValid()) return false
         addTask(draftToTask(addDraft, System.currentTimeMillis()))
         reloadTasks()
@@ -341,7 +351,7 @@ class TasksViewModel(
 
     fun submitEdit(): Boolean {
         val id = editingId ?: return false
-        if (!canSubmit(editDraft)) return false
+        if (!canSubmit(editDraft) || editDraft.descriptionError() != null) return false
         updateTask(draftToTask(editDraft, id))
         reloadTasks()
         return true
@@ -393,6 +403,8 @@ class TasksViewModel(
         addDraft.eventType = type
         addDraft.eventEndTime = null
         addDraft.reminder = ReminderOption.None
+        addDraft.minutes = ""
+        addDraft.description = ""
     }
 
     private fun reloadTasks() {
@@ -422,6 +434,7 @@ class TasksViewModel(
         return Task(
             id = id,
             name = draft.name.trim(),
+            description = draft.description.trim(),
             category = draft.category,
             deadline = if (scheduleDate.isBlank()) "" else formatInputDate(scheduleDate),
             time = scheduleTime.takeIf { it.isNotBlank() }?.let(::formatInputTime),
@@ -435,6 +448,7 @@ class TasksViewModel(
             eventType = draft.eventType,
             eventEndTime = draft.eventEndTime,
             reminder = draft.reminder,
+            estimateMinutes = draft.minutes.toIntOrNull(),
         )
     }
 
@@ -443,6 +457,7 @@ class TasksViewModel(
             return Task(
                 id = id,
                 name = draft.name.trim(),
+                description = draft.description.trim(),
                 category = draft.category,
                 deadline = formatInputDate(draft.date),
                 time = draft.startTime.takeIf { it.isNotBlank() }?.let(::formatInputTime),
@@ -451,6 +466,7 @@ class TasksViewModel(
                 eventType = EventType.Event,
                 eventEndTime = draft.endTime.takeIf { it.isNotBlank() }?.let(::formatInputTime),
                 reminder = draft.reminder,
+                estimateMinutes = draft.minutes.toIntOrNull(),
             )
         }
         return draftToTask(draft, id).copy(eventType = EventType.Task, eventEndTime = null)

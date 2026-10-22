@@ -26,7 +26,10 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,6 +39,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
@@ -44,6 +48,8 @@ import ayodong.emobilize.domain.model.EventType
 import ayodong.emobilize.domain.model.Priority
 import ayodong.emobilize.domain.model.ReminderOption
 import ayodong.emobilize.domain.model.ScheduleMode
+import ayodong.emobilize.ui.form.FormField
+import ayodong.emobilize.ui.form.errorInk
 import ayodong.emobilize.ui.theme.AppFont
 import ayodong.emobilize.ui.theme.LocalPalette
 import ayodong.emobilize.ui.theme.ShadcnRadius
@@ -69,6 +75,7 @@ fun CalendarFormSheet(
     val shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
     val scrimSource = remember { MutableInteractionSource() }
     val sheetSource = remember { MutableInteractionSource() }
+    var showErrors by remember { mutableStateOf(false) }
     val types = if (lockType) listOf(draft.eventType) else EventType.entries.filter { it != EventType.Task }
     Box(
         Modifier
@@ -103,32 +110,12 @@ fun CalendarFormSheet(
                         .background(palette.textMuted.copy(alpha = 0.25f)),
                 )
                 Spacer(Modifier.height(18.dp))
-                BasicTextField(
+                FormField(
                     value = draft.name,
                     onValueChange = { draft.name = it },
-                    singleLine = true,
-                    textStyle = TextStyle(
-                        fontFamily = AppFont,
-                        color = palette.text,
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Bold,
-                    ),
-                    cursorBrush = SolidColor(palette.primary),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    decorationBox = { inner ->
-                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
-                            if (draft.name.isEmpty()) {
-                                Text(
-                                    "Add title",
-                                    style = appStyle(22.sp, FontWeight.Bold),
-                                    color = palette.textMuted,
-                                )
-                            }
-                            inner()
-                        }
-                    },
+                    label = "Title",
+                    error = if (showErrors) draft.titleError() else null,
+                    keyboardType = KeyboardType.Text,
                 )
                 Spacer(Modifier.height(16.dp))
                 Row(
@@ -168,6 +155,25 @@ fun CalendarFormSheet(
                     Spacer(Modifier.height(18.dp))
                     ReminderPicker(draft)
                 }
+                if (showErrors) {
+                    val scheduleError = when (draft.eventType) {
+                        EventType.Event -> if (draft.date.isBlank()) "Choose a date" else null
+                        EventType.Task -> when {
+                            draft.includeSchedule && draft.scheduleMode == ScheduleMode.Deadline && draft.date.isBlank() -> "Choose a date"
+                            draft.includeSchedule && draft.scheduleMode == ScheduleMode.Range && !draft.rangeValid() -> "End time must be after start time"
+                            else -> null
+                        }
+                        EventType.RegularSchedule -> if (!draft.rangeValid()) "End time must be after start time" else null
+                    }
+                    if (scheduleError != null) {
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            scheduleError,
+                            style = appStyle(12.sp, FontWeight.Medium),
+                            color = errorInk(palette),
+                        )
+                    }
+                }
                 Spacer(Modifier.height(22.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     OutlineAction(
@@ -180,9 +186,12 @@ fun CalendarFormSheet(
                     OutlineAction(
                         label = submitLabel,
                         color = saveColor,
-                        enabled = canSubmit,
+                        enabled = true,
                         modifier = Modifier.weight(1.45f),
-                        onClick = onSubmit,
+                        onClick = {
+                            showErrors = true
+                            if (canSubmit) onSubmit()
+                        },
                     )
                 }
             }

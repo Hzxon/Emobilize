@@ -40,6 +40,8 @@ import ayodong.emobilize.domain.model.FabAction
 import ayodong.emobilize.domain.model.NavTab
 import ayodong.emobilize.domain.model.ThemeMode
 import ayodong.emobilize.domain.model.WeekStart
+import ayodong.emobilize.ui.auth.AuthScreen
+import ayodong.emobilize.ui.auth.AuthViewModel
 import ayodong.emobilize.ui.calendar.CalendarScreen
 import ayodong.emobilize.ui.dock.BottomDock
 import ayodong.emobilize.ui.dock.RadialMenu
@@ -48,6 +50,7 @@ import ayodong.emobilize.ui.settings.SettingsScreen
 import ayodong.emobilize.ui.splash.SplashScreen
 import ayodong.emobilize.ui.tasks.AddTaskCard
 import ayodong.emobilize.ui.tasks.CalendarFormSheet
+import ayodong.emobilize.ui.tasks.TaskDetailScreen
 import ayodong.emobilize.ui.tasks.TaskFormSheet
 import ayodong.emobilize.ui.tasks.TasksScreen
 import ayodong.emobilize.ui.tasks.TasksViewModel
@@ -66,7 +69,7 @@ private val overlayDialog = DialogProperties(
 )
 
 @Composable
-fun EmobilizeApp(viewModel: TasksViewModel) {
+fun EmobilizeApp(viewModel: TasksViewModel, authViewModel: AuthViewModel) {
     val navController = rememberNavController()
     val systemDark = isSystemInDarkTheme()
     val isDark = when (viewModel.appSettings.themeMode) {
@@ -83,13 +86,20 @@ fun EmobilizeApp(viewModel: TasksViewModel) {
             modifier = Modifier.fillMaxSize(),
         ) {
             composable(AppRoute.Splash) {
-                SplashScreen(
-                    onFinished = {
-                        navController.navigate(AppRoute.Tasks) {
-                            popUpTo(AppRoute.Splash) { inclusive = true }
-                            launchSingleTop = true
-                        }
-                    },
+                SplashScreen(isDark = isDark) {
+                    navController.navigate(AppRoute.Auth) {
+                        popUpTo(AppRoute.Splash) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+            }
+            composable(AppRoute.Auth) {
+                LaunchedEffect(authViewModel.signedIn) {
+                    if (authViewModel.signedIn) navController.openTasks()
+                }
+                AuthScreen(
+                    viewModel = authViewModel,
+                    onSkip = { navController.openTasks() },
                 )
             }
             composable(AppRoute.Tasks) {
@@ -97,6 +107,19 @@ fun EmobilizeApp(viewModel: TasksViewModel) {
             }
             composable(AppRoute.Calendar) {
                 MainShell(navController, NavTab.Calendar, viewModel)
+            }
+            dialog(
+                route = AppRoute.TaskDetail,
+                arguments = listOf(navArgument("taskId") { type = NavType.LongType }),
+                dialogProperties = overlayDialog,
+            ) { entry ->
+                val taskId = entry.arguments?.getLong("taskId") ?: 0L
+                TaskDetailScreen(
+                    viewModel = viewModel,
+                    taskId = taskId,
+                    onBack = { navController.leave() },
+                    onEdit = { navController.navigate(AppRoute.editTask(taskId)) },
+                )
             }
             dialog(AppRoute.Settings, dialogProperties = overlayDialog) {
                 SettingsScreen(
@@ -294,6 +317,9 @@ private fun MainShell(
                 if (tab == NavTab.Tasks) {
                     TasksScreen(
                         viewModel = viewModel,
+                        onOpenTask = { taskId ->
+                            navController.navigate(AppRoute.taskDetail(taskId))
+                        },
                         onEditTask = { taskId ->
                             navController.navigate(AppRoute.editTask(taskId))
                         },
@@ -381,6 +407,13 @@ private fun MainShell(
 
 private fun NavHostController.leave() {
     popBackStack()
+}
+
+private fun NavHostController.openTasks() {
+    navigate(AppRoute.Tasks) {
+        popUpTo(AppRoute.Auth) { inclusive = true }
+        launchSingleTop = true
+    }
 }
 
 private fun NavHostController.openTab(route: String) {

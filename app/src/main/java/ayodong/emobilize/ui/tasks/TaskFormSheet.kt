@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
@@ -55,6 +56,8 @@ import ayodong.emobilize.domain.model.Category
 import ayodong.emobilize.domain.model.Priority
 import ayodong.emobilize.domain.model.ScheduleMode
 import ayodong.emobilize.domain.model.formatInputTime
+import ayodong.emobilize.ui.form.FormField
+import ayodong.emobilize.ui.form.errorInk
 import ayodong.emobilize.ui.theme.AppFont
 import ayodong.emobilize.ui.theme.LocalPalette
 import ayodong.emobilize.ui.theme.ShadcnRadius
@@ -83,6 +86,7 @@ fun TaskFormSheet(
     val shape = RoundedCornerShape(topStart = ShadcnRadius.xl, topEnd = ShadcnRadius.xl)
     val scrimSource = remember { MutableInteractionSource() }
     val sheetSource = remember { MutableInteractionSource() }
+    var showErrors by remember { mutableStateOf(false) }
     Box(
         Modifier
             .fillMaxSize()
@@ -122,13 +126,21 @@ fun TaskFormSheet(
                     }
                 }
                 Spacer(Modifier.height(20.dp))
-                DraftField(
+                FormField(
                     value = draft.name,
-                    onValue = { draft.name = it },
-                    placeholder = "Task name...",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(46.dp),
+                    onValueChange = { draft.name = it },
+                    label = "Task name",
+                    error = if (showErrors) draft.titleError() else null,
+                    keyboardType = KeyboardType.Text,
+                )
+                FormField(
+                    value = draft.description,
+                    onValueChange = { draft.description = it },
+                    label = "Description",
+                    error = if (showErrors) draft.descriptionError() else null,
+                    keyboardType = KeyboardType.Text,
+                    singleLine = false,
+                    minLines = 3,
                 )
                 Spacer(Modifier.height(14.dp))
                 SectionLabel("Category")
@@ -220,6 +232,7 @@ fun TaskFormSheet(
                         DateField(
                             value = draft.date,
                             onValue = { draft.date = it },
+                            valid = !showErrors || draft.date.isNotBlank(),
                             modifier = Modifier.weight(3f),
                         )
                         TimeField(
@@ -232,9 +245,17 @@ fun TaskFormSheet(
                     Text(
                         "Time is optional",
                         modifier = Modifier.padding(top = 5.dp),
-                        style = appStyle(10.sp),
+                        style = appStyle(12.sp, FontWeight.Medium),
                         color = palette.textMuted,
                     )
+                    if (showErrors && draft.date.isBlank()) {
+                        Text(
+                            "Choose a date",
+                            modifier = Modifier.padding(top = 4.dp),
+                            style = appStyle(12.sp, FontWeight.Medium),
+                            color = errorInk(palette),
+                        )
+                    }
                 } else if (draft.includeSchedule) {
                     RangeRow("FROM", draft.startDate, draft.startTime, minDate = null, rangeValid = true) { date, time ->
                         draft.startDate = date
@@ -263,7 +284,10 @@ fun TaskFormSheet(
                         .clip(buttonShape)
                         .background(saveColor.copy(alpha = if (canSubmit) 0.12f else 0.06f))
                         .border(1.5.dp, saveColor.copy(alpha = if (canSubmit) 0.40f else 0.18f), buttonShape)
-                        .clickable(enabled = canSubmit, onClick = onSubmit),
+                        .clickable {
+                            showErrors = true
+                            if (canSubmit && draft.descriptionError() == null) onSubmit()
+                        },
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
@@ -283,41 +307,6 @@ internal fun SectionLabel(text: String) {
         text = text,
         style = appStyle(14.sp, FontWeight.Medium),
         color = LocalPalette.current.textMuted,
-    )
-}
-
-@Composable
-private fun DraftField(
-    value: String,
-    onValue: (String) -> Unit,
-    placeholder: String,
-    modifier: Modifier,
-) {
-    val palette = LocalPalette.current
-    BasicTextField(
-        value = value,
-        onValueChange = onValue,
-        singleLine = true,
-        textStyle = TextStyle(
-            fontFamily = AppFont,
-            color = palette.text,
-            fontSize = 15.sp,
-            fontWeight = FontWeight.SemiBold,
-        ),
-        cursorBrush = SolidColor(palette.primary),
-        modifier = modifier
-            .clip(RoundedCornerShape(ShadcnRadius.lg))
-            .background(palette.scheme.background)
-            .border(1.dp, palette.scheme.input, RoundedCornerShape(ShadcnRadius.lg))
-            .padding(horizontal = 14.dp),
-        decorationBox = { inner ->
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
-                if (value.isEmpty()) {
-                    Text(placeholder, style = appStyle(15.sp, FontWeight.SemiBold), color = palette.textMuted)
-                }
-                inner()
-            }
-        },
     )
 }
 

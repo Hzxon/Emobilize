@@ -61,8 +61,8 @@ import ayodong.emobilize.ui.calendar.CalendarScreen
 import ayodong.emobilize.ui.dock.BottomDock
 import ayodong.emobilize.ui.notifications.ExpandableReminderCard
 import ayodong.emobilize.ui.settings.SettingsScreen
-import ayodong.emobilize.ui.splash.SplashScreen
 import ayodong.emobilize.ui.tasks.TasksScreen
+import ayodong.emobilize.ui.tasks.TaskDetailScreen
 import ayodong.emobilize.ui.tasks.TasksViewModel
 import ayodong.emobilize.ui.theme.AppPalette
 import ayodong.emobilize.ui.theme.EmobilizeTheme
@@ -98,11 +98,12 @@ private fun SettingsPreview() {
     ScreenPreview(NeutralLight, NavTab.Tasks, showSettings = true)
 }
 
-@Preview(name = "Splash", group = "Screens", device = Devices.PIXEL_6, showBackground = true, backgroundColor = PreviewBackgroundLight)
+@Preview(name = "Task detail", group = "Screens", device = Devices.PIXEL_6, showBackground = true, backgroundColor = PreviewBackgroundLight)
 @Composable
-private fun SplashPreview() {
+private fun TaskDetailPreview() {
+    val viewModel = remember { previewViewModel() }
     PreviewFrame(NeutralLight) {
-        SplashScreen(onFinished = {})
+        TaskDetailScreen(viewModel, taskId = 1, onBack = {}, onEdit = {})
     }
 }
 
@@ -170,7 +171,7 @@ private fun ScreenPreview(
                         .fillMaxWidth(),
                 ) {
                     if (currentTab == NavTab.Tasks) {
-                        TasksScreen(viewModel, onEditTask = {})
+                        TasksScreen(viewModel, onOpenTask = {}, onEditTask = {})
                     } else {
                         CalendarScreen(
                             tasks = viewModel.tasks,
