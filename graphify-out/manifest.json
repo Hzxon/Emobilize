@@ -1,0 +1,428 @@
+{
+  "app/build.gradle.kts": {
+    "mtime": 1792656956.4564102,
+    "seen": 1792658332.3994665,
+    "ast_hash": "01a3a7f4db25bc2e9ddd905dffdfc8b7",
+    "semantic_hash": "01a3a7f4db25bc2e9ddd905dffdfc8b7"
+  },
+  "app/src/androidTest/java/ayodong/emobilize/ExampleInstrumentedTest.kt": {
+    "mtime": 1790491974.4651983,
+    "seen": 1792171530.355798,
+    "ast_hash": "8e341e94a75ad75139876050eb050892",
+    "semantic_hash": "8e341e94a75ad75139876050eb050892"
+  },
+  "app/src/main/java/ayodong/emobilize/MainActivity.kt": {
+    "mtime": 1792662059.6846414,
+    "seen": 1792662922.4033701,
+    "ast_hash": "fc5ad19f1cf7f6d9c0a0d14ac042cc7d",
+    "semantic_hash": "fc5ad19f1cf7f6d9c0a0d14ac042cc7d"
+  },
+  "app/src/main/java/ayodong/emobilize/data/repository/InMemoryScheduleRepository.kt": {
+    "mtime": 1792592979.4162562,
+    "seen": 1792596454.6324024,
+    "ast_hash": "085b4ac86b36616cf0524f8d5aa52a43",
+    "semantic_hash": "085b4ac86b36616cf0524f8d5aa52a43"
+  },
+  "app/src/main/java/ayodong/emobilize/data/repository/InMemoryTaskRepository.kt": {
+    "mtime": 1792592979.4172528,
+    "seen": 1792596454.6324024,
+    "ast_hash": "f192f5d57d4c4fe7c09bc7bfcaa8ab3e",
+    "semantic_hash": "f192f5d57d4c4fe7c09bc7bfcaa8ab3e"
+  },
+  "app/src/main/java/ayodong/emobilize/data/repository/PreferencesAppSettingsRepository.kt": {
+    "mtime": 1792592979.4182518,
+    "seen": 1792596454.6324024,
+    "ast_hash": "af83c25120f04568f3b0fa11cf036752",
+    "semantic_hash": "af83c25120f04568f3b0fa11cf036752"
+  },
+  "app/src/main/java/ayodong/emobilize/data/repository/PreferencesAuthRepository.kt": {
+    "mtime": 1792592979.4192557,
+    "seen": 1792596454.6324024,
+    "ast_hash": "a08ed2024083d4c7477bca155863b766",
+    "semantic_hash": "a08ed2024083d4c7477bca155863b766"
+  },
+  "app/src/main/java/ayodong/emobilize/data/repository/PreferencesCategoryRepository.kt": {
+    "mtime": 1792592979.4212568,
+    "seen": 1792596454.6324024,
+    "ast_hash": "ce1f584e92688d803f1c8277ad8614e6",
+    "semantic_hash": "ce1f584e92688d803f1c8277ad8614e6"
+  },
+  "app/src/main/java/ayodong/emobilize/data/repository/SampleData.kt": {
+    "mtime": 1792661880.3650477,
+    "seen": 1792662922.4033701,
+    "ast_hash": "74bed30da4fbb4ee3cb1c342c1d3695c",
+    "semantic_hash": "74bed30da4fbb4ee3cb1c342c1d3695c"
+  },
+  "app/src/main/java/ayodong/emobilize/di/AppContainer.kt": {
+    "mtime": 1792592979.423255,
+    "seen": 1792596454.6324024,
+    "ast_hash": "05d123e1437f5e1d3cf13fdd7707c018",
+    "semantic_hash": "05d123e1437f5e1d3cf13fdd7707c018"
+  },
+  "app/src/main/java/ayodong/emobilize/domain/model/Account.kt": {
+    "mtime": 1792592979.4252584,
+    "seen": 1792596454.6324024,
+    "ast_hash": "185ad03b1bb9534ddcce7e6756c89723",
+    "semantic_hash": "185ad03b1bb9534ddcce7e6756c89723"
+  },
+  "app/src/main/java/ayodong/emobilize/domain/model/AppSettings.kt": {
+    "mtime": 1792592979.4252584,
+    "seen": 1792596454.6324024,
+    "ast_hash": "de041305f256147e5eada07c74c24fd7",
+    "semantic_hash": "de041305f256147e5eada07c74c24fd7"
+  },
+  "app/src/main/java/ayodong/emobilize/domain/model/Calendar.kt": {
+    "mtime": 1792655178.1046531,
+    "seen": 1792658332.3994665,
+    "ast_hash": "61e69d7013b2d869bc8c28302bea79e1",
+    "semantic_hash": "61e69d7013b2d869bc8c28302bea79e1"
+  },
+  "app/src/main/java/ayodong/emobilize/domain/model/Task.kt": {
+    "mtime": 1792661880.2074711,
+    "seen": 1792662922.4033701,
+    "ast_hash": "64b684ba9c0cf664d103fccc8330ee6e",
+    "semantic_hash": "64b684ba9c0cf664d103fccc8330ee6e"
+  },
+  "app/src/main/java/ayodong/emobilize/domain/repository/AuthRepository.kt": {
+    "mtime": 1792592979.4282546,
+    "seen": 1792596454.6324024,
+    "ast_hash": "9b019eae487becc2cbeea6f132ea078b",
+    "semantic_hash": "9b019eae487becc2cbeea6f132ea078b"
+  },
+  "app/src/main/java/ayodong/emobilize/domain/repository/Repositories.kt": {
+    "mtime": 1792592979.4292533,
+    "seen": 1792596454.6324024,
+    "ast_hash": "7132ddcd9a11be9c11ea72a44aeeaf6b",
+    "semantic_hash": "7132ddcd9a11be9c11ea72a44aeeaf6b"
+  },
+  "app/src/main/java/ayodong/emobilize/domain/usecase/AppSettingsUseCases.kt": {
+    "mtime": 1792592979.4302502,
+    "seen": 1792596454.6324024,
+    "ast_hash": "bf95bb206328484020f64c81e16dd705",
+    "semantic_hash": "bf95bb206328484020f64c81e16dd705"
+  },
+  "app/src/main/java/ayodong/emobilize/domain/usecase/AuthUseCases.kt": {
+    "mtime": 1792661880.212895,
+    "seen": 1792662922.4033701,
+    "ast_hash": "566090a20f339b1ac6b0c16277036da3",
+    "semantic_hash": "566090a20f339b1ac6b0c16277036da3"
+  },
+  "app/src/main/java/ayodong/emobilize/domain/usecase/CategoryUseCases.kt": {
+    "mtime": 1792592979.4312572,
+    "seen": 1792596454.6324024,
+    "ast_hash": "6dd3692950e7a7be14a031734ec6d695",
+    "semantic_hash": "6dd3692950e7a7be14a031734ec6d695"
+  },
+  "app/src/main/java/ayodong/emobilize/domain/usecase/ScheduleUseCases.kt": {
+    "mtime": 1792592979.4322507,
+    "seen": 1792596454.6324024,
+    "ast_hash": "38a2d9b0de00ec68203c00a8641e145f",
+    "semantic_hash": "38a2d9b0de00ec68203c00a8641e145f"
+  },
+  "app/src/main/java/ayodong/emobilize/domain/usecase/TaskUseCases.kt": {
+    "mtime": 1792592979.4322507,
+    "seen": 1792596454.6324024,
+    "ast_hash": "d0738ecdf2e118fdd5de7b8b831ae353",
+    "semantic_hash": "d0738ecdf2e118fdd5de7b8b831ae353"
+  },
+  "app/src/main/java/ayodong/emobilize/ui/EmobilizeApp.kt": {
+    "mtime": 1792663817.0191069,
+    "seen": 1792664743.8122718,
+    "ast_hash": "fb2155f8a0ab81b1a6b001420f99e790",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/ayodong/emobilize/ui/auth/AuthScreen.kt": {
+    "mtime": 1792661880.2798083,
+    "seen": 1792662922.4033701,
+    "ast_hash": "26db94616780df132a3da201fa763722",
+    "semantic_hash": "26db94616780df132a3da201fa763722"
+  },
+  "app/src/main/java/ayodong/emobilize/ui/auth/AuthViewModel.kt": {
+    "mtime": 1792661880.2300303,
+    "seen": 1792662922.4033701,
+    "ast_hash": "3a09b0bac068a05896d60a26ddb60a4c",
+    "semantic_hash": "3a09b0bac068a05896d60a26ddb60a4c"
+  },
+  "app/src/main/java/ayodong/emobilize/ui/calendar/CalendarScreen.kt": {
+    "mtime": 1792655202.8286457,
+    "seen": 1792658332.3994665,
+    "ast_hash": "18eb30fcd270d0874757e6c0d520ae4d",
+    "semantic_hash": "18eb30fcd270d0874757e6c0d520ae4d"
+  },
+  "app/src/main/java/ayodong/emobilize/ui/dock/RadialDock.kt": {
+    "mtime": 1792592979.4372525,
+    "seen": 1792596454.6324024,
+    "ast_hash": "7db73256c7b82abff0daebc708ba1db4",
+    "semantic_hash": "7db73256c7b82abff0daebc708ba1db4"
+  },
+  "app/src/main/java/ayodong/emobilize/ui/dock/RadialMenu.kt": {
+    "mtime": 1792592979.4382517,
+    "seen": 1792596454.6324024,
+    "ast_hash": "d842695d98f96ef0cf64d2cfac6a8a46",
+    "semantic_hash": "d842695d98f96ef0cf64d2cfac6a8a46"
+  },
+  "app/src/main/java/ayodong/emobilize/ui/settings/SettingsScreen.kt": {
+    "mtime": 1792661880.3270211,
+    "seen": 1792662922.4033701,
+    "ast_hash": "44710f24ed3ff96a7856a1526d3ccef7",
+    "semantic_hash": "44710f24ed3ff96a7856a1526d3ccef7"
+  },
+  "app/src/main/java/ayodong/emobilize/ui/tasks/AddTaskCard.kt": {
+    "mtime": 1792663796.847978,
+    "seen": 1792664743.8122718,
+    "ast_hash": "acc54fa859388d7f7003ddbcf5ab31d6",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/ayodong/emobilize/ui/tasks/CalendarFormSheet.kt": {
+    "mtime": 1792661879.8862216,
+    "seen": 1792662922.4033701,
+    "ast_hash": "4919388b9a610b22dad8dada7291d9a6",
+    "semantic_hash": "4919388b9a610b22dad8dada7291d9a6"
+  },
+  "app/src/main/java/ayodong/emobilize/ui/tasks/TaskFormSheet.kt": {
+    "mtime": 1792663797.3347728,
+    "seen": 1792664743.8122718,
+    "ast_hash": "8905e0f22333be0a4bc1ea681da746da",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/ayodong/emobilize/ui/tasks/TasksScreen.kt": {
+    "mtime": 1792661879.92208,
+    "seen": 1792662922.4033701,
+    "ast_hash": "30bfed2518a0c1262ac18cb80062e8c6",
+    "semantic_hash": "30bfed2518a0c1262ac18cb80062e8c6"
+  },
+  "app/src/main/java/ayodong/emobilize/ui/tasks/TasksViewModel.kt": {
+    "mtime": 1792661879.8248312,
+    "seen": 1792662922.4033701,
+    "ast_hash": "8f9a9f859076b11c32986ba057179d74",
+    "semantic_hash": "8f9a9f859076b11c32986ba057179d74"
+  },
+  "app/src/main/java/ayodong/emobilize/ui/theme/Metrics.kt": {
+    "mtime": 1792592979.4472501,
+    "seen": 1792596454.6324024,
+    "ast_hash": "4ec04279597a382f421222e17eb0d84e",
+    "semantic_hash": "4ec04279597a382f421222e17eb0d84e"
+  },
+  "app/src/main/java/ayodong/emobilize/ui/theme/Palette.kt": {
+    "mtime": 1792592979.4472501,
+    "seen": 1792596454.6324024,
+    "ast_hash": "6bd945c928ec54b71c51859b8ca316ff",
+    "semantic_hash": "6bd945c928ec54b71c51859b8ca316ff"
+  },
+  "app/src/main/java/ayodong/emobilize/ui/theme/Shadcn.kt": {
+    "mtime": 1792657479.5717354,
+    "seen": 1792658332.3994665,
+    "ast_hash": "75f13bf288d9a82b2c82329d84007e33",
+    "semantic_hash": "75f13bf288d9a82b2c82329d84007e33"
+  },
+  "app/src/main/java/ayodong/emobilize/ui/theme/Theme.kt": {
+    "mtime": 1792657480.227957,
+    "seen": 1792658332.3994665,
+    "ast_hash": "200dc509b7e8a076cf5dd579d55432a0",
+    "semantic_hash": "200dc509b7e8a076cf5dd579d55432a0"
+  },
+  "app/src/main/java/ayodong/emobilize/ui/theme/Type.kt": {
+    "mtime": 1792592979.450251,
+    "seen": 1792596454.6324024,
+    "ast_hash": "73c7ec73ae6e3b19a31f0a3927fc27a8",
+    "semantic_hash": "73c7ec73ae6e3b19a31f0a3927fc27a8"
+  },
+  "app/src/test/java/ayodong/emobilize/ExampleUnitTest.kt": {
+    "mtime": 1790491974.5074468,
+    "seen": 1792171530.355798,
+    "ast_hash": "7e7144f4f6d61c2509fbcc5561dae5c6",
+    "semantic_hash": "7e7144f4f6d61c2509fbcc5561dae5c6"
+  },
+  "build.gradle.kts": {
+    "mtime": 1790491974.5074468,
+    "seen": 1792171530.355798,
+    "ast_hash": "e47df53f67d9e57f21ad5bf196e55b29",
+    "semantic_hash": "e47df53f67d9e57f21ad5bf196e55b29"
+  },
+  "gradlew": {
+    "mtime": 1792592979.4742622,
+    "seen": 1792598557.4457006,
+    "ast_hash": "343bf72f71043b4da467584bfb1d13cc",
+    "semantic_hash": "343bf72f71043b4da467584bfb1d13cc"
+  },
+  "settings.gradle.kts": {
+    "mtime": 1790491974.5164952,
+    "seen": 1792171530.355798,
+    "ast_hash": "ea3b688ae65b4a2229d67ec0a4614215",
+    "semantic_hash": "ea3b688ae65b4a2229d67ec0a4614215"
+  },
+  "app/src/main/java/ayodong/emobilize/ui/notifications/ExpandableReminderCard.kt": {
+    "mtime": 1792661880.0155694,
+    "seen": 1792662922.4033701,
+    "ast_hash": "afc644cf8a2d2faa4982904fa2003871",
+    "semantic_hash": "afc644cf8a2d2faa4982904fa2003871"
+  },
+  ".github/workflows/ci.yml": {
+    "mtime": 1792592979.4077914,
+    "seen": 1792598557.4457006,
+    "ast_hash": "20181ad43170ce58b25ee22837ab1ae7",
+    "semantic_hash": "20181ad43170ce58b25ee22837ab1ae7"
+  },
+  "CONTEXT.md": {
+    "mtime": 1792604717.802048,
+    "seen": 1792658332.3994665,
+    "ast_hash": "f6a56d1e9a28ee620ef365ab3d1d4a9d",
+    "semantic_hash": "f6a56d1e9a28ee620ef365ab3d1d4a9d"
+  },
+  "DESIGN.md": {
+    "mtime": 1792592979.4115696,
+    "seen": 1792598557.4457006,
+    "ast_hash": "aa37f8986846d68705be9cfdb6b5e602",
+    "semantic_hash": "aa37f8986846d68705be9cfdb6b5e602"
+  },
+  "app/src/main/res/mipmap-hdpi/ic_launcher.webp": {
+    "mtime": 1790491974.484126,
+    "seen": 1792598557.4457006,
+    "ast_hash": "39d9bb21eb48f128a71c3f01ad3cd427",
+    "semantic_hash": "39d9bb21eb48f128a71c3f01ad3cd427"
+  },
+  "app/src/main/res/mipmap-hdpi/ic_launcher_round.webp": {
+    "mtime": 1790491974.4855113,
+    "seen": 1792598557.4457006,
+    "ast_hash": "70d6f58af3c76ee221c829b1ce9daa04",
+    "semantic_hash": "70d6f58af3c76ee221c829b1ce9daa04"
+  },
+  "app/src/main/res/mipmap-mdpi/ic_launcher.webp": {
+    "mtime": 1790491974.4885108,
+    "seen": 1792598557.4457006,
+    "ast_hash": "d2acce71c7b46e5e9540d23a9f7b2166",
+    "semantic_hash": "d2acce71c7b46e5e9540d23a9f7b2166"
+  },
+  "app/src/main/res/mipmap-mdpi/ic_launcher_round.webp": {
+    "mtime": 1790491974.489513,
+    "seen": 1792598557.4457006,
+    "ast_hash": "6376acb48f96a855ee95c113cd7fd616",
+    "semantic_hash": "6376acb48f96a855ee95c113cd7fd616"
+  },
+  "app/src/main/res/mipmap-xhdpi/ic_launcher.webp": {
+    "mtime": 1790491974.4915266,
+    "seen": 1792598557.4457006,
+    "ast_hash": "bd087d80b70bec05a43c745f29dc3ffc",
+    "semantic_hash": "bd087d80b70bec05a43c745f29dc3ffc"
+  },
+  "app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp": {
+    "mtime": 1790491974.4925292,
+    "seen": 1792598557.4457006,
+    "ast_hash": "7479edd56ab712609f030054bffd7263",
+    "semantic_hash": "7479edd56ab712609f030054bffd7263"
+  },
+  "app/src/main/res/mipmap-xxhdpi/ic_launcher.webp": {
+    "mtime": 1790491974.4940493,
+    "seen": 1792598557.4457006,
+    "ast_hash": "ea180e8d1a2e8300cc998b987266b736",
+    "semantic_hash": "ea180e8d1a2e8300cc998b987266b736"
+  },
+  "app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp": {
+    "mtime": 1790491974.4940493,
+    "seen": 1792598557.4457006,
+    "ast_hash": "947842742b29eeda80ee0805e1600366",
+    "semantic_hash": "947842742b29eeda80ee0805e1600366"
+  },
+  "app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp": {
+    "mtime": 1790491974.496454,
+    "seen": 1792598557.4457006,
+    "ast_hash": "54ab624970c86c2146e76b93f27586f7",
+    "semantic_hash": "54ab624970c86c2146e76b93f27586f7"
+  },
+  "app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp": {
+    "mtime": 1790491974.4974506,
+    "seen": 1792598557.4457006,
+    "ast_hash": "9ee591be72fb336861a8044086054daa",
+    "semantic_hash": "9ee591be72fb336861a8044086054daa"
+  },
+  "HALAMAN.md": {
+    "mtime": 1792657761.5361557,
+    "seen": 1792658332.3994665,
+    "ast_hash": "e9e89abc03ec432d5c855986af1c333b",
+    "semantic_hash": "e9e89abc03ec432d5c855986af1c333b"
+  },
+  "app/src/debug/java/ayodong/emobilize/ui/preview/EmobilizePreviews.kt": {
+    "mtime": 1792661880.0721273,
+    "seen": 1792662922.4033701,
+    "ast_hash": "c9f84d511b1cd7c54e994ad455b3cfa9",
+    "semantic_hash": "c9f84d511b1cd7c54e994ad455b3cfa9"
+  },
+  "app/src/main/java/ayodong/emobilize/ui/navigation/AppRoute.kt": {
+    "mtime": 1792661880.117453,
+    "seen": 1792662922.4033701,
+    "ast_hash": "7d4ec32c9b6d740b8ddb88ed52286b63",
+    "semantic_hash": "7d4ec32c9b6d740b8ddb88ed52286b63"
+  },
+  "app/src/main/java/ayodong/emobilize/ui/preview/Previews.kt": {
+    "mtime": 1792658646.4158633,
+    "seen": 1792662922.4033701,
+    "ast_hash": "fda6f900a148084c6b4c4f34e779fccb",
+    "semantic_hash": "fda6f900a148084c6b4c4f34e779fccb"
+  },
+  "app/src/main/java/ayodong/emobilize/ui/form/FormField.kt": {
+    "mtime": 1792661880.1681516,
+    "seen": 1792662922.4033701,
+    "ast_hash": "9532ec299245882f921e25a24667e084",
+    "semantic_hash": "9532ec299245882f921e25a24667e084"
+  },
+  "app/src/main/java/ayodong/emobilize/ui/tasks/TaskDetailScreen.kt": {
+    "mtime": 1792664005.2168362,
+    "seen": 1792664743.8122718,
+    "ast_hash": "320228b0e8bac81fe02357ea982d3d3b",
+    "semantic_hash": ""
+  },
+  "PROJECT_REPORT.md": {
+    "mtime": 1792664735.4755943,
+    "seen": 1792664743.8122718,
+    "ast_hash": "4ca4b53790e51c7f0e47d1d93cc0b56e",
+    "semantic_hash": ""
+  },
+  "app/src/main/java/ayodong/emobilize/ui/splash/SplashScreen.kt": {
+    "mtime": 1792662049.298478,
+    "seen": 1792662922.4033701,
+    "ast_hash": "1c26ae68f6d78155d0f76c2b6a75eb36",
+    "semantic_hash": "1c26ae68f6d78155d0f76c2b6a75eb36"
+  },
+  "app/src/main/java/ayodong/emobilize/ui/theme/EmobilizeLogo.kt": {
+    "mtime": 1792661880.3838613,
+    "seen": 1792662922.4033701,
+    "ast_hash": "bedbbdace1f80261d581f2e0c221a347",
+    "semantic_hash": "bedbbdace1f80261d581f2e0c221a347"
+  },
+  "app/src/main/res/drawable-night/ic_emobilize_logo_app.png": {
+    "mtime": 1792661242.9309835,
+    "seen": 1792662922.4033701,
+    "ast_hash": "70b9a9b6c0ede178f3474cffc1219788",
+    "semantic_hash": "70b9a9b6c0ede178f3474cffc1219788"
+  },
+  "app/src/main/res/drawable/ic_emobilize_logo_app.png": {
+    "mtime": 1792661242.9324915,
+    "seen": 1792662922.4033701,
+    "ast_hash": "960060706a344221ec60ba43b09b9cd8",
+    "semantic_hash": "960060706a344221ec60ba43b09b9cd8"
+  },
+  "app/src/main/res/drawable/ic_emobilize_logo_dark.png": {
+    "mtime": 1792661242.9309835,
+    "seen": 1792662922.4033701,
+    "ast_hash": "70b9a9b6c0ede178f3474cffc1219788",
+    "semantic_hash": "70b9a9b6c0ede178f3474cffc1219788"
+  },
+  "app/src/main/res/drawable/ic_emobilize_logo_light.png": {
+    "mtime": 1792661242.9324915,
+    "seen": 1792662922.4033701,
+    "ast_hash": "960060706a344221ec60ba43b09b9cd8",
+    "semantic_hash": "960060706a344221ec60ba43b09b9cd8"
+  },
+  "app/src/main/res/drawable/ic_emobilize_mark_dark.png": {
+    "mtime": 1792661242.8959472,
+    "seen": 1792662922.4033701,
+    "ast_hash": "eca012b89e1b4aeec38e41eecfcd486e",
+    "semantic_hash": "eca012b89e1b4aeec38e41eecfcd486e"
+  },
+  "app/src/main/res/drawable/ic_emobilize_mark_light.png": {
+    "mtime": 1792661242.918379,
+    "seen": 1792662922.4033701,
+    "ast_hash": "66655b8275aab1beaaeae69097484dfd",
+    "semantic_hash": "66655b8275aab1beaaeae69097484dfd"
+  }
+}
