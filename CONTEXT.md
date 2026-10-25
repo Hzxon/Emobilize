@@ -66,7 +66,7 @@ Package: `ayodong.emobilize`. Satu modul Gradle: `:app`. `minSdk` 28. `compileSd
 | Bagian layar | File | Composable |
 | --- | --- | --- |
 | Daftar rute, kapan form muncul | `core/navigation/AppNavHost.kt` | `AppNavHost` |
-| Tombol header (Reminders, Settings), tab, dock, radial menu | `core/navigation/MainShell.kt` | `MainShell`, `HeaderButton` |
+| Tombol header (Reminders, Settings), pindah tab, radial menu | `core/navigation/MainShell.kt` | `MainShell`, `HeaderButton` |
 | Preferensi aplikasi dan kategori | `feature/settings/ui/SettingsScreen.kt` | `SettingsScreen` |
 | Papan keberangkatan, filter, baris tugas | `feature/tasks/ui/TasksScreen.kt` | `TasksScreen`, `BoardRow`, `NextStrip`, `LastService` |
 | Kartu Add di tab Tasks | `feature/tasks/ui/AddTaskCard.kt` | `AddTaskCard` |
@@ -74,8 +74,8 @@ Package: `ayodong.emobilize`. Satu modul Gradle: `:app`. `minSdk` 28. `compileSd
 | Form Add dan edit di tab Calendar | `feature/calendar/ui/CalendarFormSheet.kt` | `CalendarFormSheet` |
 | Peta rute: header, garis minggu, kisi bulan, agenda | `feature/calendar/ui/CalendarScreen.kt` | `CalendarScreen`, `WeekLine`, `MonthGrid`, `DayAgenda`, `RouteRow` |
 | Tiket detail tugas | `feature/tasks/ui/TaskDetailScreen.kt` | `TaskDetailScreen`, `Ticket` |
-| Dock bawah, tab, muka tombol tengah | `core/ui/dock/RadialDock.kt` | `BottomDock`, `FabFace` |
-| Kipas Add / Update / Edit / Delete | `core/ui/dock/RadialMenu.kt` | `RadialMenu` |
+| Muka tombol mengambang | `core/ui/dock/RadialDock.kt` | `FabFace` |
+| Gestur tombol mengambang, kipas Add / Update / Edit / Delete | `core/ui/dock/RadialMenu.kt` | `RadialMenu` |
 | Warna, radius, jarak, font | `core/ui/theme/` dan `DESIGN.md` | `LocalPalette`, `AppMetrics`, `appStyle`, `monoStyle`, `lineColor` |
 
 State data tidak diubah dari Composable. Setiap fitur punya ViewModel sendiri di `feature/<x>/ui/`. Untuk ganti warna kartu atau jarak, jangan buka ViewModel.
@@ -98,7 +98,7 @@ Jangan menambah palet baru. Nilai token dijelaskan di `DESIGN.md`.
 
 Produk: aplikasi tugas dan kalender. Data di memori, hilang saat proses mati. Sampel di `core/data/SampleData.kt`.
 
-Dua tab: Tasks (label dock DEPARTURES) dan Calendar (label dock ROUTE MAP). Tombol tengah persegi membuka radial menu. Ikon gear di header membuka Settings. Tema hanya diubah dari Settings.
+Dua tab: Tasks (judul Departures) dan Calendar (judul Route map). Tidak ada bar navigasi. Tombol persegi mengambang di tengah bawah: ketuk untuk pindah tab, tahan atau seret untuk membuka radial menu. Ikon gear di header membuka Settings. Tema hanya diubah dari Settings.
 
 ### Tasks
 
@@ -127,7 +127,7 @@ Membuka `CalendarFormSheet`, bukan `AddTaskCard`. Pilihan tipe hanya **Event** d
 
 ### Radial menu
 
-Aksi: Add, Update, Edit, Delete. Di tab Calendar, Update disembunyikan. Animasi: spring `dampingRatio = 0.75`, `Spring.StiffnessMediumLow`, kipas membesar dari hub, tombol naik dari dock, ikon berputar 90 derajat. Jangan mengganti aksi ini dengan menu navigasi.
+Aksi: Add, Update, Edit, Delete. Di tab Calendar, Update disembunyikan. Animasi: spring `dampingRatio = 0.75`, `Spring.StiffnessMediumLow`, kipas membesar dari hub, tombol naik, ikon berputar 90 derajat. Ketukan singkat pada tombol adalah navigasi (pindah tab); kipas hanya dibuka dengan tahan atau seret. Jangan pindahkan aksi Add/Update/Edit/Delete ke tempat lain.
 
 ## Arsitektur
 

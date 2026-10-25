@@ -47,6 +47,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.onLongClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -72,9 +73,12 @@ fun RadialMenu(
     menuOpen: Boolean,
     onMenuOpenChange: (Boolean) -> Unit,
     onAction: (FabAction) -> Unit,
+    // A quick tap on the key switches between Departures and Route map; hold or drag opens the fan.
+    onSwitchTab: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val palette = LocalPalette.current
+    val onSwitchState = rememberUpdatedState(onSwitchTab)
     val progress by animateFloatAsState(
         targetValue = if (menuOpen) 1f else 0f,
         animationSpec = spring(dampingRatio = 0.75f, stiffness = Spring.StiffnessMediumLow),
@@ -250,7 +254,7 @@ fun RadialMenu(
                     .graphicsLayer { translationY = -travelPx * progress },
                 contentAlignment = Alignment.Center,
             ) {
-                FabFace(progress = progress, showCancel = dragging && menuOpen)
+                FabFace(progress = progress, open = menuOpen, tab = tab)
             }
 
             Box(
@@ -264,9 +268,17 @@ fun RadialMenu(
                     }
                     .size(AppMetrics.fabSize)
                     .semantics {
-                        contentDescription = if (menuOpen) "Close menu" else "Open menu"
+                        contentDescription = when {
+                            menuOpen -> "Close actions"
+                            tab == NavTab.Tasks -> "Go to Route map"
+                            else -> "Go to Departures"
+                        }
                         onClick {
-                            onOpenState.value(!menuOpenState.value)
+                            if (menuOpenState.value) onOpenState.value(false) else onSwitchState.value()
+                            true
+                        }
+                        onLongClick(label = "Open actions") {
+                            onOpenState.value(true)
                             true
                         }
                     }
@@ -275,9 +287,35 @@ fun RadialMenu(
                         awaitEachGesture {
                             val down = awaitFirstDown(requireUnconsumed = false)
                             val wasOpen = menuOpenState.value
-                            if (!wasOpen) onOpenState.value(true)
-                            dragging = true
                             down.consume()
+                            // Closed: wait to see whether this is a tap (switch screen) or a hold or drag (open the fan).
+                            var movedEarly = false
+                            if (!wasOpen) {
+                                val ended = withTimeoutOrNull(viewConfiguration.longPressTimeoutMillis) {
+                                    while (true) {
+                                        val event = awaitPointerEvent()
+                                        val change = event.changes.firstOrNull { it.id == down.id } ?: return@withTimeoutOrNull true
+                                        if (!change.pressed) {
+                                            change.consume()
+                                            return@withTimeoutOrNull true
+                                        }
+                                        if ((change.position - down.position).getDistance() > viewConfiguration.touchSlop) {
+                                            return@withTimeoutOrNull false
+                                        }
+                                        change.consume()
+                                    }
+                                    @Suppress("UNREACHABLE_CODE")
+                                    false
+                                }
+                                if (ended == true) {
+                                    onSwitchState.value()
+                                    return@awaitEachGesture
+                                }
+                                movedEarly = ended == false
+                                onOpenState.value(true)
+                                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                            }
+                            dragging = true
 
                             fun updateHover(position: Offset) {
                                 val next = if (progressState.value < 0.5f) {
@@ -294,7 +332,7 @@ fun RadialMenu(
                             }
 
                             updateHover(down.position)
-                            var moved = false
+                            var moved = movedEarly
                             while (true) {
                                 val event = awaitPointerEvent()
                                 val change = event.changes.firstOrNull { it.id == down.id } ?: break

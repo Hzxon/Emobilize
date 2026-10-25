@@ -31,7 +31,7 @@ Token tetap berbentuk shadcn (`ShadcnColors`), tapi nilainya hex Departures.
 | --- | --- | --- |
 | background | `#EEF0F2` | Latar halaman |
 | foreground | `#111214` | Teks utama, garis kontrol |
-| card | `#FFFFFF` | Panel, tombol outline, dock |
+| card | `#FFFFFF` | Panel, tombol outline |
 | popover | `#FFFFFF` | Sheet |
 | primary | `#111214` | Filter aktif, tombol tengah, tab aktif |
 | primary-foreground | `#FFD400` | Teks dan ikon di atas primary |
@@ -55,7 +55,7 @@ Token tetap berbentuk shadcn (`ShadcnColors`), tapi nilainya hex Departures.
 | --- | --- | --- |
 | background | `#111214` | Latar halaman |
 | foreground | `#FFFFFF` | Teks utama |
-| card, popover | `#1B1D21` | Panel, sheet, dock |
+| card, popover | `#1B1D21` | Panel, sheet |
 | primary | `#FFD400` | Aksi utama |
 | primary-foreground | `#111214` | Teks di atas primary |
 | secondary, muted | `#22242A` | Bidang tenang |
@@ -88,7 +88,7 @@ Papan keberangkatan dan tiket tetap gelap/putih di kedua tema, seperti layar sta
 | Token | Light | Dark | Pemakaian |
 | --- | --- | --- | --- |
 | scrim | `#000000` 40% | `#000000` 62% | Overlay menu radial dan sheet |
-| nav | background 96% | background 97% | Cadangan; dock memakai `card` |
+| nav | background 96% | background 97% | Cadangan; tidak ada bar navigasi |
 | shadow | transparan | transparan | Departures tidak memakai bayangan |
 | text-subtle | muted-foreground 62% | muted-foreground 62% | Teks redup |
 
@@ -184,9 +184,9 @@ Jarak layar yang sudah dipakai (`AppMetrics`):
 | pageHorizontal | 20 dp | Papan, filter, peta rute |
 | cardMinHeight | 68 dp | Kartu form |
 | actionHeight | 44 dp | Tombol aksi |
-| navHeight | 96 dp | Dock |
-| fabSize | 96 dp | Tombol tengah, setinggi dock |
-| fabCenterFromBottom | 48 dp | Pusat tombol tengah |
+| navHeight | 80 dp | Ruang kosong di bawah konten untuk tombol mengambang |
+| fabSize | 80 dp | Area sentuh tombol mengambang (persegi terlihat 64 dp) |
+| fabCenterFromBottom | 40 dp | Pusat tombol mengambang |
 | nodeSize | 48 dp | Item menu radial |
 
 Garis kontrol 2 dp `foreground`. Tombol utama tinggi 52–56 dp. Target sentuh minimal 44 dp.
@@ -203,12 +203,14 @@ Garis kontrol 2 dp `foreground`. Tombol utama tinggi 52–56 dp. Target sentuh m
 - Tombol Reminders dan Settings di kanan baris itu. `MainShell` mengirimnya lewat parameter `headerActions`.
 - Tombol header: persegi 44 dp, isi `card`, garis 2 dp `foreground`
 
-### Dock (`RadialDock`)
+### Tombol mengambang (`RadialMenu`, `FabFace`)
 
-- Isi `card`, garis atas 2 dp `foreground`
-- Tab DEPARTURES dan ROUTE MAP, UPPERCASE
-- Tab aktif: teks `foreground` dan bilah atas 4 dp `foreground`
-- Tombol tengah: persegi penuh 96 dp, isi `primary`, ikon plus `primary-foreground`. Tetap membuka menu radial.
+- Tidak ada bar navigasi bawah. Satu tombol persegi mengambang di tengah bawah.
+- Persegi 64 dp, isi `primary`, garis 2 dp `primary-foreground`. Area sentuh 80 dp.
+- Ikon menunjuk layar tujuan: kalender di Departures, daftar di Route map. Saat kipas terbuka: ikon tutup.
+- Ketuk: pindah antara Departures dan Route map.
+- Tahan atau seret: buka menu radial (Add, Update, Edit, Delete). Lepas di sektor untuk memilih.
+- TalkBack: aksi klik "Go to Route map" / "Go to Departures", aksi tahan "Open actions".
 
 ### Menu radial (`RadialMenu`)
 

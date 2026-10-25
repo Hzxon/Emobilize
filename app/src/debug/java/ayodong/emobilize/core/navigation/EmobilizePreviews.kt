@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -44,7 +45,6 @@ import ayodong.emobilize.core.model.Priority
 import ayodong.emobilize.core.model.ReminderOption
 import ayodong.emobilize.core.model.Task
 import ayodong.emobilize.core.model.WeekStart
-import ayodong.emobilize.core.ui.dock.BottomDock
 import ayodong.emobilize.core.ui.dock.NavTab
 import ayodong.emobilize.core.ui.theme.AppPalette
 import ayodong.emobilize.core.ui.theme.EmobilizeTheme
@@ -208,9 +208,9 @@ private fun ScreenPreview(
                         )
                     }
                 }
-                BottomDock(
-                    tab = currentTab,
-                    onTab = { currentTab = it },
+                // The floating key replaces the tab bar; previews keep its space clear.
+                androidx.compose.foundation.layout.Spacer(
+                    Modifier.height(ayodong.emobilize.core.ui.theme.AppMetrics.navHeight),
                 )
             }
             if (bannerExpanded != null) {

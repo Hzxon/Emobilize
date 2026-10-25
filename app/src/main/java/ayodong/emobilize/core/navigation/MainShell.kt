@@ -18,6 +18,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -47,7 +50,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import ayodong.emobilize.core.di.LocalAppContainer
-import ayodong.emobilize.core.ui.dock.BottomDock
 import ayodong.emobilize.core.ui.dock.FabAction
 import ayodong.emobilize.core.ui.dock.NavTab
 import ayodong.emobilize.core.ui.dock.RadialMenu
@@ -220,16 +222,12 @@ internal fun MainShell(
                     )
                 }
             }
-            BottomDock(
-                tab = tab,
-                onTab = { next ->
-                    menuOpen = false
-                    shell.clearBlockSelection()
-                    if (next == NavTab.Calendar && shellState.pendingAction == FabAction.Update) {
-                        shell.cancelPending()
-                    }
-                    tab = next
-                },
+            // No tab bar: this strip only keeps content clear of the floating key, which switches screens.
+            Spacer(
+                Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .height(AppMetrics.navHeight),
             )
         }
         RadialMenu(
@@ -244,6 +242,14 @@ internal fun MainShell(
                     action == FabAction.Add -> navController.openForm(shell, AppRoute.AddTask)
                     else -> shell.onFabAction(action)
                 }
+            },
+            onSwitchTab = {
+                val next = if (tab == NavTab.Tasks) NavTab.Calendar else NavTab.Tasks
+                shell.clearBlockSelection()
+                if (next == NavTab.Calendar && shellState.pendingAction == FabAction.Update) {
+                    shell.cancelPending()
+                }
+                tab = next
             },
             modifier = Modifier.zIndex(2f),
         )
