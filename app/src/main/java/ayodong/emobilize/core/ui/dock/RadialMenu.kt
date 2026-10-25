@@ -5,6 +5,11 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import ayodong.emobilize.core.ui.theme.monoStyle
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.alpha
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -59,11 +64,9 @@ import ayodong.emobilize.core.ui.theme.AppMetrics
 import ayodong.emobilize.core.ui.theme.LocalPalette
 import ayodong.emobilize.core.ui.theme.appStyle
 import ayodong.emobilize.core.ui.theme.menuColor
-import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.hypot
-import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
@@ -102,7 +105,7 @@ fun RadialMenu(
     val restFromBottom = with(density) { AppMetrics.fabCenterFromBottom.toPx() }
     val hubFromBottom = with(density) { (16.dp + AppMetrics.arcRadius).toPx() }
     val travelPx = hubFromBottom - restFromBottom
-    val innerLimit = fabPx / 2f + with(density) { 8.dp.toPx() }
+    val innerLimit = with(density) { DialInner.toPx() - 6.dp.toPx() }
     val outerLimit = arcPx + nodePx
     val centerX = widthPx / 2f
     val restY = heightPx - bottomInset - restFromBottom
@@ -116,20 +119,21 @@ fun RadialMenu(
         }
     }
 
+    val slices = dialSlices(actions, tab)
+    val needleAngle by animateFloatAsState(
+        targetValue = slices.firstOrNull { it.action == highlighted }?.center ?: 0f,
+        animationSpec = spring(dampingRatio = 0.6f, stiffness = Spring.StiffnessMedium),
+        label = "dialNeedle",
+    )
+
+    // The slice under the finger, or null inside the hub or past the dial's rim.
     fun nearest(position: Offset, origin: Offset): FabAction? {
         val dx = position.x - origin.x
         val dy = position.y - origin.y
         val distance = hypot(dx, dy)
         if (distance < innerLimit || distance > outerLimit) return null
         val pointerAngle = Math.toDegrees(atan2(dx.toDouble(), (-dy).toDouble())).toFloat()
-        return actions
-            .map { action ->
-                val raw = abs(pointerAngle - displayAngle(action, tab)) % 360f
-                action to min(raw, 360f - raw)
-            }
-            .minBy { it.second }
-            .takeIf { it.second <= 30f }
-            ?.first
+        return slices.firstOrNull { pointerAngle >= it.start && pointerAngle < it.end }?.action
     }
 
     Box(
@@ -181,37 +185,89 @@ fun RadialMenu(
                     },
             ) {
                 Canvas(Modifier.fillMaxSize()) {
-                    actions.forEach { action ->
-                        val angle = displayAngle(action, tab)
-                        val color = palette.menuColor(action)
-                        val active = highlighted == action
-                        val path = sectorPath(
-                            center = Offset(size.width / 2f, size.height / 2f),
-                            inner = fabPx / 2f + 6.dp.toPx(),
-                            outer = arcPx + 12.dp.toPx(),
-                            startDeg = angle - 27f,
-                            endDeg = angle + 27f,
+                    val center = Offset(size.width / 2f, size.height / 2f)
+                    val inner = DialInner.toPx()
+                    val outer = DialOuter.toPx()
+                    val rim = DialRim.toPx()
+                    fun at(radius: Float, degrees: Float): Offset {
+                        val radians = Math.toRadians(degrees.toDouble())
+                        return Offset(
+                            center.x + radius * sin(radians).toFloat(),
+                            center.y - radius * cos(radians).toFloat(),
                         )
-                        // Opaque sectors with an ink outline, so the fan reads over the dark board.
-                        drawPath(path, if (active) color else palette.card)
-                        drawPath(path, palette.text, style = Stroke(width = 2.dp.toPx()))
                     }
+                    // Tick ring: a mark every 6 degrees, longer and brighter every 30.
+                    for (deg in -120..120 step 6) {
+                        val major = deg % 30 == 0
+                        drawLine(
+                            Color.White.copy(alpha = if (major) 0.8f else 0.35f),
+                            at(156.dp.toPx(), deg.toFloat()),
+                            at((if (major) 168 else 162).dp.toPx(), deg.toFloat()),
+                            strokeWidth = (if (major) 2.5f else 1.5f).dp.toPx(),
+                        )
+                    }
+                    // Slices: dark plates with an action-coloured rim. The picked one fills with
+                    // its colour, grows past the rim and takes a signal-yellow rim.
+                    slices.forEach { slice ->
+                        val on = highlighted == slice.action
+                        val fade = if (highlighted != null && !on) 0.6f else 1f
+                        val color = dialColor(slice.action)
+                        val reach = if (on) outer + DialLift.toPx() else outer
+                        drawPath(sectorPath(center, inner, reach, slice.start, slice.end), if (on) color else DialPlate, alpha = fade)
+                        drawPath(sectorPath(center, reach - rim, reach, slice.start, slice.end), if (on) palette.signal else color, alpha = fade)
+                    }
+                    slices.drop(1).forEach { slice ->
+                        drawLine(DialSeam, at(inner, slice.start), at(outer - rim, slice.start), strokeWidth = 2.dp.toPx())
+                    }
+                    // Needle from the hub to the picked slice; it rests pointing straight up.
+                    val tip = at(150.dp.toPx(), needleAngle)
+                    drawLine(palette.signal, at(40.dp.toPx(), needleAngle), tip, strokeWidth = 4.dp.toPx())
+                    drawPath(
+                        Path().apply {
+                            moveTo(tip.x, tip.y)
+                            at(141.dp.toPx(), needleAngle - 3f).let { lineTo(it.x, it.y) }
+                            at(141.dp.toPx(), needleAngle + 3f).let { lineTo(it.x, it.y) }
+                            close()
+                        },
+                        palette.signal,
+                    )
+                    drawCircle(DialSeam, radius = 46.dp.toPx(), center = center)
+                    drawCircle(DialHubRing, radius = 46.dp.toPx(), center = center, style = Stroke(width = 2.dp.toPx()))
                 }
 
-                actions.forEach { action ->
-                    val angle = displayAngle(action, tab)
-                    val radians = Math.toRadians(angle.toDouble())
-                    val reach = arcPx * 0.78f
+                // Destination sign above the dial: a prompt until a slice is picked, then its name.
+                val picked = highlighted
+                Box(
+                    Modifier
+                        .align(Alignment.TopCenter)
+                        .offset(y = (-42).dp)
+                        .background(if (picked != null) palette.signal else palette.signalInk)
+                        .border(2.dp, palette.signal)
+                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                ) {
+                    Text(
+                        if (picked != null) "\u2192 ${picked.label.uppercase()}" else "SLIDE TO SELECT",
+                        style = monoStyle(13.sp, letterSpacing = 1.5.sp),
+                        color = if (picked != null) palette.signalInk else palette.signal,
+                        maxLines = 1,
+                    )
+                }
+
+                slices.forEach { slice ->
+                    val action = slice.action
+                    val on = highlighted == action
+                    val radians = Math.toRadians(slice.center.toDouble())
+                    val reach = with(density) { (if (on) 101.dp else 95.dp).toPx() }
                     val x = wheelPx / 2f + (reach * sin(radians)).toFloat()
                     val y = wheelPx / 2f + (-reach * cos(radians)).toFloat()
-                    val color = palette.menuColor(action)
-                    val active = highlighted == action
+                    val color = dialColor(action)
                     Column(
                         modifier = Modifier
                             .offset {
                                 IntOffset((x - nodePx / 2f).roundToInt(), (y - nodePx / 2f).roundToInt())
                             }
                             .size(AppMetrics.nodeSize)
+                            .alpha(if (highlighted != null && !on) 0.6f else 1f)
                             .semantics {
                                 contentDescription = action.label
                                 onClick {
@@ -220,20 +276,21 @@ fun RadialMenu(
                                 }
                             },
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
+                        verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
                     ) {
                         Icon(
                             actionIcon(action),
                             contentDescription = null,
-                            tint = if (active) palette.onDark else color,
+                            tint = if (on) Color.White else color,
                             modifier = Modifier.size(20.dp),
                         )
                         Text(
                             action.label.uppercase(),
-                            style = appStyle(11.sp, FontWeight.ExtraBold, letterSpacing = 0.5.sp),
-                            color = if (active) palette.onDark else palette.text,
+                            style = monoStyle(11.sp, letterSpacing = 1.sp),
+                            color = Color.White,
                             textAlign = TextAlign.Center,
                             maxLines = 1,
+                            softWrap = false,
                         )
                     }
                 }
@@ -361,6 +418,22 @@ fun RadialMenu(
             )
         }
     }
+}
+
+// The dial stays dark in both themes, like the board, so it carries its own bright action colours.
+private val DialPlate = Color(0xFF1B1D21)
+private val DialSeam = Color(0xFF111214)
+private val DialHubRing = Color(0xFF3A3D44)
+private val DialInner = 54.dp
+private val DialOuter = 138.dp
+private val DialRim = 8.dp
+private val DialLift = 14.dp
+
+private fun dialColor(action: FabAction): Color = when (action) {
+    FabAction.Add -> Color(0xFF1FA35C)
+    FabAction.Edit -> Color(0xFFE08A00)
+    FabAction.Update -> Color(0xFF3B82F6)
+    FabAction.Delete -> Color(0xFFFF5A4E)
 }
 
 private fun actionIcon(action: FabAction): ImageVector = when (action) {

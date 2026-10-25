@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
@@ -18,18 +17,20 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
 import ayodong.emobilize.core.ui.theme.LocalPalette
 
-// The floating key: a solid square. At rest it shows the screen a tap goes to; open, it shows close.
+// The floating key: a solid square. At rest it shows the screen a tap goes to. As the dial
+// opens it turns 45 degrees into a diamond hub with an upright close mark.
 @Composable
 internal fun FabFace(progress: Float, open: Boolean, tab: NavTab) {
     val palette = LocalPalette.current
-    Box(
-        Modifier
-            .fillMaxSize()
-            .padding(8.dp)
-            .background(palette.primary)
-            .border(2.dp, palette.onFilled),
-        contentAlignment = Alignment.Center,
-    ) {
+    val turn = 45f * progress.coerceIn(0f, 1f)
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Box(
+            Modifier
+                .size(64.dp - 10.dp * progress.coerceIn(0f, 1f))
+                .rotate(turn)
+                .background(palette.signal)
+                .border(2.dp, palette.signalInk),
+        )
         Icon(
             when {
                 open -> Icons.Filled.Close
@@ -37,10 +38,8 @@ internal fun FabFace(progress: Float, open: Boolean, tab: NavTab) {
                 else -> Icons.AutoMirrored.Filled.List
             },
             contentDescription = null,
-            tint = palette.onFilled,
-            modifier = Modifier
-                .size(26.dp)
-                .rotate(progress * 90f),
+            tint = palette.signalInk,
+            modifier = Modifier.size(26.dp),
         )
     }
 }

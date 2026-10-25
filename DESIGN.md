@@ -206,17 +206,22 @@ Garis kontrol 2 dp `foreground`. Tombol utama tinggi 52–56 dp. Target sentuh m
 ### Tombol mengambang (`RadialMenu`, `FabFace`)
 
 - Tidak ada bar navigasi bawah. Satu tombol persegi mengambang di tengah bawah.
-- Persegi 64 dp, isi `primary`, garis 2 dp `primary-foreground`. Area sentuh 80 dp.
+- Persegi 64 dp, isi `signal`, garis 2 dp `signalInk`. Area sentuh 80 dp. Saat dial terbuka, persegi berputar 45° menjadi berlian 54 dp dengan tanda tutup tegak.
 - Ikon menunjuk layar tujuan: kalender di Departures, daftar di Route map. Saat kipas terbuka: ikon tutup.
 - Ketuk: pindah antara Departures dan Route map.
 - Tahan atau seret: buka menu radial (Add, Update, Edit, Delete). Lepas di sektor untuk memilih.
 - TalkBack: aksi klik "Go to Route map" / "Go to Departures", aksi tahan "Open actions".
 
-### Menu radial (`RadialMenu`)
+### Menu radial: Signal dial (`RadialMenu`)
 
-- Sektor buram: isi `card`, garis 2 dp `foreground`
-- Ikon warna aksi, label UPPERCASE ExtraBold `foreground`
-- Sektor yang disorot: isi warna aksi, ikon dan label putih
+- Selalu gelap seperti papan, di kedua tema. Warna aksi khusus dial: Add `#1FA35C`, Edit `#E08A00`, Update `#3B82F6`, Delete `#FF5A4E`.
+- Irisan menyatu tanpa celah (`dialSlices`): batasnya di titik tengah antar aksi, irisan terluar 28° di luar aksinya. Radius dalam 54 dp, luar 138 dp.
+- Tiap irisan: isi `#1B1D21`, tepi luar 8 dp warna aksi, ikon warna aksi, label mono 11 sp putih. Sambungan antar irisan garis gelap 2 dp. Tidak ada garis tepi putih.
+- Cincin tick di luar dial: tiap 6°, lebih panjang dan terang tiap 30°.
+- Jarum `signal` dari hub ke irisan yang disorot, diam menunjuk ke atas, bergerak dengan spring.
+- Papan tujuan di atas dial: "SLIDE TO SELECT", lalu "→ ADD" dengan isi `signal`.
+- Irisan disorot: isi warna aksi, memanjang 14 dp keluar, tepi `signal`; irisan lain redup 60%.
+- Pilihan memakai irisan di bawah jari, bukan sudut terdekat. Di Calendar (tanpa Update) Edit pindah ke atas agar tiga irisan seimbang.
 
 ### Filter dan toggle tersegmen
 
