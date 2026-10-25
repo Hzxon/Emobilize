@@ -45,7 +45,7 @@ feature/<x>/
 
 ## Branch dan PR
 
-- Satu branch atau `git worktree` per tugas. PR kecil, merge ke `main` setiap hari.
+- Satu branch atau `git worktree` per tugas. PR kecil, merge ke `main` setiap hari. Caranya ada di skill `.claude/skills/parallel-work/` (baca sebelum edit pertama); helper `scripts/task.sh` di dalamnya membuat worktree, mengklaim branch, dan mengecek tumpang tindih dengan tugas lain.
 - Perubahan hotspot (`core/`, Gradle, manifest) masuk lewat PR kecil dari pemilik `core/` dan di-merge lebih dulu.
 - Migrasi skema data dikerjakan berurutan, tidak paralel.
 - Conflict yang tetap muncul berarti dua tugas tidak independen atau agent keluar batas. Pindahkan bagian bersama ke `core/`.
