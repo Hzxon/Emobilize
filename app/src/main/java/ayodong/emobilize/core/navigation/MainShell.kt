@@ -18,19 +18,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -40,14 +39,16 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -60,6 +61,7 @@ import ayodong.emobilize.core.ui.dock.RadialMenu
 import ayodong.emobilize.core.ui.theme.AppMetrics
 import ayodong.emobilize.core.ui.theme.LocalPalette
 import ayodong.emobilize.core.ui.theme.ShadcnRadius
+import ayodong.emobilize.core.ui.theme.appStyle
 import ayodong.emobilize.feature.calendar.di.CalendarModule
 import ayodong.emobilize.feature.calendar.ui.CalendarScreen
 import ayodong.emobilize.feature.calendar.ui.CalendarViewModel
@@ -127,11 +129,11 @@ internal fun MainShell(
                 Modifier
                     .fillMaxWidth()
                     .statusBarsPadding()
-                    .padding(start = 24.dp, end = 12.dp, top = 4.dp),
+                    .padding(start = AppMetrics.headerHorizontal, end = AppMetrics.headerHorizontal, top = 14.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                Spacer(Modifier.weight(1f))
+                StationMark(Modifier.weight(1f))
                 HeaderButton(
                     icon = Icons.Outlined.Notifications,
                     contentDescription = "Reminders",
@@ -318,7 +320,33 @@ private fun TabPage(
     }
 }
 
-// Round secondary button for the top-right header actions, matching the calendar's month arrows.
+// The station sign: a square "E" plate and the app name, set like platform signage.
+@Composable
+private fun StationMark(modifier: Modifier = Modifier) {
+    val colors = LocalPalette.current
+    Row(
+        modifier.semantics(mergeDescendants = true) {},
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Box(
+            Modifier
+                .size(28.dp)
+                .background(colors.primary),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text("E", style = appStyle(16.sp, FontWeight.ExtraBold), color = colors.onFilled)
+        }
+        Text(
+            "EMOBILIZE CENTRAL",
+            style = appStyle(13.sp, FontWeight.Bold, letterSpacing = 1.5.sp),
+            color = colors.text,
+            maxLines = 1,
+        )
+    }
+}
+
+// Square outlined button for the top-right header actions.
 @Composable
 private fun HeaderButton(
     icon: ImageVector,
@@ -326,21 +354,14 @@ private fun HeaderButton(
     onClick: () -> Unit,
 ) {
     val colors = LocalPalette.current
-    // 48dp touch target, 40dp visible circle.
     Box(
         Modifier
             .size(48.dp)
-            .clip(CircleShape)
+            .background(colors.card)
+            .border(2.dp, colors.text)
             .clickable(onClick = onClick, role = Role.Button),
         contentAlignment = Alignment.Center,
     ) {
-        Box(
-            Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(colors.scheme.secondary)
-                .border(1.dp, colors.scheme.border, CircleShape),
-        )
         Icon(
             imageVector = icon,
             contentDescription = contentDescription,

@@ -54,6 +54,7 @@ import ayodong.emobilize.core.ui.component.FormField
 import ayodong.emobilize.core.ui.form.SectionLabel
 import ayodong.emobilize.core.ui.theme.AppMetrics
 import ayodong.emobilize.core.ui.theme.LocalPalette
+import ayodong.emobilize.core.ui.theme.lineColor
 import ayodong.emobilize.core.ui.theme.ShadcnRadius
 import ayodong.emobilize.core.ui.theme.appStyle
 
@@ -397,7 +398,7 @@ private fun CategoryEditor(
                             Modifier
                                 .size(28.dp)
                                 .clip(CircleShape)
-                                .background(Color(color))
+                                .background(lineColor(color))
                                 .border(if (selected) 2.dp else 1.dp, if (selected) palette.text else palette.scheme.border, CircleShape),
                         )
                     }
@@ -420,7 +421,7 @@ private fun CategoryEditor(
                     .padding(end = 14.dp)
                     .size(14.dp)
                     .clip(CircleShape)
-                    .background(Color(category.color)),
+                    .background(lineColor(category.color)),
             )
             Text(category.name, modifier = Modifier.weight(1f), style = appStyle(15.sp, FontWeight.SemiBold), color = palette.text)
             Box(

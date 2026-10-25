@@ -23,8 +23,8 @@ fun AppPalette.inkOn(color: Color): Color {
 fun AppPalette.roleInk(color: Color): Color = lerp(color, text, 0.35f)
 
 fun AppPalette.menuColor(action: FabAction): Color = when (action) {
-    FabAction.Add -> Color(0xFF16A34A)
-    FabAction.Update -> Color(0xFF2563EB)
+    FabAction.Add -> Color(0xFF007A4D)
+    FabAction.Update -> Color(0xFF0057B8)
     FabAction.Edit -> actionEdit
     FabAction.Delete -> danger
 }
@@ -82,6 +82,17 @@ data class AppPalette(
     val danger: Color,
     val cardHighlight: Color,
     val shadow: Color,
+    // The departure board stays dark in both themes, like a real station display.
+    val board: Color,
+    val boardRule: Color,
+    val boardText: Color,
+    val boardMuted: Color,
+    val boardGone: Color,
+    val boardBoarding: Color,
+    val boardBoardingRow: Color,
+    val boardDelayed: Color,
+    val signal: Color,
+    val signalInk: Color,
 )
 
 private fun paletteFrom(id: Int, scheme: ShadcnColors, dark: Boolean): AppPalette {
@@ -158,11 +169,21 @@ private fun paletteFrom(id: Int, scheme: ShadcnColors, dark: Boolean): AppPalett
         cubeInner = listOf(scheme.background, if (dark) scheme.secondary else scheme.muted),
         cubeGlow = if (dark) scheme.foreground.copy(alpha = 0.35f) else Color.Transparent,
         onFilled = scheme.primaryForeground,
-        onDark = hsl(0f, 0f, 98f),
+        onDark = Color(0xFFFFFFFF),
         ink = if (dark) scheme.background else scheme.foreground,
         danger = scheme.destructive,
         cardHighlight = Color.Transparent,
-        shadow = Color.Black.copy(alpha = if (dark) 0.35f else 0.06f),
+        shadow = Color.Transparent,
+        board = if (dark) Color(0xFF000000) else Color(0xFF111214),
+        boardRule = Color(0xFF2A2C31),
+        boardText = Color(0xFFFFFFFF),
+        boardMuted = Color(0xFFA9ACB3),
+        boardGone = Color(0xFF8A8D93),
+        boardBoarding = Color(0xFF3DDC84),
+        boardBoardingRow = Color(0xFF1A2A20),
+        boardDelayed = Color(0xFFFF7A5C),
+        signal = Color(0xFFFFD400),
+        signalInk = Color(0xFF111214),
     )
 }
 
@@ -171,7 +192,20 @@ val NeutralDark = paletteFrom(2, ShadcnDark, dark = true)
 
 val LocalPalette = staticCompositionLocalOf { NeutralLight }
 
-fun AppPalette.categoryColor(category: ayodong.emobilize.core.model.Category): Color = Color(category.color)
+/**
+ * Line colour for a stored category colour. Categories keep their saved ARGB values (the repository
+ * validates them against Category.colorChoices), and each one is drawn as a transit line colour.
+ */
+fun lineColor(argb: Int): Color = when (argb.toLong() and 0xFFFFFFFFL) {
+    0xFFE76E50L -> Color(0xFFD6001C)
+    0xFF2A9D90L -> Color(0xFF007A4D)
+    0xFF274754L -> Color(0xFF5C2D91)
+    0xFFE8C468L -> Color(0xFFB35900)
+    0xFFF4A462L -> Color(0xFF0057B8)
+    else -> Color(argb)
+}
+
+fun AppPalette.categoryColor(category: ayodong.emobilize.core.model.Category): Color = lineColor(category.color)
 
 fun AppPalette.priorityColor(priority: ayodong.emobilize.core.model.Priority): Color = when (priority) {
     ayodong.emobilize.core.model.Priority.Low -> prioLow

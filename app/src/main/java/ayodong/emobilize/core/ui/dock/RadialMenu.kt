@@ -188,12 +188,9 @@ fun RadialMenu(
                             startDeg = angle - 27f,
                             endDeg = angle + 27f,
                         )
-                        drawPath(path, if (active) color else color.copy(alpha = 0.07f))
-                        drawPath(
-                            path,
-                            if (active) color else palette.primary.copy(alpha = 0.21f),
-                            style = Stroke(width = if (active) 2.dp.toPx() else 1.dp.toPx()),
-                        )
+                        // Opaque sectors with an ink outline, so the fan reads over the dark board.
+                        drawPath(path, if (active) color else palette.card)
+                        drawPath(path, palette.text, style = Stroke(width = 2.dp.toPx()))
                     }
                 }
 
@@ -225,12 +222,12 @@ fun RadialMenu(
                             actionIcon(action),
                             contentDescription = null,
                             tint = if (active) palette.onDark else color,
-                            modifier = Modifier.size(18.dp),
+                            modifier = Modifier.size(20.dp),
                         )
                         Text(
-                            action.label,
-                            style = appStyle(11.sp, FontWeight.Medium),
-                            color = if (active) palette.onDark else color,
+                            action.label.uppercase(),
+                            style = appStyle(11.sp, FontWeight.ExtraBold, letterSpacing = 0.5.sp),
+                            color = if (active) palette.onDark else palette.text,
                             textAlign = TextAlign.Center,
                             maxLines = 1,
                         )

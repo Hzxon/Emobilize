@@ -5,14 +5,14 @@ import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -23,11 +23,10 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -43,17 +42,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import ayodong.emobilize.core.model.CalView
 import ayodong.emobilize.core.model.Category
@@ -72,21 +69,19 @@ import ayodong.emobilize.core.model.weekOf
 import ayodong.emobilize.core.ui.dock.FabAction
 import ayodong.emobilize.core.ui.theme.AppMetrics
 import ayodong.emobilize.core.ui.theme.LocalPalette
-import ayodong.emobilize.core.ui.theme.ShadcnRadius
 import ayodong.emobilize.core.ui.theme.appStyle
-import ayodong.emobilize.core.ui.theme.at
 import ayodong.emobilize.core.ui.theme.categoryColor
 import ayodong.emobilize.core.ui.theme.menuColor
-import ayodong.emobilize.core.ui.theme.priorityColor
-import ayodong.emobilize.core.ui.theme.roleInk
+import ayodong.emobilize.core.ui.theme.monoStyle
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
+import java.time.temporal.WeekFields
 import java.util.Locale
-
-private val monthTitle = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.US)
+import kotlin.math.roundToInt
 
 @Composable
 fun CalendarScreen(
@@ -128,6 +123,7 @@ fun CalendarScreen(
     Column(modifier.fillMaxSize()) {
         CalendarHeader(
             month = visibleMonth,
+            activeDate = activeDate,
             view = view,
             showToday = activeDate != today,
             onPrev = { shiftMonth(-1) },
@@ -143,55 +139,55 @@ fun CalendarScreen(
             )
         }
         Box(Modifier.weight(1f).fillMaxWidth()) {
-            when (view) {
-                CalView.Month -> MonthBody(
-                    month = visibleMonth,
-                    weekStart = weekStart,
-                    activeDate = activeDate,
-                    today = today,
+            Column(Modifier.fillMaxSize()) {
+                when (view) {
+                    CalView.Month -> MonthGrid(
+                        month = visibleMonth,
+                        weekStart = weekStart,
+                        activeDate = activeDate,
+                        today = today,
+                        tasks = tasks,
+                        blocks = blocks,
+                        onDate = selectDate,
+                    )
+                    CalView.Week, CalView.Day -> WeekLine(
+                        activeDate = activeDate,
+                        weekStart = weekStart,
+                        today = today,
+                        tasks = tasks,
+                        blocks = blocks,
+                        onDate = selectDate,
+                    )
+                }
+                DayAgenda(
+                    date = activeDate,
                     tasks = tasks,
-                    blocks = blocks,
+                    blocks = blocks[activeDate].orEmpty(),
+                    today = today,
                     pending = pending,
                     selectedTaskId = selectedTaskId,
                     selectedBlockId = selectedBlockId,
-                    onDate = selectDate,
                     onSelectTask = onSelectTask,
-                    onSelectBlock = onSelectBlock,
+                    onSelectBlock = { onSelectBlock(activeDate, it) },
                     onAdd = onAdd,
-                )
-                CalView.Week, CalView.Day -> WeekBody(
-                    activeDate = activeDate,
-                    weekStart = weekStart,
-                    today = today,
-                    tasks = tasks,
-                    blocks = blocks,
-                    pending = pending,
-                    selectedTaskId = selectedTaskId,
-                    selectedBlockId = selectedBlockId,
-                    onDate = selectDate,
-                    onSelectTask = onSelectTask,
-                    onSelectBlock = onSelectBlock,
-                    onAdd = onAdd,
+                    modifier = Modifier.weight(1f),
                 )
             }
         }
         if (canDelete) {
-            val shape = RoundedCornerShape(12.dp)
             Box(
                 modifier = Modifier
                     .padding(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, top = 8.dp, bottom = 12.dp)
                     .fillMaxWidth()
-                    .height(44.dp)
-                    .clip(shape)
-                    .background(palette.danger.copy(alpha = 0.12f))
-                    .border(1.5.dp, palette.danger.copy(alpha = 0.40f), shape)
-                    .clickable(onClick = onDelete),
+                    .heightIn(min = 52.dp)
+                    .background(palette.danger)
+                    .clickable(onClick = onDelete, role = Role.Button),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    "Delete calendar item",
-                    style = appStyle(13.sp, FontWeight.Bold, letterSpacing = 0.04.em),
-                    color = palette.danger,
+                    "DELETE CALENDAR ITEM",
+                    style = appStyle(14.sp, FontWeight.ExtraBold, letterSpacing = 1.sp),
+                    color = palette.scheme.destructiveForeground,
                 )
             }
         }
@@ -201,6 +197,7 @@ fun CalendarScreen(
 @Composable
 private fun CalendarHeader(
     month: YearMonth,
+    activeDate: LocalDate,
     view: CalView,
     showToday: Boolean,
     onPrev: () -> Unit,
@@ -209,93 +206,97 @@ private fun CalendarHeader(
     onView: (CalView) -> Unit,
 ) {
     val palette = LocalPalette.current
-    Column(Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            CircleNav(onClick = onPrev) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Previous month", tint = palette.text)
-            }
-            Text(
-                text = month.atDay(1).format(monthTitle),
-                modifier = Modifier.weight(1f),
-                style = appStyle(24.sp, FontWeight.SemiBold, lineHeight = 32.sp),
-                color = palette.text,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-            )
-            CircleNav(onClick = onNext) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "Next month", tint = palette.text)
-            }
-        }
-        Spacer(Modifier.height(12.dp))
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Row(
-                Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(ShadcnRadius.lg))
-                    .background(palette.scheme.muted)
-                    .padding(3.dp),
-                horizontalArrangement = Arrangement.spacedBy(2.dp),
-            ) {
-                listOf(CalView.Month, CalView.Week).forEach { item ->
-                    val selected = item == view
-                    Box(
-                        Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(ShadcnRadius.lg))
-                            .background(if (selected) palette.scheme.background else Color.Transparent)
-                            .clickable(role = Role.Tab) { onView(item) }
-                            .heightIn(min = 40.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = item.name.lowercase().replaceFirstChar { it.titlecase(Locale.US) },
-                            style = appStyle(14.sp, FontWeight.Medium),
-                            color = if (selected) palette.text else palette.textMuted,
-                        )
-                    }
-                }
+    val week = activeDate.get(WeekFields.ISO.weekOfWeekBasedYear())
+    Column(Modifier.padding(start = AppMetrics.headerHorizontal, end = AppMetrics.headerHorizontal, top = 14.dp, bottom = 8.dp)) {
+        Row(verticalAlignment = Alignment.Bottom) {
+            Column(Modifier.weight(1f)) {
+                Text(
+                    "WEEK $week \u00B7 ${month.atDay(1).format(monthKicker).uppercase(Locale.US)}",
+                    style = appStyle(13.sp, FontWeight.Bold, letterSpacing = 1.5.sp),
+                    color = palette.textMuted,
+                    maxLines = 1,
+                )
+                Text(
+                    "Route map",
+                    modifier = Modifier.padding(top = 4.dp),
+                    style = appStyle(40.sp, FontWeight.ExtraBold, letterSpacing = (-1.5).sp, lineHeight = 42.sp),
+                    color = palette.text,
+                    maxLines = 1,
+                )
             }
             // Jumps the selection back to today. Hidden while today is already selected.
             AnimatedVisibility(
                 visible = showToday,
-                enter = fadeIn() + expandHorizontally(expandFrom = Alignment.Start),
-                exit = fadeOut() + shrinkHorizontally(shrinkTowards = Alignment.Start),
+                enter = fadeIn() + expandHorizontally(expandFrom = Alignment.End),
+                exit = fadeOut() + shrinkHorizontally(shrinkTowards = Alignment.End),
             ) {
-                Text(
-                    text = "Today",
-                    modifier = Modifier
+                Box(
+                    Modifier
                         .padding(start = 8.dp)
-                        .clip(RoundedCornerShape(ShadcnRadius.lg))
-                        .background(palette.scheme.secondary)
-                        .border(1.dp, palette.scheme.border, RoundedCornerShape(ShadcnRadius.lg))
+                        .height(44.dp)
+                        .background(palette.signal)
+                        .border(2.dp, palette.signalInk)
                         .clickable(onClick = onToday, role = Role.Button)
-                        .heightIn(min = 46.dp)
-                        .padding(horizontal = 16.dp)
-                        .wrapContentHeight(),
-                    style = appStyle(14.sp, FontWeight.SemiBold),
-                    color = palette.text,
-                )
+                        .padding(horizontal = 14.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        "TODAY",
+                        style = appStyle(13.sp, FontWeight.ExtraBold, letterSpacing = 1.sp),
+                        color = palette.signalInk,
+                    )
+                }
+            }
+        }
+        Spacer(Modifier.height(14.dp))
+        Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically) {
+            SquareNav(onClick = onPrev) {
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Previous month", tint = palette.text)
+            }
+            Spacer(Modifier.width(8.dp))
+            Row(
+                Modifier
+                    .weight(1f)
+                    .border(2.dp, palette.text),
+            ) {
+                listOf(CalView.Month, CalView.Week).forEachIndexed { index, item ->
+                    val selected = item == view
+                    if (index > 0) Box(Modifier.width(2.dp).height(44.dp).background(palette.text))
+                    Box(
+                        Modifier
+                            .weight(1f)
+                            .height(44.dp)
+                            .background(if (selected) palette.primary else palette.card)
+                            .selectable(selected = selected, role = Role.Tab) { onView(item) },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = item.name.uppercase(Locale.US),
+                            style = appStyle(13.sp, FontWeight.Bold, letterSpacing = 1.sp),
+                            color = if (selected) palette.onFilled else palette.text,
+                        )
+                    }
+                }
+            }
+            Spacer(Modifier.width(8.dp))
+            SquareNav(onClick = onNext) {
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "Next month", tint = palette.text)
             }
         }
     }
 }
 
 @Composable
-private fun CircleNav(onClick: () -> Unit, icon: @Composable () -> Unit) {
+private fun SquareNav(onClick: () -> Unit, icon: @Composable () -> Unit) {
     val palette = LocalPalette.current
     Box(
         Modifier
             .size(48.dp)
-            .clip(CircleShape)
+            .background(palette.card)
+            .border(2.dp, palette.text)
             .clickable(onClick = onClick, role = Role.Button),
         contentAlignment = Alignment.Center,
     ) {
-        Box(
-            Modifier
-                .size(32.dp)
-                .clip(CircleShape)
-                .background(palette.scheme.secondary)
-                .border(1.dp, palette.scheme.border, CircleShape),
-        )
         icon()
     }
 }
@@ -306,70 +307,151 @@ private fun SelectionBanner(
     onCancel: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val color = LocalPalette.current.menuColor(action)
+    val palette = LocalPalette.current
+    val color = palette.menuColor(action)
     Row(
         modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(ShadcnRadius.xl))
-            .background(color.copy(alpha = 0.12f))
-            .border(1.dp, color.copy(alpha = 0.45f), RoundedCornerShape(ShadcnRadius.xl))
+            .background(palette.signal)
+            .border(2.dp, palette.signalInk)
             .padding(start = 14.dp, end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        Box(Modifier.size(12.dp).background(color))
+        Spacer(Modifier.width(10.dp))
         Text(
             text = if (action == FabAction.Delete) "Select a calendar item to delete" else "Select a calendar item to edit",
             modifier = Modifier.weight(1f),
-            style = appStyle(12.sp, FontWeight.Bold),
-            color = color,
+            style = appStyle(13.sp, FontWeight.Bold),
+            color = palette.signalInk,
         )
         Text(
-            "Cancel",
+            "CANCEL",
             modifier = Modifier
-                .clip(RoundedCornerShape(ShadcnRadius.md))
                 .clickable(onClick = onCancel, role = Role.Button)
                 .minimumInteractiveComponentSize()
-                .padding(horizontal = 6.dp),
-            style = appStyle(12.sp, FontWeight.SemiBold),
-            color = color,
+                .padding(horizontal = 8.dp),
+            style = appStyle(12.sp, FontWeight.ExtraBold, letterSpacing = 1.sp),
+            color = palette.signalInk,
         )
     }
 }
 
+private fun hasService(
+    date: LocalDate,
+    today: LocalDate,
+    tasks: List<Task>,
+    blocks: Map<LocalDate, List<TimeBlock>>,
+): Boolean = (blocks[date]?.isNotEmpty() == true) || tasks.any { taskOccursOn(it, date, today) }
+
+// The week drawn as seven stations on one thick line. The picked day is the big yellow stop and
+// days with nothing on them are greyed out.
 @Composable
-private fun MonthBody(
+private fun WeekLine(
+    activeDate: LocalDate,
+    weekStart: DayOfWeek,
+    today: LocalDate,
+    tasks: List<Task>,
+    blocks: Map<LocalDate, List<TimeBlock>>,
+    onDate: (LocalDate) -> Unit,
+) {
+    val palette = LocalPalette.current
+    Box(
+        Modifier
+            .padding(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, top = 10.dp)
+            .fillMaxWidth()
+            .height(96.dp),
+    ) {
+        Box(
+            Modifier
+                .padding(horizontal = 22.dp)
+                .padding(top = 22.dp)
+                .fillMaxWidth()
+                .height(8.dp)
+                .background(palette.text),
+        )
+        Row(Modifier.fillMaxWidth()) {
+            weekOf(activeDate, weekStart).forEach { date ->
+                val active = date == activeDate
+                val isToday = date == today
+                val has = hasService(date, today, tasks, blocks)
+                val dow = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.US).uppercase(Locale.US)
+                val size = if (active) 52.dp else 28.dp
+                Column(
+                    Modifier
+                        .weight(1f)
+                        .heightIn(min = 88.dp)
+                        .selectable(selected = active, role = Role.Button) { onDate(date) }
+                        .semantics {
+                            contentDescription = "$dow ${date.dayOfMonth}" +
+                                (if (isToday) ", today" else "") +
+                                (if (has) "" else ", no service")
+                        },
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Box(
+                        Modifier
+                            .padding(top = if (active) 0.dp else 12.dp)
+                            .size(size)
+                            .clip(CircleShape)
+                            .background(palette.text)
+                            .padding(4.dp)
+                            .clip(CircleShape)
+                            .background(
+                                when {
+                                    active -> palette.signal
+                                    has -> palette.card
+                                    else -> palette.scheme.muted
+                                },
+                            ),
+                    )
+                    Spacer(Modifier.height(if (active) 6.dp else 8.dp))
+                    Text(
+                        if (isToday) "TODAY" else dow,
+                        style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 1.sp),
+                        color = if (has || active) palette.text else palette.textMuted,
+                        maxLines = 1,
+                    )
+                    Text(
+                        date.dayOfMonth.toString(),
+                        style = appStyle(16.sp, FontWeight.ExtraBold, lineHeight = 18.sp),
+                        color = if (has || active) palette.text else palette.textMuted,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MonthGrid(
     month: YearMonth,
     weekStart: DayOfWeek,
     activeDate: LocalDate,
     today: LocalDate,
     tasks: List<Task>,
     blocks: Map<LocalDate, List<TimeBlock>>,
-    pending: FabAction?,
-    selectedTaskId: Long?,
-    selectedBlockId: Long?,
     onDate: (LocalDate) -> Unit,
-    onSelectTask: (Task) -> Unit,
-    onSelectBlock: (LocalDate, TimeBlock) -> Unit,
-    onAdd: () -> Unit,
 ) {
     val palette = LocalPalette.current
     val cells = monthCells(month, weekStart)
     val weekdayLabels = (0..6).map { offset ->
         weekStart.plus(offset.toLong()).getDisplayName(TextStyle.SHORT, Locale.US).first().uppercaseChar().toString()
     }
-    Column(Modifier.fillMaxSize()) {
-        Row(Modifier.padding(horizontal = 16.dp)) {
+    Column(Modifier.padding(horizontal = AppMetrics.pageHorizontal)) {
+        Row {
             weekdayLabels.forEach { label ->
                 Text(
                     label,
                     modifier = Modifier.weight(1f),
-                    style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 0.06.em),
+                    style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 1.sp),
                     color = palette.textMuted,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                    textAlign = TextAlign.Center,
                 )
             }
         }
         cells.chunked(7).forEach { row ->
-            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+            Row(Modifier.fillMaxWidth()) {
                 row.forEach { date ->
                     Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
                         if (date != null) {
@@ -377,7 +459,7 @@ private fun MonthBody(
                                 date = date,
                                 active = date == activeDate,
                                 today = date == today,
-                                marked = (blocks[date]?.isNotEmpty() == true) || tasks.any { taskOccursOn(it, date, today) },
+                                marked = hasService(date, today, tasks, blocks),
                                 onClick = { onDate(date) },
                             )
                         }
@@ -386,101 +468,6 @@ private fun MonthBody(
                 repeat(7 - row.size) { Spacer(Modifier.weight(1f)) }
             }
         }
-        Box(
-            Modifier
-                .padding(horizontal = 16.dp, vertical = 10.dp)
-                .fillMaxWidth()
-                .height(1.dp)
-                .background(palette.scheme.border),
-        )
-        DayAgenda(
-            date = activeDate,
-            tasks = tasks,
-            blocks = blocks[activeDate].orEmpty(),
-            today = today,
-            pending = pending,
-            selectedTaskId = selectedTaskId,
-            selectedBlockId = selectedBlockId,
-            onSelectTask = onSelectTask,
-            onSelectBlock = { onSelectBlock(activeDate, it) },
-            onAdd = onAdd,
-            modifier = Modifier.weight(1f),
-        )
-    }
-}
-
-@Composable
-private fun WeekBody(
-    activeDate: LocalDate,
-    weekStart: DayOfWeek,
-    today: LocalDate,
-    tasks: List<Task>,
-    blocks: Map<LocalDate, List<TimeBlock>>,
-    pending: FabAction?,
-    selectedTaskId: Long?,
-    selectedBlockId: Long?,
-    onDate: (LocalDate) -> Unit,
-    onSelectTask: (Task) -> Unit,
-    onSelectBlock: (LocalDate, TimeBlock) -> Unit,
-    onAdd: () -> Unit,
-) {
-    val palette = LocalPalette.current
-    Column(Modifier.fillMaxSize()) {
-        Row(Modifier.padding(horizontal = AppMetrics.pageHorizontal)) {
-            weekOf(activeDate, weekStart).forEach { date ->
-                val active = date == activeDate
-                val marked = (blocks[date]?.isNotEmpty() == true) || tasks.any { taskOccursOn(it, date, today) }
-                Column(
-                    Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(ShadcnRadius.lg))
-                        .clickable(role = Role.Button) { onDate(date) }
-                        .padding(vertical = 4.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text(
-                        date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.US).uppercase(Locale.US),
-                        style = appStyle(11.sp, FontWeight.SemiBold, letterSpacing = 0.04.em),
-                        color = if (active) palette.primary else palette.textMuted,
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    DayNumber(date.dayOfMonth, active = active, today = date == today)
-                    Spacer(Modifier.height(4.dp))
-                    Box(
-                        Modifier
-                            .size(4.dp)
-                            .clip(CircleShape)
-                            .background(
-                                when {
-                                    !marked -> Color.Transparent
-                                    active -> palette.onFilled
-                                    else -> palette.primary.at(0x80)
-                                },
-                            ),
-                    )
-                }
-            }
-        }
-        Box(
-            Modifier
-                .padding(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, top = 12.dp)
-                .fillMaxWidth()
-                .height(1.dp)
-                .background(palette.scheme.border),
-        )
-        DayAgenda(
-            date = activeDate,
-            tasks = tasks,
-            blocks = blocks[activeDate].orEmpty(),
-            today = today,
-            pending = pending,
-            selectedTaskId = selectedTaskId,
-            selectedBlockId = selectedBlockId,
-            onSelectTask = onSelectTask,
-            onSelectBlock = { onSelectBlock(activeDate, it) },
-            onAdd = onAdd,
-            modifier = Modifier.weight(1f),
-        )
     }
 }
 
@@ -495,58 +482,30 @@ private fun DayCell(
     val palette = LocalPalette.current
     Column(
         Modifier
-            .heightIn(min = 48.dp)
-            .clip(RoundedCornerShape(ShadcnRadius.lg))
-            .clickable(onClick = onClick, role = Role.Button)
-            .padding(horizontal = 4.dp, vertical = 2.dp),
+            .size(44.dp)
+            .background(if (active) palette.primary else Color.Transparent)
+            .then(if (today && !active) Modifier.border(2.dp, palette.text) else Modifier)
+            .selectable(selected = active, onClick = onClick, role = Role.Button),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        DayNumber(date.dayOfMonth, active = active, today = today, diameter = 30.dp)
+        Text(
+            date.dayOfMonth.toString(),
+            style = appStyle(13.sp, if (active || today) FontWeight.ExtraBold else FontWeight.Medium)
+                .copy(fontFeatureSettings = "tnum"),
+            color = if (active) palette.onFilled else palette.text,
+        )
         Spacer(Modifier.height(3.dp))
         Box(
             Modifier
-                .size(4.dp)
-                .clip(CircleShape)
+                .size(width = 10.dp, height = 3.dp)
                 .background(
                     when {
                         !marked -> Color.Transparent
                         active -> palette.onFilled
-                        else -> palette.primary.at(0x70)
+                        else -> palette.text
                     },
                 ),
-        )
-    }
-}
-
-@Composable
-private fun DayNumber(
-    day: Int,
-    active: Boolean,
-    today: Boolean,
-    diameter: androidx.compose.ui.unit.Dp = 34.dp,
-) {
-    val palette = LocalPalette.current
-    Box(
-        Modifier
-            .size(diameter)
-            .clip(CircleShape)
-            .background(if (active) palette.primary else Color.Transparent)
-            .border(
-                width = if (today && !active) 2.dp else 2.dp,
-                color = if (today && !active) palette.primary else Color.Transparent,
-                shape = CircleShape,
-            ),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            day.toString(),
-            style = appStyle(if (diameter < 32.dp) 12.5.sp else 13.sp, if (active) FontWeight.Bold else FontWeight.Medium),
-            color = when {
-                active -> palette.onFilled
-                today -> palette.primary
-                else -> palette.text
-            },
         )
     }
 }
@@ -563,6 +522,16 @@ private data class AgendaCard(
     val selected: Boolean,
     val onClick: (() -> Unit)?,
 )
+
+// One stop on the day's route: a time, the track segment with its station dot, and the item.
+// NowMarker is the "you are here" point between stops on today's route.
+private sealed interface RouteStop {
+    data class Stop(val card: AgendaCard) : RouteStop
+    data class NowMarker(val hours: Float) : RouteStop
+}
+
+private val dayTitle: DateTimeFormatter = DateTimeFormatter.ofPattern("EEEE d", Locale.US)
+private val monthKicker: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM yyyy", Locale.US)
 
 @Composable
 private fun DayAgenda(
@@ -619,169 +588,262 @@ private fun DayAgenda(
             )
         }
     }.sortedBy { it.sort }
-    if (cards.isEmpty()) {
-        Column(
-            modifier
-                .fillMaxSize()
-                .padding(horizontal = AppMetrics.headerHorizontal),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                "Nothing scheduled",
-                style = appStyle(16.sp, FontWeight.SemiBold),
-                color = palette.text,
-            )
-            Spacer(Modifier.height(6.dp))
-            Text(
-                "Events and regular schedules for this day show up here.",
-                style = appStyle(13.sp, FontWeight.Medium, lineHeight = 18.sp),
-                color = palette.textMuted,
-                textAlign = TextAlign.Center,
-            )
-            Spacer(Modifier.height(16.dp))
-            Text(
-                text = "Add an event",
-                modifier = Modifier
-                    .clip(RoundedCornerShape(ShadcnRadius.lg))
-                    .background(palette.primary)
-                    .clickable(onClick = onAdd, role = Role.Button)
-                    .heightIn(min = AppMetrics.actionHeight)
-                    .padding(horizontal = 20.dp, vertical = 12.dp),
-                style = appStyle(14.sp, FontWeight.Bold),
-                color = palette.onFilled,
-            )
-        }
-        return
-    }
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(horizontal = AppMetrics.pageHorizontal, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        items(cards, key = { it.key }) { card ->
-            Box(Modifier.animateItem()) {
-                AgendaRow(card = card, pending = pending, dimmed = choosing && !card.selected)
+    val now = LocalTime.now()
+    val nowHours = now.hour + now.minute / 60f
+    val stops: List<RouteStop> = buildList {
+        val markNow = date == today && cards.isNotEmpty()
+        var placed = false
+        cards.forEach { card ->
+            if (markNow && !placed && card.sort > nowHours) {
+                add(RouteStop.NowMarker(nowHours))
+                placed = true
             }
+            add(RouteStop.Stop(card))
         }
+        if (markNow && !placed) add(RouteStop.NowMarker(nowHours))
     }
-}
 
-@Composable
-private fun AgendaRow(card: AgendaCard, pending: FabAction?, dimmed: Boolean) {
-    val palette = LocalPalette.current
-    val shape = RoundedCornerShape(AppMetrics.cardRadius)
-    val accent = card.category?.let { palette.categoryColor(it) } ?: palette.scheme.border
-    val menu = if (card.selected) pending?.let { palette.menuColor(it) } else null
-    val click = card.onClick
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .alpha(if (dimmed) 0.6f else 1f)
-            .heightIn(min = AppMetrics.cardMinHeight)
-            .shadow(if (card.selected) 0.dp else 1.dp, shape, ambientColor = palette.shadow, spotColor = palette.shadow)
-            .clip(shape)
-            .background(if (menu != null) menu.copy(alpha = 0.12f) else palette.card)
-            .border(if (card.selected) 2.dp else 1.dp, menu ?: palette.scheme.border, shape)
-            .then(if (click != null) Modifier.clickable(onClick = click, role = Role.Button) else Modifier),
-    ) {
-        Column(
+    Column(modifier.fillMaxSize()) {
+        Box(
             Modifier
+                .padding(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, top = 6.dp)
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 12.dp),
+                .height(2.dp)
+                .background(palette.text),
+        )
+        Row(
+            Modifier.padding(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, top = 14.dp, bottom = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                card.kind.uppercase(),
-                style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 0.1.em),
-                color = palette.textMuted,
+                if (date == today) "Today \u00B7 ${date.format(dayTitle)}" else date.format(dayTitle),
+                modifier = Modifier.weight(1f),
+                style = appStyle(18.sp, FontWeight.ExtraBold),
+                color = palette.text,
                 maxLines = 1,
             )
-            Spacer(Modifier.height(4.dp))
             Text(
-                card.title,
-                style = appStyle(15.sp, FontWeight.SemiBold, lineHeight = 20.sp),
-                color = palette.text,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
+                if (cards.size == 1) "1 stop" else "${cards.size} stops",
+                style = appStyle(13.sp, FontWeight.SemiBold),
+                color = palette.textMuted,
             )
-            if (card.whenLabel != null) {
+        }
+        if (cards.isEmpty()) {
+            Column(
+                Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(horizontal = AppMetrics.headerHorizontal),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Text(
+                    "Nothing scheduled",
+                    style = appStyle(18.sp, FontWeight.ExtraBold),
+                    color = palette.text,
+                )
                 Spacer(Modifier.height(4.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    ClockIcon(palette.text)
-                    Spacer(Modifier.width(5.dp))
+                Text(
+                    "No service on this day.",
+                    style = appStyle(14.sp, FontWeight.Medium, lineHeight = 20.sp),
+                    color = palette.textMuted,
+                    textAlign = TextAlign.Center,
+                )
+                Spacer(Modifier.height(16.dp))
+                Box(
+                    Modifier
+                        .heightIn(min = 52.dp)
+                        .background(palette.primary)
+                        .clickable(onClick = onAdd, role = Role.Button)
+                        .padding(horizontal = 20.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
                     Text(
-                        card.whenLabel,
-                        style = appStyle(12.sp, FontWeight.SemiBold),
-                        color = palette.text,
-                        maxLines = 2,
+                        "ADD AN EVENT",
+                        style = appStyle(14.sp, FontWeight.ExtraBold, letterSpacing = 1.sp),
+                        color = palette.onFilled,
                     )
                 }
             }
-            if (card.category != null || card.priority != null || card.reminder != null) {
-                Spacer(Modifier.height(8.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    card.priority?.let { level -> Badge(level.name, palette.priorityColor(level)) }
-                    card.category?.let { category ->
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(Modifier.size(6.dp).clip(CircleShape).background(accent))
-                            Spacer(Modifier.width(5.dp))
-                            Text(
-                                category.name,
-                                style = appStyle(12.sp, FontWeight.Medium),
-                                color = palette.textMuted,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
-                    }
-                    card.reminder?.let { reminder ->
-                        Text(
-                            reminder,
-                            style = appStyle(12.sp, FontWeight.Medium),
-                            color = palette.textMuted,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
+            return@Column
+        }
+        LazyColumn(
+            modifier = Modifier.weight(1f).fillMaxWidth(),
+            contentPadding = PaddingValues(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, top = 4.dp, bottom = 12.dp),
+        ) {
+            itemsIndexed(stops, key = { _, stop -> if (stop is RouteStop.Stop) stop.card.key else "now" }) { index, stop ->
+                val previous = (0 until index).reversed().firstNotNullOfOrNull { (stops[it] as? RouteStop.Stop)?.card }
+                Box(Modifier.animateItem()) {
+                    when (stop) {
+                        is RouteStop.Stop -> RouteRow(
+                            card = stop.card,
+                            first = index == 0,
+                            last = index == stops.lastIndex,
+                            pending = pending,
+                            dimmed = choosing && !stop.card.selected,
+                        )
+                        is RouteStop.NowMarker -> NowRow(
+                            hours = stop.hours,
+                            color = previous?.category?.let { palette.categoryColor(it) } ?: palette.text,
+                            first = index == 0,
+                            last = index == stops.lastIndex,
                         )
                     }
                 }
             }
         }
-        Box(Modifier.matchParentSize()) {
+        val lines = cards.mapNotNull { it.category }.distinctBy { it.id }
+        if (lines.isNotEmpty()) {
+            Row(
+                Modifier.padding(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, top = 4.dp, bottom = 10.dp),
+                horizontalArrangement = Arrangement.spacedBy(14.dp),
+            ) {
+                lines.forEach { category ->
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(Modifier.size(width = 16.dp, height = 6.dp).background(palette.categoryColor(category)))
+                        Spacer(Modifier.width(6.dp))
+                        Text(category.name, style = appStyle(12.sp, FontWeight.Bold), color = palette.text, maxLines = 1)
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Left part of a route row: the time and the track with its station dot.
+@Composable
+private fun RouteTrack(
+    time: String,
+    timeColor: Color,
+    lineColor: Color,
+    ring: Color,
+    dot: Dp,
+    first: Boolean,
+    last: Boolean,
+) {
+    val palette = LocalPalette.current
+    Text(
+        time,
+        modifier = Modifier.width(48.dp).padding(top = 10.dp),
+        style = monoStyle(13.sp),
+        color = timeColor,
+        maxLines = 1,
+        softWrap = false,
+    )
+    Spacer(Modifier.width(10.dp))
+    Box(Modifier.width(28.dp).fillMaxHeight(), contentAlignment = Alignment.TopCenter) {
+        Box(
+            Modifier
+                .padding(top = if (first) 18.dp else 0.dp)
+                .width(8.dp)
+                .then(if (last) Modifier.height(if (first) 0.dp else 18.dp) else Modifier.fillMaxHeight())
+                .background(lineColor),
+        )
+        if (dot > 0.dp) {
             Box(
                 Modifier
-                    .width(4.dp)
-                    .fillMaxHeight()
-                    .background(accent),
+                    .padding(top = 8.dp)
+                    .size(dot)
+                    .clip(CircleShape)
+                    .background(ring)
+                    .padding(4.dp)
+                    .clip(CircleShape)
+                    .background(palette.card),
+            )
+        }
+    }
+    Spacer(Modifier.width(10.dp))
+}
+
+@Composable
+private fun RouteRow(card: AgendaCard, first: Boolean, last: Boolean, pending: FabAction?, dimmed: Boolean) {
+    val palette = LocalPalette.current
+    val color = card.category?.let { palette.categoryColor(it) } ?: palette.text
+    val menu = if (card.selected) pending?.let { palette.menuColor(it) } else null
+    val click = card.onClick
+    val via = listOfNotNull(card.kind, card.category?.name, card.priority?.name, card.whenLabel, card.reminder)
+        .joinToString(" \u00B7 ")
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min)
+            .heightIn(min = 64.dp)
+            .alpha(if (dimmed) 0.6f else 1f),
+    ) {
+        RouteTrack(
+            time = if (card.sort < 24f) clock(card.sort) else "ANY",
+            timeColor = palette.text,
+            lineColor = color,
+            ring = color,
+            dot = 20.dp,
+            first = first,
+            last = last,
+        )
+        Column(
+            Modifier
+                .weight(1f)
+                .padding(bottom = 6.dp)
+                .then(if (menu != null) Modifier.background(menu.copy(alpha = 0.14f)).border(2.dp, menu) else Modifier)
+                .then(if (click != null) Modifier.clickable(onClick = click, role = Role.Button) else Modifier)
+                .heightIn(min = 44.dp)
+                .padding(start = if (menu != null) 8.dp else 0.dp, end = 4.dp, top = 8.dp, bottom = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(3.dp),
+        ) {
+            Text(
+                card.title,
+                style = appStyle(16.sp, FontWeight.Bold),
+                color = palette.text,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                via,
+                style = appStyle(13.sp),
+                color = palette.textMuted,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
             )
         }
     }
 }
 
 @Composable
-private fun Badge(label: String, color: Color) {
-    Text(
-        text = label,
-        modifier = Modifier
-            .clip(RoundedCornerShape(ShadcnRadius.md))
-            .background(color.at(0x18))
-            .padding(horizontal = 8.dp, vertical = 2.dp),
-        style = appStyle(11.sp, FontWeight.SemiBold),
-        color = LocalPalette.current.roleInk(color),
-    )
+private fun NowRow(hours: Float, color: Color, first: Boolean, last: Boolean) {
+    val palette = LocalPalette.current
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min)
+            .heightIn(min = 48.dp),
+    ) {
+        RouteTrack(
+            time = clock(hours),
+            timeColor = palette.text,
+            lineColor = if (first) Color.Transparent else color,
+            ring = color,
+            dot = 0.dp,
+            first = false,
+            last = last,
+        )
+        Box(
+            Modifier
+                .padding(top = 6.dp)
+                .background(palette.signal)
+                .border(2.dp, palette.signalInk)
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+        ) {
+            Text(
+                "YOU ARE HERE",
+                style = appStyle(12.sp, FontWeight.ExtraBold, letterSpacing = 1.sp),
+                color = palette.signalInk,
+            )
+        }
+    }
 }
 
-@Composable
-private fun ClockIcon(color: Color) {
-    Canvas(Modifier.size(11.dp)) {
-        val stroke = 2.5f * size.minDimension / 24f
-        drawCircle(color = color, style = Stroke(width = stroke, cap = StrokeCap.Round))
-        val center = Offset(size.width / 2f, size.height / 2f)
-        drawLine(color, center, Offset(center.x, size.height * 0.28f), strokeWidth = stroke, cap = StrokeCap.Round)
-        drawLine(color, center, Offset(size.width * 0.68f, size.height * 0.58f), strokeWidth = stroke, cap = StrokeCap.Round)
-    }
+private fun clock(hours: Float): String {
+    val total = (hours * 60f).roundToInt()
+    return "%02d:%02d".format(total / 60, total % 60)
 }
 
 private fun ReminderOption.reminderLabel(): String? =

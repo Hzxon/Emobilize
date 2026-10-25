@@ -1,19 +1,36 @@
 package ayodong.emobilize.core.ui.theme
 
 import androidx.compose.material3.Typography
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import ayodong.emobilize.R
 
+// Inter Tight ships as one variable file, so each weight points the wght axis at the same resource.
+@OptIn(ExperimentalTextApi::class)
+private fun interTight(weight: FontWeight) = Font(
+    R.font.inter_tight,
+    weight,
+    variationSettings = FontVariation.Settings(FontVariation.weight(weight.weight)),
+)
+
 val AppFont = FontFamily(
-    Font(R.font.montserrat_regular, FontWeight.Normal),
-    Font(R.font.montserrat_medium, FontWeight.Medium),
-    Font(R.font.montserrat_semibold, FontWeight.SemiBold),
-    Font(R.font.montserrat_bold, FontWeight.Bold),
+    interTight(FontWeight.Normal),
+    interTight(FontWeight.Medium),
+    interTight(FontWeight.SemiBold),
+    interTight(FontWeight.Bold),
+    interTight(FontWeight.ExtraBold),
+)
+
+/** Board figures: times, codes and status words, set like a departure display. */
+val MonoFont = FontFamily(
+    Font(R.font.ibm_plex_mono_medium, FontWeight.Medium),
+    Font(R.font.ibm_plex_mono_semibold, FontWeight.SemiBold),
 )
 
 fun appStyle(
@@ -29,7 +46,19 @@ fun appStyle(
     lineHeight = lineHeight,
 )
 
-/** Tailwind type scale used by shadcn, set in Montserrat. */
+fun monoStyle(
+    size: TextUnit,
+    weight: FontWeight = FontWeight.SemiBold,
+    letterSpacing: TextUnit = 0.sp,
+) = TextStyle(
+    fontFamily = MonoFont,
+    fontSize = size,
+    fontWeight = weight,
+    letterSpacing = letterSpacing,
+    fontFeatureSettings = "tnum",
+)
+
+/** Tailwind type scale used by shadcn, set in Inter Tight. */
 object ShadcnType {
     val xs = appStyle(12.sp, lineHeight = 16.sp)
     val sm = appStyle(14.sp, lineHeight = 20.sp)
