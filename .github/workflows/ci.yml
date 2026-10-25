@@ -71,3 +71,20 @@ jobs:
 
       - name: Build debug APK and run unit tests
         run: ${{ matrix.gradlew }} assembleDebug testDebugUnitTest --stacktrace
+
+  # The one check that main's branch rule requires. It fails when any job
+  # above fails, is cancelled or is skipped, so the rule does not need
+  # updating when jobs or OSes change. GitHub treats a skipped required
+  # check as passed, which is why this job always runs.
+  ci-passed:
+    name: CI passed
+    if: always()
+    needs: [config, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Fail if any job did not succeed
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
+        run: |
+          echo "config: ${{ needs.config.result }}, build: ${{ needs.build.result }}"
+          exit 1
