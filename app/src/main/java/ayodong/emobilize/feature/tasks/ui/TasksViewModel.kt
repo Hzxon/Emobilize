@@ -4,10 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ayodong.emobilize.core.domain.AppSettingsRepository
 import ayodong.emobilize.core.domain.TaskRepository
-import ayodong.emobilize.core.model.FilterKey
 import ayodong.emobilize.core.model.Task
 import ayodong.emobilize.core.model.TaskStatus
-import ayodong.emobilize.core.model.filteredTasks
+import ayodong.emobilize.feature.tasks.domain.BoardFilter
+import ayodong.emobilize.feature.tasks.domain.boardTasks
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -17,13 +17,16 @@ import java.time.LocalDate
 
 data class TasksUiState(
     val tasks: List<Task> = emptyList(),
-    val filter: FilterKey = FilterKey.All,
+    val filter: BoardFilter = BoardFilter.Today,
     val doneIds: Set<Long> = emptySet(),
     val progressIds: Set<Long> = emptySet(),
     val showCompletedTasks: Boolean = true,
     val undo: UndoEntry? = null,
 ) {
-    fun visibleTasks(today: LocalDate = LocalDate.now()): List<Task> = filteredTasks(tasks, filter, today)
+    fun visibleTasks(today: LocalDate = LocalDate.now()): List<Task> = boardTasks(tasks, filter, today)
+
+    /** Today's tasks whatever tab is open, for the Next strip. */
+    fun todayTasks(today: LocalDate = LocalDate.now()): List<Task> = boardTasks(tasks, BoardFilter.Today, today)
 
     fun task(id: Long): Task? = tasks.find { it.id == id }
 }
@@ -40,7 +43,7 @@ class TasksViewModel(
     private val tasks: TaskRepository,
     settings: AppSettingsRepository,
 ) : ViewModel() {
-    private val filter = MutableStateFlow(FilterKey.All)
+    private val filter = MutableStateFlow(BoardFilter.Today)
     private val undo = MutableStateFlow<UndoEntry?>(null)
 
     val uiState: StateFlow<TasksUiState> = combine(tasks.board, filter, settings.settings, undo) { board, filter, settings, undo ->
@@ -53,7 +56,7 @@ class TasksViewModel(
         },
     )
 
-    fun selectFilter(next: FilterKey) {
+    fun selectFilter(next: BoardFilter) {
         filter.value = next
     }
 

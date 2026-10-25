@@ -5,6 +5,7 @@ import ayodong.emobilize.core.data.FakeCategoryRepository
 import ayodong.emobilize.core.data.InMemoryTaskRepository
 import ayodong.emobilize.core.model.FilterKey
 import ayodong.emobilize.core.model.ScheduleMode
+import ayodong.emobilize.feature.tasks.domain.BoardFilter
 import ayodong.emobilize.feature.tasks.ui.TaskFormViewModel
 import ayodong.emobilize.feature.tasks.ui.TasksViewModel
 import ayodong.emobilize.testing.MainDispatcherRule
@@ -23,13 +24,19 @@ class TasksViewModelTest {
     private val settings = FakeAppSettingsRepository()
 
     @Test
+    fun boardOpensOnToday() {
+        assertEquals(BoardFilter.Today, TasksViewModel(tasks, settings).uiState.value.filter)
+    }
+
+    @Test
     fun filterNarrowsVisibleTasks() {
         val viewModel = TasksViewModel(tasks, settings)
-        viewModel.selectFilter(FilterKey.Tomorrow)
+        viewModel.selectFilter(BoardFilter.Upcoming)
 
         val state = viewModel.uiState.value
-        assertEquals(FilterKey.Tomorrow, state.filter)
-        assertTrue(state.visibleTasks().all { it.filterKey == FilterKey.Tomorrow || it.range != null })
+        assertEquals(BoardFilter.Upcoming, state.filter)
+        assertTrue(state.visibleTasks().isNotEmpty())
+        assertTrue(state.visibleTasks().none { it.filterKey == FilterKey.Today })
     }
 
     @Test

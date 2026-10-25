@@ -60,6 +60,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -83,6 +84,8 @@ import ayodong.emobilize.core.ui.theme.appStyle
 import ayodong.emobilize.core.ui.theme.categoryColor
 import ayodong.emobilize.core.ui.theme.menuColor
 import ayodong.emobilize.core.ui.theme.monoStyle
+import ayodong.emobilize.feature.tasks.domain.BoardFilter
+import ayodong.emobilize.feature.tasks.domain.departureDate
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -93,11 +96,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 private val filters = listOf(
-    FilterKey.Today to "Today",
-    FilterKey.Tomorrow to "Tmrw",
-    FilterKey.Later to "Later",
-    FilterKey.All to "All",
+    BoardFilter.Today to "Today",
+    BoardFilter.Upcoming to "Upcoming",
+    BoardFilter.NoDate to "No date",
 )
+
+private val dividerDate: DateTimeFormatter = DateTimeFormatter.ofPattern("EEE d MMM", Locale.US)
 
 private val boardDate: DateTimeFormatter = DateTimeFormatter.ofPattern("EEEE d MMMM", Locale.US)
 private val boardClock: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm", Locale.US)
@@ -113,7 +117,7 @@ fun TasksScreen(
     state: TasksUiState,
     pending: FabAction?,
     selectedTaskId: Long?,
-    onSelectFilter: (FilterKey) -> Unit,
+    onSelectFilter: (BoardFilter) -> Unit,
     onOpenTask: (Long) -> Unit,
     onEditTask: (Long) -> Unit,
     onSelectTask: (Long) -> Unit,
@@ -155,8 +159,17 @@ fun TasksScreen(
             else -> group.sortedBy { deadlineRank(it) }
         }
     }
-    val next = visible
-        .filter { it.id !in doneIds && it.filterKey == FilterKey.Today }
+    // Upcoming splits the board by departure day; the other tabs are one run of rows.
+    val today = LocalDate.now()
+    val sections: List<Pair<String?, List<Task>>> = if (state.filter == BoardFilter.Upcoming) {
+        rows.groupBy { departureDate(it, today) }
+            .toSortedMap(compareBy { it ?: "9999" })
+            .map { (date, tasks) -> dayLabel(date, today) to tasks }
+    } else {
+        listOf(null to rows)
+    }
+    val next = state.todayTasks(today)
+        .filter { it.id !in doneIds }
         .mapNotNull { task -> startHours(task)?.let { task to it } }
         .filter { it.second >= nowHours }
         .minByOrNull { it.second }
@@ -246,7 +259,7 @@ fun TasksScreen(
                 .padding(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, top = 14.dp, bottom = 14.dp),
         ) {
             val allDone = visible.isNotEmpty() && visible.all { it.id in doneIds }
-            if (rows.isEmpty() && allDone) {
+            if (rows.isEmpty() && allDone && state.filter == BoardFilter.Today) {
                 LastService(count = visible.size, onAddTask = onAddTask)
             } else Column(Modifier.fillMaxSize().background(palette.board)) {
                 BoardHeader()
@@ -255,10 +268,15 @@ fun TasksScreen(
                         EmptyBoard(
                             filter = state.filter,
                             hasAnyTask = state.tasks.isNotEmpty(),
+                            allDone = allDone,
                             onAddTask = onAddTask,
                         )
                     } else LazyColumn(Modifier.fillMaxSize()) {
-                        items(rows, key = { it.id }) { task ->
+                        sections.forEach { (label, sectionRows) ->
+                        if (label != null) {
+                            item(key = "day-$label") { Box(Modifier.animateItem()) { DayDivider(label) } }
+                        }
+                        items(sectionRows, key = { it.id }) { task ->
                             val isDone = task.id in doneIds
                             Box(Modifier.animateItem()) {
                                 cardContainer(task.id) {
@@ -294,6 +312,7 @@ fun TasksScreen(
                                     }
                                 }
                             }
+                        }
                         }
                     }
                     SnackbarHost(
@@ -372,6 +391,30 @@ private enum class BoardStatus(val label: String) {
     Delayed("DELAYED"),
     OnTime("ON TIME"),
     AnyTime("ANY TIME"),
+}
+
+// Day break inside the Upcoming board, set like a timetable heading.
+@Composable
+private fun DayDivider(label: String) {
+    val palette = LocalPalette.current
+    Column(Modifier.fillMaxWidth().background(palette.board)) {
+        Text(
+            text = label,
+            modifier = Modifier
+                .fillMaxWidth()
+                .semantics { heading() }
+                .padding(start = 14.dp, end = 14.dp, top = 14.dp, bottom = 6.dp),
+            style = monoStyle(12.sp, letterSpacing = 1.5.sp),
+            color = palette.signal,
+        )
+        Box(Modifier.fillMaxWidth().height(1.dp).background(palette.boardRule))
+    }
+}
+
+private fun dayLabel(iso: String?, today: LocalDate): String {
+    val date = iso?.let { runCatching { LocalDate.parse(it) }.getOrNull() } ?: return "NO DATE"
+    val name = date.format(dividerDate).uppercase(Locale.US)
+    return if (date == today.plusDays(1)) "TOMORROW \u00B7 $name" else name
 }
 
 @Composable
@@ -527,16 +570,18 @@ private fun NextStrip(next: Task?, nowHours: Float, doneCount: Int, total: Int) 
 // Nothing on the board for this filter: a yellow notice in the board's own type.
 @Composable
 private fun EmptyBoard(
-    filter: FilterKey,
+    filter: BoardFilter,
     hasAnyTask: Boolean,
+    allDone: Boolean,
     onAddTask: () -> Unit,
 ) {
     val palette = LocalPalette.current
     val (title, body) = when {
         !hasAnyTask -> "NO SERVICES YET" to "Add your first task and it shows up here."
-        filter == FilterKey.Today -> "NO DEPARTURES TODAY" to "Tasks with today's date land here."
-        filter == FilterKey.Tomorrow -> "NO DEPARTURES TOMORROW" to "Tasks with tomorrow's date land here."
-        filter == FilterKey.Later -> "NOTHING LATER" to "Tasks dated after tomorrow land here."
+        allDone -> "ALL DEPARTED" to "Every task in this view is done."
+        filter == BoardFilter.Today -> "NO DEPARTURES TODAY" to "Tasks with today's date land here."
+        filter == BoardFilter.Upcoming -> "NOTHING UPCOMING" to "Tasks dated after today land here, grouped by day."
+        filter == BoardFilter.NoDate -> "NO UNDATED TASKS" to "Tasks without a date land here."
         else -> "NO DEPARTURES" to "Add a task to get started."
     }
     Column(

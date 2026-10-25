@@ -102,7 +102,7 @@ Dua tab: Tasks (label dock DEPARTURES) dan Calendar (label dock ROUTE MAP). Tomb
 
 ### Tasks
 
-Filter Today, Tmrw, Later, All. Papan gelap dengan kolom TIME, DESTINATION, LN, STATUS. Urutan tetap: to-do, progress, done, masing-masing menurut deadline. Status: ON TIME, ANY TIME, DELAYED (lewat jam hari ini), BOARDING (progress), DEPARTED (done). Baris kedua: prioritas, durasi, dan hari bila bukan hari ini. Tugas tanpa jadwal hanya muncul di All. Swipe kanan selesai, swipe kiri hapus, snackbar Undo. Semua tugas di filter selesai: panel "The last service has left."
+Filter Today, Upcoming, No date (`BoardFilter` di `feature/tasks/domain/BoardFilter.kt`, terpisah dari `FilterKey` milik model). Setiap tugas masuk tepat satu tab; time range dihitung dari tanggal mulai, jadi range yang sedang berjalan tetap di Today. Upcoming dibagi per hari dengan pemisah (TOMORROW · TUE 27 OCT). Papan gelap dengan kolom TIME, DESTINATION, LN, STATUS. Urutan tetap: to-do, progress, done, masing-masing menurut deadline. Status: ON TIME, ANY TIME, DELAYED (lewat jam hari ini), BOARDING (progress), DEPARTED (done). Baris kedua: prioritas, durasi, dan hari bila bukan hari ini. Tugas tanpa jadwal hanya muncul di No date. Strip Next selalu memakai tugas hari ini. Swipe kanan selesai, swipe kiri hapus, snackbar Undo. Semua tugas di filter selesai: panel "The last service has left."
 
 ### Add di tab Tasks
 
