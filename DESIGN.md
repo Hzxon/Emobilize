@@ -141,7 +141,7 @@ Kedua font berlisensi SIL OFL, diambil dari repo `google/fonts`. `monoStyle` mem
 
 | Peran | Ukuran | Berat | Catatan |
 | --- | --- | --- | --- |
-| Jam papan (header Departures) | 28 sp | ExtraBold | letter-spacing −1 sp, `tnum`, satu baris 44 dp dengan tanggal 11 sp UPPERCASE |
+| Jam papan (header Departures) | 26 sp mono | SemiBold | letter-spacing −0.5 sp, `tnum`, di pita 56 dp dengan nama layar dan tanggal 11 sp UPPERCASE |
 | Judul layar (Route map) | 24 sp | ExtraBold | letter-spacing −0.5 sp, satu baris 44 dp dengan kicker 11 sp di bawahnya |
 | Judul tiket | 30 sp | ExtraBold | letter-spacing −1 sp |
 | Judul hari | 18 sp | ExtraBold | |
@@ -197,11 +197,10 @@ Garis kontrol 2 dp `foreground`. Tombol utama tinggi 52–56 dp. Target sentuh m
 
 ### Header
 
-- Tidak ada baris header bersama. Tiap tab menggambar header sendiri dalam satu baris 44 dp:
-  - Tasks: jam 28 sp di atas tanggal 11 sp UPPERCASE
-  - Calendar: "Route map" 24 sp di atas minggu 11 sp, lalu tombol TODAY bila hari lain dipilih
-- Tombol Reminders dan Settings di kanan baris itu. `MainShell` mengirimnya lewat parameter `headerActions`.
-- Tombol header: persegi 44 dp, isi `card`, garis 2 dp `foreground`
+- Tidak ada baris header bersama. Tiap tab menggambar header sendiri:
+  - Tasks (papan jam): satu pita selebar layar, tinggi 56 dp (`boardHeaderHeight`), isi `board`. Jam mono 26 sp warna `signal`, lalu "DEPARTURES" 11 sp ExtraBold `boardText` di atas tanggal "MON 26 OCT" 11 sp `boardMuted`. Tombol Reminders dan Settings di tepi kanan pita, lebar 44 dp setinggi pita, tanpa kotak, ikon `boardMuted`, dipisah garis 1 dp `boardRule`.
+  - Calendar: satu baris 44 dp, "Route map" 24 sp di atas minggu 11 sp, lalu tombol TODAY bila hari lain dipilih. Tombol header persegi 44 dp, isi `card`, garis 2 dp `foreground`.
+- `MainShell` mengirim tombolnya lewat parameter `headerActions`: varian papan ke Tasks, varian kotak ke Calendar.
 
 ### Tombol mengambang (`RadialMenu`, `FabFace`)
 

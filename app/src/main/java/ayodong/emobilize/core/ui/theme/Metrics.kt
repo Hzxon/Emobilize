@@ -9,6 +9,8 @@ object AppMetrics {
     val arcRadius = 120.dp
     val fabCenterFromBottom = 40.dp
     val headerHorizontal = 20.dp
+    // Height of the Departures board band, shared by the clock row and its header buttons.
+    val boardHeaderHeight = 56.dp
     val pageHorizontal = 20.dp
     val cardRadius = ShadcnRadius.xl
     val cardMinHeight = 68.dp

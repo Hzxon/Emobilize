@@ -103,7 +103,6 @@ private val filters = listOf(
 
 private val dividerDate: DateTimeFormatter = DateTimeFormatter.ofPattern("EEE d MMM", Locale.US)
 
-private val boardDate: DateTimeFormatter = DateTimeFormatter.ofPattern("EEEE d MMMM", Locale.US)
 private val boardClock: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm", Locale.US)
 
 // Column widths of the departure board, shared by the header row and every task row.
@@ -190,36 +189,45 @@ fun TasksScreen(
     }
 
     Column(modifier.fillMaxSize()) {
-        // Compact header: clock over date on the left, the shell's buttons on the right, one 44dp row.
+        // Board clock: one band in the board colour, like the departure board under it. The clock
+        // is the station's LED clock in signal yellow, the screen name and date sit beside it, and
+        // the shell's buttons occupy the right edge of the band without boxes.
         Row(
             Modifier
-                .padding(start = AppMetrics.headerHorizontal, end = AppMetrics.headerHorizontal, top = 12.dp)
-                .heightIn(min = 44.dp),
+                .fillMaxWidth()
+                .height(AppMetrics.boardHeaderHeight)
+                .background(palette.board)
+                .padding(start = AppMetrics.headerHorizontal, end = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            Column(Modifier.weight(1f)) {
+            Text(
+                text = now.format(boardClock),
+                style = monoStyle(26.sp, letterSpacing = (-0.5).sp),
+                color = palette.signal,
+                maxLines = 1,
+            )
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
-                    text = now.format(boardClock),
-                    style = appStyle(28.sp, FontWeight.ExtraBold, letterSpacing = (-1).sp, lineHeight = 30.sp)
-                        .copy(fontFeatureSettings = "tnum"),
-                    color = palette.text,
+                    text = "DEPARTURES",
+                    style = appStyle(11.sp, FontWeight.ExtraBold, letterSpacing = 1.5.sp),
+                    color = palette.boardText,
                     maxLines = 1,
                 )
                 Text(
-                    text = LocalDate.now().format(boardDate).uppercase(Locale.US),
+                    text = LocalDate.now().format(dividerDate).uppercase(Locale.US),
                     style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 1.sp),
-                    color = palette.textMuted,
+                    color = palette.boardMuted,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
             }
-            headerActions()
+            Row(Modifier.height(AppMetrics.boardHeaderHeight), verticalAlignment = Alignment.CenterVertically) { headerActions() }
         }
 
         Row(
             Modifier
-                .padding(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, top = 8.dp)
+                .padding(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, top = 12.dp)
                 .fillMaxWidth()
                 .border(2.dp, palette.text),
         ) {

@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Notifications
@@ -118,24 +119,25 @@ internal fun MainShell(
             .background(colors.surface),
     ) {
         val cardShape = RoundedCornerShape(AppMetrics.cardRadius)
-        // Each tab draws its own header (clock or route title) with these two buttons on its right.
+        // Each tab draws its own header with these two buttons on its right. Departures draws a
+        // board band, so its buttons sit unboxed on the board with a rule between them; Route map
+        // keeps the outlined squares on the page background.
+        val openReminders = {
+            menuOpen = false
+            navController.navigate(AppRoute.Reminders) { launchSingleTop = true }
+        }
+        val openSettings = {
+            menuOpen = false
+            navController.navigate(AppRoute.Settings) { launchSingleTop = true }
+        }
         val headerActions: @Composable () -> Unit = {
-            HeaderButton(
-                icon = Icons.Outlined.Notifications,
-                contentDescription = "Reminders",
-                onClick = {
-                    menuOpen = false
-                    navController.navigate(AppRoute.Reminders) { launchSingleTop = true }
-                },
-            )
-            HeaderButton(
-                icon = Icons.Outlined.Settings,
-                contentDescription = "Settings",
-                onClick = {
-                    menuOpen = false
-                    navController.navigate(AppRoute.Settings) { launchSingleTop = true }
-                },
-            )
+            HeaderButton(Icons.Outlined.Notifications, "Reminders", onBoard = false, onClick = openReminders)
+            HeaderButton(Icons.Outlined.Settings, "Settings", onBoard = false, onClick = openSettings)
+        }
+        val boardHeaderActions: @Composable () -> Unit = {
+            HeaderButton(Icons.Outlined.Notifications, "Reminders", onBoard = true, onClick = openReminders)
+            Box(Modifier.width(1.dp).height(AppMetrics.boardHeaderHeight).background(colors.boardRule))
+            HeaderButton(Icons.Outlined.Settings, "Settings", onBoard = true, onClick = openSettings)
         }
         Column(Modifier.fillMaxSize().statusBarsPadding()) {
             Box(
@@ -163,7 +165,7 @@ internal fun MainShell(
                         onDeleteTask = tasksViewModel::deleteTask,
                         onUndo = tasksViewModel::undo,
                         onDismissUndo = tasksViewModel::dismissUndo,
-                        headerActions = headerActions,
+                        headerActions = boardHeaderActions,
                         cardContainer = { taskId, content ->
                             SharedCard(
                                 key = "task-$taskId",
@@ -313,26 +315,29 @@ private fun TabPage(
     }
 }
 
-// Square outlined button for the top-right header actions.
+// Top-right header action. On the page it is a square outlined button; on the Departures board
+// band it is a plain muted glyph the full height of the band, with no box.
 @Composable
 private fun HeaderButton(
     icon: ImageVector,
     contentDescription: String,
+    onBoard: Boolean,
     onClick: () -> Unit,
 ) {
     val colors = LocalPalette.current
+    val shape = if (onBoard) {
+        Modifier.width(44.dp).height(AppMetrics.boardHeaderHeight)
+    } else {
+        Modifier.size(44.dp).background(colors.card).border(2.dp, colors.text)
+    }
     Box(
-        Modifier
-            .size(44.dp)
-            .background(colors.card)
-            .border(2.dp, colors.text)
-            .clickable(onClick = onClick, role = Role.Button),
+        shape.clickable(onClick = onClick, role = Role.Button),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
             imageVector = icon,
             contentDescription = contentDescription,
-            tint = colors.text,
+            tint = if (onBoard) colors.boardMuted else colors.text,
             modifier = Modifier.size(20.dp),
         )
     }
