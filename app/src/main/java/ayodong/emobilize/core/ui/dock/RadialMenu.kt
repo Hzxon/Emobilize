@@ -229,7 +229,7 @@ fun RadialMenu(
                         )
                         Text(
                             action.label,
-                            style = appStyle(10.sp, FontWeight.Medium),
+                            style = appStyle(11.sp, FontWeight.Medium),
                             color = if (active) palette.onDark else color,
                             textAlign = TextAlign.Center,
                             maxLines = 1,

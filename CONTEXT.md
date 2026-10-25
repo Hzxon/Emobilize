@@ -85,7 +85,7 @@ State data tidak diubah dari Composable. Setiap fitur punya ViewModel sendiri di
 - Warna shadcn: `palette.scheme` dari `core/ui/theme/Shadcn.kt` (`background`, `popover`, `border`, `card`).
 - Teks: `appStyle(...)` dan `AppFont` di `core/ui/theme/Type.kt`. Font Montserrat.
 - Jarak dan ukuran kartu: `AppMetrics` di `core/ui/theme/Metrics.kt`. Radius kartu `AppMetrics.cardRadius`. Tinggi minimum kartu `AppMetrics.cardMinHeight`.
-- Padding halaman: `AppMetrics.pageHorizontal` (18.dp). Header: `AppMetrics.headerHorizontal` (24.dp).
+- Padding halaman: `AppMetrics.pageHorizontal` (16.dp). Header: `AppMetrics.headerHorizontal` (24.dp).
 - Aksi radial: Add hijau, Update biru, Edit `actionEdit`, Delete `danger`. Fungsi `menuColor`.
 
 Jangan menambah palet baru. Nilai token dijelaskan di `DESIGN.md`.

@@ -277,7 +277,7 @@ private fun CategoryOptions(draft: TaskDraft, categories: List<Category>) {
                     .background(if (selected) color else color.at(0x18))
                     .clickable { draft.category = if (selected) null else category }
                     .padding(horizontal = 12.dp, vertical = 5.dp),
-                style = appStyle(11.5.sp, FontWeight.Bold),
+                style = appStyle(12.sp, FontWeight.Bold),
                 color = if (selected) palette.inkOn(color) else color,
             )
         }
@@ -344,7 +344,7 @@ private fun ScheduleOptions(draft: TaskDraft) {
                 ) {
                     Text(
                         label,
-                        style = appStyle(11.5.sp, FontWeight.Bold),
+                        style = appStyle(12.sp, FontWeight.Bold),
                         color = if (active) palette.scheme.primaryForeground else palette.scheme.mutedForeground,
                     )
                 }
@@ -366,7 +366,7 @@ private fun ScheduleOptions(draft: TaskDraft) {
             Text(
                 "Date and time are optional",
                 modifier = Modifier.padding(top = 5.dp),
-                style = appStyle(10.sp),
+                style = appStyle(11.sp),
                 color = palette.textMuted,
             )
         } else if (draft.includeSchedule) {
@@ -383,7 +383,7 @@ private fun ScheduleOptions(draft: TaskDraft) {
                 Text(
                     "End time must be after start time",
                     modifier = Modifier.padding(top = 5.dp),
-                    style = appStyle(10.sp),
+                    style = appStyle(11.sp),
                     color = palette.danger,
                 )
             }
@@ -447,7 +447,7 @@ private fun ReminderOptions(draft: TaskDraft) {
             ) {
                 Text(
                     text = option.label,
-                    style = appStyle(11.5.sp, if (selected) FontWeight.Bold else FontWeight.Medium),
+                    style = appStyle(12.sp, if (selected) FontWeight.Bold else FontWeight.Medium),
                     color = contentColor,
                 )
             }

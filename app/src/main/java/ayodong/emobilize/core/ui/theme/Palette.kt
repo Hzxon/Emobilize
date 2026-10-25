@@ -2,6 +2,7 @@ package ayodong.emobilize.core.ui.theme
 
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import ayodong.emobilize.core.model.Category
 import ayodong.emobilize.core.model.Priority
 import ayodong.emobilize.core.ui.dock.FabAction
@@ -12,6 +13,14 @@ fun AppPalette.inkOn(color: Color): Color {
     val luminance = 0.299f * color.red + 0.587f * color.green + 0.114f * color.blue
     return if (luminance > 0.72f) ink else onDark
 }
+
+/**
+ * Text colour for a role colour drawn on its own 10% tint or on the page.
+ * The raw chart and priority tones sit near 2:1 against the background, so the
+ * tone is pulled a third of the way toward the foreground to clear 4.5:1 in
+ * both themes while keeping its hue.
+ */
+fun AppPalette.roleInk(color: Color): Color = lerp(color, text, 0.35f)
 
 fun AppPalette.menuColor(action: FabAction): Color = when (action) {
     FabAction.Add -> Color(0xFF16A34A)

@@ -66,7 +66,7 @@ internal fun RangeRow(
         modifier = Modifier.padding(top = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(label, modifier = Modifier.width(34.dp), style = appStyle(9.5.sp, FontWeight.Bold), color = palette.textMuted)
+        Text(label, modifier = Modifier.width(34.dp), style = appStyle(11.sp, FontWeight.Bold), color = palette.textMuted)
         DateField(
             value = date,
             onValue = { onChange(it, time) },

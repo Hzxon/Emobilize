@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import ayodong.emobilize.core.model.AppSettings
 import ayodong.emobilize.core.model.CalView
@@ -298,7 +299,7 @@ private fun SectionLabel(text: String) {
     Text(
         text,
         modifier = Modifier.padding(start = 2.dp, bottom = 8.dp),
-        style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 0.1.sp),
+        style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 0.1.em),
         color = palette.textMuted,
     )
 }

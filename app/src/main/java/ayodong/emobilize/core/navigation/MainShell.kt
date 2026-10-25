@@ -36,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -106,9 +107,9 @@ internal fun MainShell(
                 Modifier
                     .fillMaxWidth()
                     .statusBarsPadding()
-                    .padding(start = 24.dp, end = 18.dp, top = 4.dp),
+                    .padding(start = 24.dp, end = 12.dp, top = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Spacer(Modifier.weight(1f))
                 HeaderButton(
@@ -272,15 +273,21 @@ private fun HeaderButton(
     onClick: () -> Unit,
 ) {
     val colors = LocalPalette.current
+    // 48dp touch target, 40dp visible circle.
     Box(
         Modifier
-            .size(40.dp)
+            .size(48.dp)
             .clip(CircleShape)
-            .background(colors.scheme.secondary)
-            .border(1.dp, colors.scheme.border, CircleShape)
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick, role = Role.Button),
         contentAlignment = Alignment.Center,
     ) {
+        Box(
+            Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(colors.scheme.secondary)
+                .border(1.dp, colors.scheme.border, CircleShape),
+        )
         Icon(
             imageVector = icon,
             contentDescription = contentDescription,

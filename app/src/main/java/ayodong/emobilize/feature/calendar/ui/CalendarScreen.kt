@@ -26,6 +26,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -68,6 +70,7 @@ import ayodong.emobilize.core.ui.theme.at
 import ayodong.emobilize.core.ui.theme.categoryColor
 import ayodong.emobilize.core.ui.theme.menuColor
 import ayodong.emobilize.core.ui.theme.priorityColor
+import ayodong.emobilize.core.ui.theme.roleInk
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -125,7 +128,7 @@ fun CalendarScreen(
             SelectionBanner(
                 action = pending,
                 onCancel = onCancel,
-                modifier = Modifier.padding(horizontal = 18.dp, vertical = 4.dp),
+                modifier = Modifier.padding(horizontal = AppMetrics.pageHorizontal, vertical = 4.dp),
             )
         }
         Box(Modifier.weight(1f).fillMaxWidth()) {
@@ -163,7 +166,7 @@ fun CalendarScreen(
             val shape = RoundedCornerShape(12.dp)
             Box(
                 modifier = Modifier
-                    .padding(start = 18.dp, end = 18.dp, top = 8.dp, bottom = 12.dp)
+                    .padding(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, top = 8.dp, bottom = 12.dp)
                     .fillMaxWidth()
                     .height(44.dp)
                     .clip(shape)
@@ -191,7 +194,7 @@ private fun CalendarHeader(
     onView: (CalView) -> Unit,
 ) {
     val palette = LocalPalette.current
-    Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 14.dp, bottom = 10.dp)) {
+    Column(Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             CircleNav(onClick = onPrev) {
                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Previous month", tint = palette.text)
@@ -223,8 +226,8 @@ private fun CalendarHeader(
                         .weight(1f)
                         .clip(RoundedCornerShape(ShadcnRadius.lg))
                         .background(if (selected) palette.scheme.background else Color.Transparent)
-                        .clickable { onView(item) }
-                        .padding(vertical = 6.dp),
+                        .clickable(role = Role.Tab) { onView(item) }
+                        .heightIn(min = 40.dp),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
@@ -243,13 +246,18 @@ private fun CircleNav(onClick: () -> Unit, icon: @Composable () -> Unit) {
     val palette = LocalPalette.current
     Box(
         Modifier
-            .size(32.dp)
+            .size(48.dp)
             .clip(CircleShape)
-            .background(palette.scheme.secondary)
-            .border(1.dp, palette.scheme.border, CircleShape)
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick, role = Role.Button),
         contentAlignment = Alignment.Center,
     ) {
+        Box(
+            Modifier
+                .size(32.dp)
+                .clip(CircleShape)
+                .background(palette.scheme.secondary)
+                .border(1.dp, palette.scheme.border, CircleShape),
+        )
         icon()
     }
 }
@@ -267,19 +275,23 @@ private fun SelectionBanner(
             .clip(RoundedCornerShape(ShadcnRadius.xl))
             .background(color.copy(alpha = 0.12f))
             .border(1.dp, color.copy(alpha = 0.45f), RoundedCornerShape(ShadcnRadius.xl))
-            .padding(horizontal = 14.dp, vertical = 10.dp),
+            .padding(start = 14.dp, end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = if (action == FabAction.Delete) "Select a calendar item to delete" else "Select a calendar item to edit",
             modifier = Modifier.weight(1f),
-            style = appStyle(11.5.sp, FontWeight.Bold),
+            style = appStyle(12.sp, FontWeight.Bold),
             color = color,
         )
         Text(
             "Cancel",
-            modifier = Modifier.clickable(onClick = onCancel).padding(horizontal = 6.dp, vertical = 2.dp),
-            style = appStyle(11.sp, FontWeight.SemiBold),
+            modifier = Modifier
+                .clip(RoundedCornerShape(ShadcnRadius.md))
+                .clickable(onClick = onCancel, role = Role.Button)
+                .minimumInteractiveComponentSize()
+                .padding(horizontal = 6.dp),
+            style = appStyle(12.sp, FontWeight.SemiBold),
             color = color,
         )
     }
@@ -311,7 +323,7 @@ private fun MonthBody(
                 Text(
                     label,
                     modifier = Modifier.weight(1f),
-                    style = appStyle(10.sp, FontWeight.Bold, letterSpacing = 0.06.sp),
+                    style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 0.06.em),
                     color = palette.textMuted,
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                 )
@@ -373,19 +385,21 @@ private fun WeekBody(
 ) {
     val palette = LocalPalette.current
     Column(Modifier.fillMaxSize()) {
-        Row(Modifier.padding(horizontal = 14.dp)) {
+        Row(Modifier.padding(horizontal = AppMetrics.pageHorizontal)) {
             weekOf(activeDate, weekStart).forEach { date ->
                 val active = date == activeDate
                 val marked = (blocks[date]?.isNotEmpty() == true) || tasks.any { taskOccursOn(it, date, today) }
                 Column(
                     Modifier
                         .weight(1f)
-                        .clickable { onDate(date) },
+                        .clip(RoundedCornerShape(ShadcnRadius.lg))
+                        .clickable(role = Role.Button) { onDate(date) }
+                        .padding(vertical = 4.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
                         date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.US).uppercase(Locale.US),
-                        style = appStyle(10.sp, FontWeight.SemiBold, letterSpacing = 0.04.sp),
+                        style = appStyle(11.sp, FontWeight.SemiBold, letterSpacing = 0.04.em),
                         color = if (active) palette.primary else palette.textMuted,
                     )
                     Spacer(Modifier.height(4.dp))
@@ -408,7 +422,7 @@ private fun WeekBody(
         }
         Box(
             Modifier
-                .padding(start = 14.dp, end = 14.dp, top = 12.dp)
+                .padding(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, top = 12.dp)
                 .fillMaxWidth()
                 .height(1.dp)
                 .background(palette.scheme.border),
@@ -438,8 +452,13 @@ private fun DayCell(
 ) {
     val palette = LocalPalette.current
     Column(
-        Modifier.clickable(onClick = onClick).padding(vertical = 2.dp),
+        Modifier
+            .heightIn(min = 48.dp)
+            .clip(RoundedCornerShape(ShadcnRadius.lg))
+            .clickable(onClick = onClick, role = Role.Button)
+            .padding(horizontal = 4.dp, vertical = 2.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
         DayNumber(date.dayOfMonth, active = active, today = today, diameter = 30.dp)
         Spacer(Modifier.height(3.dp))
@@ -568,7 +587,7 @@ private fun DayAgenda(
         modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 18.dp, vertical = 12.dp),
+            .padding(horizontal = AppMetrics.pageHorizontal, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         cards.forEach { card ->
@@ -593,16 +612,16 @@ private fun AgendaRow(card: AgendaCard, pending: FabAction?, dimmed: Boolean) {
             .clip(shape)
             .background(if (menu != null) menu.copy(alpha = 0.12f) else palette.card)
             .border(if (card.selected) 2.dp else 1.dp, menu ?: palette.scheme.border, shape)
-            .then(if (click != null) Modifier.clickable(onClick = click) else Modifier),
+            .then(if (click != null) Modifier.clickable(onClick = click, role = Role.Button) else Modifier),
     ) {
         Column(
             Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 14.dp, top = 12.dp, bottom = 12.dp),
+                .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 12.dp),
         ) {
             Text(
                 card.kind.uppercase(),
-                style = appStyle(10.sp, FontWeight.Bold, letterSpacing = 0.1.em),
+                style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 0.1.em),
                 color = palette.textMuted,
                 maxLines = 1,
             )
@@ -679,7 +698,7 @@ private fun Badge(label: String, color: Color) {
             .background(color.at(0x18))
             .padding(horizontal = 8.dp, vertical = 2.dp),
         style = appStyle(11.sp, FontWeight.SemiBold),
-        color = color,
+        color = LocalPalette.current.roleInk(color),
     )
 }
 

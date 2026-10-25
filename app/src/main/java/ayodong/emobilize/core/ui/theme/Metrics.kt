@@ -9,7 +9,7 @@ object AppMetrics {
     val arcRadius = 120.dp
     val fabCenterFromBottom = 52.dp
     val headerHorizontal = 24.dp
-    val pageHorizontal = 18.dp
+    val pageHorizontal = 16.dp
     val cardRadius = ShadcnRadius.xl
     val cardMinHeight = 68.dp
     val actionHeight = 44.dp

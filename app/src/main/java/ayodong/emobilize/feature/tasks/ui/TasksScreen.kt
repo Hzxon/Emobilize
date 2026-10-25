@@ -23,12 +23,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -56,6 +58,7 @@ import ayodong.emobilize.core.ui.theme.at
 import ayodong.emobilize.core.ui.theme.categoryColor
 import ayodong.emobilize.core.ui.theme.menuColor
 import ayodong.emobilize.core.ui.theme.priorityColor
+import ayodong.emobilize.core.ui.theme.roleInk
 import java.time.LocalTime
 
 private val filters = listOf(
@@ -126,8 +129,9 @@ fun TasksScreen(
                             .weight(1f)
                             .clip(RoundedCornerShape(ShadcnRadius.md))
                             .background(if (active) palette.scheme.background else Color.Transparent)
-                            .clickable { onSelectFilter(key) }
-                            .padding(vertical = 6.dp),
+                            .clickable(role = Role.Tab) { onSelectFilter(key) }
+                            .heightIn(min = 40.dp)
+                            .padding(horizontal = 4.dp),
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
@@ -302,7 +306,7 @@ private fun SelectionBanner(
             .clip(RoundedCornerShape(12.dp))
             .background(color.copy(alpha = 0.12f))
             .border(1.dp, color.copy(alpha = 0.45f), RoundedCornerShape(12.dp))
-            .padding(horizontal = 14.dp, vertical = 10.dp),
+            .padding(start = 14.dp, end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(Modifier.size(8.dp).clip(CircleShape).background(color))
@@ -316,9 +320,11 @@ private fun SelectionBanner(
         Text(
             text = "Cancel",
             modifier = Modifier
-                .clickable(onClick = onCancel)
-                .padding(horizontal = 6.dp, vertical = 2.dp),
-            style = appStyle(11.sp, FontWeight.SemiBold),
+                .clip(RoundedCornerShape(ShadcnRadius.md))
+                .clickable(onClick = onCancel, role = Role.Button)
+                .minimumInteractiveComponentSize()
+                .padding(horizontal = 6.dp),
+            style = appStyle(12.sp, FontWeight.SemiBold),
             color = color,
         )
     }
@@ -346,7 +352,7 @@ private fun StatusHeader(status: TaskStatus, count: Int) {
         Text(
             label.uppercase(),
             style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 0.1.em),
-            color = color,
+            color = palette.roleInk(color),
         )
         Spacer(Modifier.width(6.dp))
         Text(
@@ -386,12 +392,12 @@ private fun TaskCard(
             .clip(shape)
             .background(background)
             .border(if (isSelected) 2.dp else 1.dp, borderColor, shape)
-            .then(Modifier.clickable(onClick = onClick)),
+            .clickable(onClick = onClick, role = Role.Button),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 14.dp, top = 14.dp, bottom = 14.dp),
+                .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 12.dp),
             verticalAlignment = Alignment.Top,
         ) {
             Column(Modifier.weight(1f)) {
@@ -463,7 +469,7 @@ private fun RoleBadge(label: String, color: Color) {
             .background(color.at(0x18))
             .padding(horizontal = 8.dp, vertical = 2.dp),
         style = appStyle(11.sp, FontWeight.SemiBold),
-        color = color,
+        color = LocalPalette.current.roleInk(color),
     )
 }
 
@@ -498,7 +504,7 @@ private fun TaskMeta(task: Task, overdue: Boolean, isDone: Boolean) {
         if (timeLabel != null) {
             val timeColor = when {
                 isDone -> palette.textSubtle
-                overdue -> palette.danger
+                overdue -> palette.roleInk(palette.danger)
                 else -> palette.text
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
