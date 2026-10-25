@@ -78,5 +78,6 @@ if [ "$failures" -eq 0 ]; then
   echo "All configuration checks passed."
 else
   echo "$failures configuration check(s) failed."
+  echo "See CONTRIBUTING.md for what each failure means and how to fix it."
   exit 1
 fi
