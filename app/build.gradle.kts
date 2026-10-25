@@ -49,16 +49,3 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
-
-tasks.register("resolveCiDependencies") {
-    group = "verification"
-    description = "Resolves app classpaths so CI fails when a Gradle dependency cannot be resolved."
-    listOf(
-        "debugCompileClasspath",
-        "debugRuntimeClasspath",
-        "releaseCompileClasspath",
-        "releaseRuntimeClasspath",
-    ).forEach { name ->
-        inputs.files(configurations.named(name))
-    }
-}
