@@ -181,6 +181,11 @@ private fun ScreenPreview(
                             onCancelPending = {},
                             onConfirmDelete = {},
                             onApplyStatus = {},
+                            onAddTask = {},
+                            onCompleteTask = {},
+                            onDeleteTask = {},
+                            onUndo = {},
+                            onDismissUndo = {},
                         )
                     } else {
                         CalendarScreen(
@@ -199,6 +204,7 @@ private fun ScreenPreview(
                             onSelectBlock = { _, _ -> },
                             onDelete = {},
                             onCancel = {},
+                            onAdd = {},
                         )
                     }
                 }

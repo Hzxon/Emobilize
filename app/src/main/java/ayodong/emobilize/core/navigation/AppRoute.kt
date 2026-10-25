@@ -4,7 +4,6 @@ object AppRoute {
     const val Splash = "splash"
     const val Auth = "auth"
     const val Tasks = "tasks"
-    const val TaskDetail = "detail/{taskId}"
     const val Calendar = "calendar"
     const val Settings = "settings"
     const val Reminders = "reminders"
@@ -13,8 +12,6 @@ object AppRoute {
     const val CalendarAdd = "calendar/add"
     const val CalendarTask = "calendar/task/{taskId}"
     const val CalendarBlock = "calendar/block/{blockId}/{date}"
-
-    fun taskDetail(taskId: Long) = "detail/$taskId"
 
     fun editTask(taskId: Long) = "task/$taskId"
 

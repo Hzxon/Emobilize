@@ -52,6 +52,7 @@ fun TaskDetailScreen(
     inProgress: Boolean,
     onBack: () -> Unit,
     onEdit: () -> Unit,
+    panelModifier: Modifier = Modifier,
 ) {
     val palette = LocalPalette.current
     val scrimSource = remember { MutableInteractionSource() }
@@ -72,6 +73,7 @@ fun TaskDetailScreen(
                 Modifier
                     .align(Alignment.Center)
                     .padding(horizontal = AppMetrics.pageHorizontal)
+                    .then(panelModifier)
                     .fillMaxWidth()
                     .heightIn(max = maxHeight * 0.8f)
                     .clip(shape)

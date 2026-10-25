@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,10 +18,10 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -43,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
@@ -93,6 +95,7 @@ fun CalendarScreen(
     onSelectBlock: (LocalDate, TimeBlock) -> Unit,
     onDelete: () -> Unit,
     onCancel: () -> Unit,
+    onAdd: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val palette = LocalPalette.current
@@ -146,6 +149,7 @@ fun CalendarScreen(
                     onDate = selectDate,
                     onSelectTask = onSelectTask,
                     onSelectBlock = onSelectBlock,
+                    onAdd = onAdd,
                 )
                 CalView.Week, CalView.Day -> WeekBody(
                     activeDate = activeDate,
@@ -159,6 +163,7 @@ fun CalendarScreen(
                     onDate = selectDate,
                     onSelectTask = onSelectTask,
                     onSelectBlock = onSelectBlock,
+                    onAdd = onAdd,
                 )
             }
         }
@@ -311,6 +316,7 @@ private fun MonthBody(
     onDate: (LocalDate) -> Unit,
     onSelectTask: (Task) -> Unit,
     onSelectBlock: (LocalDate, TimeBlock) -> Unit,
+    onAdd: () -> Unit,
 ) {
     val palette = LocalPalette.current
     val cells = monthCells(month, weekStart)
@@ -364,6 +370,7 @@ private fun MonthBody(
             selectedBlockId = selectedBlockId,
             onSelectTask = onSelectTask,
             onSelectBlock = { onSelectBlock(activeDate, it) },
+            onAdd = onAdd,
             modifier = Modifier.weight(1f),
         )
     }
@@ -382,6 +389,7 @@ private fun WeekBody(
     onDate: (LocalDate) -> Unit,
     onSelectTask: (Task) -> Unit,
     onSelectBlock: (LocalDate, TimeBlock) -> Unit,
+    onAdd: () -> Unit,
 ) {
     val palette = LocalPalette.current
     Column(Modifier.fillMaxSize()) {
@@ -437,6 +445,7 @@ private fun WeekBody(
             selectedBlockId = selectedBlockId,
             onSelectTask = onSelectTask,
             onSelectBlock = { onSelectBlock(activeDate, it) },
+            onAdd = onAdd,
             modifier = Modifier.weight(1f),
         )
     }
@@ -510,6 +519,7 @@ private fun DayNumber(
 }
 
 private data class AgendaCard(
+    val key: String,
     val title: String,
     val kind: String,
     val category: Category?,
@@ -532,6 +542,7 @@ private fun DayAgenda(
     selectedBlockId: Long?,
     onSelectTask: (Task) -> Unit,
     onSelectBlock: (TimeBlock) -> Unit,
+    onAdd: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val palette = LocalPalette.current
@@ -540,6 +551,7 @@ private fun DayAgenda(
         blocks.forEach { block ->
             add(
                 AgendaCard(
+                    key = "block-${block.id}",
                     title = block.title,
                     kind = "Regular Schedule",
                     category = block.category,
@@ -556,6 +568,7 @@ private fun DayAgenda(
             val picked = selectedTaskId == task.id && choosing
             add(
                 AgendaCard(
+                    key = "task-${task.id}",
                     title = task.name,
                     kind = task.eventType.label,
                     category = task.category,
@@ -574,24 +587,49 @@ private fun DayAgenda(
         }
     }.sortedBy { it.sort }
     if (cards.isEmpty()) {
-        Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Column(
+            modifier
+                .fillMaxSize()
+                .padding(horizontal = AppMetrics.headerHorizontal),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
             Text(
                 "Nothing scheduled",
-                style = appStyle(13.sp, FontWeight.Medium),
+                style = appStyle(16.sp, FontWeight.SemiBold),
+                color = palette.text,
+            )
+            Spacer(Modifier.height(6.dp))
+            Text(
+                "Events and regular schedules for this day show up here.",
+                style = appStyle(13.sp, FontWeight.Medium, lineHeight = 18.sp),
                 color = palette.textMuted,
+                textAlign = TextAlign.Center,
+            )
+            Spacer(Modifier.height(16.dp))
+            Text(
+                text = "Add an event",
+                modifier = Modifier
+                    .clip(RoundedCornerShape(ShadcnRadius.lg))
+                    .background(palette.primary)
+                    .clickable(onClick = onAdd, role = Role.Button)
+                    .heightIn(min = AppMetrics.actionHeight)
+                    .padding(horizontal = 20.dp, vertical = 12.dp),
+                style = appStyle(14.sp, FontWeight.Bold),
+                color = palette.onFilled,
             )
         }
         return
     }
-    Column(
-        modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = AppMetrics.pageHorizontal, vertical = 12.dp),
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = AppMetrics.pageHorizontal, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        cards.forEach { card ->
-            AgendaRow(card = card, pending = pending, dimmed = choosing && !card.selected)
+        items(cards, key = { it.key }) { card ->
+            Box(Modifier.animateItem()) {
+                AgendaRow(card = card, pending = pending, dimmed = choosing && !card.selected)
+            }
         }
     }
 }

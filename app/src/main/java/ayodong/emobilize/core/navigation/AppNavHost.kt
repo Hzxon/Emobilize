@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -43,10 +45,8 @@ import ayodong.emobilize.feature.settings.ui.SettingsViewModel
 import ayodong.emobilize.feature.splash.ui.SplashScreen
 import ayodong.emobilize.feature.tasks.di.TasksModule
 import ayodong.emobilize.feature.tasks.ui.AddTaskCard
-import ayodong.emobilize.feature.tasks.ui.TaskDetailScreen
 import ayodong.emobilize.feature.tasks.ui.TaskFormSheet
 import ayodong.emobilize.feature.tasks.ui.TaskFormViewModel
-import ayodong.emobilize.feature.tasks.ui.TasksViewModel
 
 // Hotspot file: every route is registered here once by the core owner. A feature fills its own
 // screen and ViewModel; it does not edit this graph.
@@ -109,23 +109,6 @@ fun AppNavHost(shell: ShellViewModel) {
             composable(AppRoute.Calendar) {
                 MainShell(navController, NavTab.Calendar, shell)
             }
-            dialog(
-                route = AppRoute.TaskDetail,
-                arguments = listOf(navArgument("taskId") { type = NavType.LongType }),
-                dialogProperties = overlayDialog,
-            ) { entry ->
-                val taskId = entry.arguments?.getLong("taskId") ?: 0L
-                val viewModel: TasksViewModel = viewModel(factory = TasksModule.tasksViewModel(container))
-                val state by viewModel.uiState.collectAsState()
-                TaskDetailScreen(
-                    task = state.task(taskId),
-                    taskId = taskId,
-                    isDone = taskId in state.doneIds,
-                    inProgress = taskId in state.progressIds,
-                    onBack = { navController.leave() },
-                    onEdit = { navController.openEditor(shell, taskId) },
-                )
-            }
             dialog(AppRoute.Reminders, dialogProperties = overlayDialog) {
                 val viewModel: RemindersViewModel = viewModel(factory = RemindersModule.remindersViewModel(container))
                 val state by viewModel.uiState.collectAsState()
@@ -154,12 +137,18 @@ fun AppNavHost(shell: ShellViewModel) {
             dialog(AppRoute.AddTask, dialogProperties = overlayDialog) {
                 val viewModel: TaskFormViewModel = viewModel(factory = TasksModule.taskFormViewModel(container, taskId = null))
                 val categories by viewModel.categories.collectAsState()
+                val haptics = LocalHapticFeedback.current
                 AddTaskCard(
                     draft = viewModel.draft,
                     categories = categories,
                     onDismiss = { navController.leave() },
                     onSubmit = {
-                        if (viewModel.submitAdd()) navController.leave()
+                        if (viewModel.submitAdd()) {
+                            haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                            navController.leave()
+                        } else {
+                            haptics.performHapticFeedback(HapticFeedbackType.Reject)
+                        }
                     },
                 )
             }
@@ -175,6 +164,7 @@ fun AppNavHost(shell: ShellViewModel) {
                 } else {
                     val categories by viewModel.categories.collectAsState()
                     val colors = LocalPalette.current
+                    val haptics = LocalHapticFeedback.current
                     BackHandler { navController.leave() }
                     TaskFormSheet(
                         title = "Edit Task",
@@ -185,7 +175,12 @@ fun AppNavHost(shell: ShellViewModel) {
                         saveColor = colors.menuColor(FabAction.Edit),
                         onDismiss = { navController.leave() },
                         onSubmit = {
-                            if (viewModel.submitEdit()) navController.leave()
+                            if (viewModel.submitEdit()) {
+                                haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                                navController.leave()
+                            } else {
+                                haptics.performHapticFeedback(HapticFeedbackType.Reject)
+                            }
                         },
                     )
                 }
@@ -232,6 +227,7 @@ private fun CalendarFormDestination(
     }
     val categories by viewModel.categories.collectAsState()
     val colors = LocalPalette.current
+    val haptics = LocalHapticFeedback.current
     CalendarFormSheet(
         draft = viewModel.draft,
         categories = categories,
@@ -241,7 +237,12 @@ private fun CalendarFormDestination(
         submitLabel = if (viewModel.editing) "Save Changes" else "Save",
         onDismiss = dismiss,
         onSubmit = {
-            if (viewModel.submit()) dismiss()
+            if (viewModel.submit()) {
+                haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                dismiss()
+            } else {
+                haptics.performHapticFeedback(HapticFeedbackType.Reject)
+            }
         },
     )
 }
