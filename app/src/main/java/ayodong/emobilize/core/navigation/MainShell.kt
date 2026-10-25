@@ -120,8 +120,8 @@ internal fun MainShell(
     ) {
         val cardShape = RoundedCornerShape(AppMetrics.cardRadius)
         // Each tab draws its own header with these two buttons on its right. Departures draws a
-        // board band, so its buttons sit unboxed on the board with a rule between them; Route map
-        // keeps the outlined squares on the page background.
+        // clock band, so its buttons sit unboxed at the band's full height; Route map keeps the
+        // outlined squares.
         val openReminders = {
             menuOpen = false
             navController.navigate(AppRoute.Reminders) { launchSingleTop = true }
@@ -314,8 +314,8 @@ private fun TabPage(
     }
 }
 
-// Top-right header action. On the page it is a square outlined button; on the Departures board
-// band it is a plain muted glyph the full height of the band, with no box.
+// Top-right header action. On the page it is a square outlined button; on the Departures clock
+// band it is a plain glyph the full height of the band, with no box.
 @Composable
 private fun HeaderButton(
     icon: ImageVector,
@@ -336,7 +336,7 @@ private fun HeaderButton(
         Icon(
             imageVector = icon,
             contentDescription = contentDescription,
-            tint = if (onBoard) colors.boardText else colors.text,
+            tint = colors.text,
             modifier = Modifier.size(if (onBoard) 24.dp else 20.dp),
         )
     }

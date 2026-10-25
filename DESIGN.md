@@ -207,7 +207,7 @@ Garis kontrol 2 dp `foreground`. Tombol utama tinggi 52–56 dp. Target sentuh m
 ### Header
 
 - Tidak ada baris header bersama. Tiap tab menggambar header sendiri:
-  - Tasks (papan jam): satu pita selebar layar, tinggi 56 dp (`boardHeaderHeight`), isi `board`. Jam mono 26 sp warna `signal`, lalu "DEPARTURES" 11 sp ExtraBold `boardText` di atas tanggal "MON 26 OCT" 11 sp `boardMuted`. Tombol Reminders dan Settings di tepi kanan pita, lebar 44 dp setinggi pita, tanpa kotak dan tanpa garis pemisah, ikon 24 dp `boardText`.
+  - Tasks (papan jam): satu pita selebar layar, tinggi 56 dp (`boardHeaderHeight`), isi `background` (warna halaman, menyatu dengan status bar seperti header Calendar). Jam mono 26 sp warna `signal` di tema Dark dan `foreground` di tema Light (kuning di atas dinding pucat tidak terbaca), lalu "DEPARTURES" 11 sp ExtraBold `foreground` di atas tanggal "MON 26 OCT" 11 sp `muted-foreground`. Tombol Reminders dan Settings di tepi kanan pita, lebar 44 dp setinggi pita, tanpa kotak dan tanpa garis pemisah, ikon 24 dp `foreground`.
   - Calendar: satu baris 44 dp, "Route map" 24 sp di atas minggu 11 sp, lalu tombol TODAY bila hari lain dipilih. Tombol header persegi 44 dp, isi `card`, garis 2 dp `foreground`.
 - `MainShell` mengirim tombolnya lewat parameter `headerActions`: varian papan ke Tasks, varian kotak ke Calendar.
 
