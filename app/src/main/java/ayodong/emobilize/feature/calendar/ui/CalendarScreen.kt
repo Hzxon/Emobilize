@@ -352,8 +352,8 @@ private fun hasService(
     blocks: Map<LocalDate, List<TimeBlock>>,
 ): Boolean = (blocks[date]?.isNotEmpty() == true) || tasks.any { taskOccursOn(it, date, today) }
 
-// The week drawn as seven stations on one thick line. The picked day is the big yellow stop and
-// days with nothing on them are greyed out.
+// The week drawn as seven numbered stations on one thin line. The picked day is the big yellow
+// stop and days with nothing on them are greyed out.
 @Composable
 private fun WeekLine(
     activeDate: LocalDate,
@@ -366,16 +366,16 @@ private fun WeekLine(
     val palette = LocalPalette.current
     Box(
         Modifier
-            .padding(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, top = 10.dp)
+            .padding(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, top = 8.dp)
             .fillMaxWidth()
-            .height(96.dp),
+            .height(52.dp),
     ) {
         Box(
             Modifier
                 .padding(horizontal = 22.dp)
-                .padding(top = 22.dp)
+                .padding(top = 16.dp)
                 .fillMaxWidth()
-                .height(8.dp)
+                .height(4.dp)
                 .background(palette.text),
         )
         Row(Modifier.fillMaxWidth()) {
@@ -384,11 +384,11 @@ private fun WeekLine(
                 val isToday = date == today
                 val has = hasService(date, today, tasks, blocks)
                 val dow = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.US).uppercase(Locale.US)
-                val size = if (active) 52.dp else 28.dp
+                val size = if (active) 36.dp else 30.dp
+                val ink = if (has || active) palette.text else palette.textMuted
                 Column(
                     Modifier
                         .weight(1f)
-                        .heightIn(min = 88.dp)
                         .selectable(selected = active, role = Role.Button) { onDate(date) }
                         .semantics {
                             contentDescription = "$dow ${date.dayOfMonth}" +
@@ -399,11 +399,11 @@ private fun WeekLine(
                 ) {
                     Box(
                         Modifier
-                            .padding(top = if (active) 0.dp else 12.dp)
+                            .padding(top = if (active) 0.dp else 3.dp)
                             .size(size)
                             .clip(CircleShape)
                             .background(palette.text)
-                            .padding(4.dp)
+                            .padding(2.dp)
                             .clip(CircleShape)
                             .background(
                                 when {
@@ -412,18 +412,21 @@ private fun WeekLine(
                                     else -> palette.scheme.muted
                                 },
                             ),
-                    )
-                    Spacer(Modifier.height(if (active) 6.dp else 8.dp))
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            date.dayOfMonth.toString(),
+                            style = appStyle(if (active) 14.sp else 13.sp, FontWeight.ExtraBold, lineHeight = 14.sp),
+                            color = if (active) palette.signalInk else ink,
+                            maxLines = 1,
+                        )
+                    }
+                    Spacer(Modifier.height(3.dp))
                     Text(
                         if (isToday) "TODAY" else dow,
-                        style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 1.sp),
-                        color = if (has || active) palette.text else palette.textMuted,
+                        style = appStyle(10.sp, FontWeight.Bold, letterSpacing = 1.sp, lineHeight = 11.sp),
+                        color = if (active) palette.signal else ink,
                         maxLines = 1,
-                    )
-                    Text(
-                        date.dayOfMonth.toString(),
-                        style = appStyle(16.sp, FontWeight.ExtraBold, lineHeight = 18.sp),
-                        color = if (has || active) palette.text else palette.textMuted,
                     )
                 }
             }

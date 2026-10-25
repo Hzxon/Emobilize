@@ -41,10 +41,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -93,7 +93,6 @@ import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 private val filters = listOf(
     BoardFilter.Today to "Today",
@@ -717,18 +716,26 @@ private fun SwipeableTaskCard(
     val density = LocalDensity.current
     val threshold = with(density) { 96.dp.toPx() }
     val limit = with(density) { 160.dp.toPx() }
-    val offset = remember(task.id) { Animatable(0f) }
-    val scope = rememberCoroutineScope()
+    // The finger position is plain state written synchronously per delta, and the spring-back is a
+    // separate Animatable. Snapping the Animatable from a launched coroutine per delta let the
+    // last delta land after onDragStopped had started animateTo(0f), cancel it, and leave the
+    // card stuck at the released offset.
+    var drag by remember(task.id) { mutableFloatStateOf(0f) }
+    val settle = remember(task.id) { Animatable(0f) }
+    var settling by remember(task.id) { mutableStateOf(false) }
     var armed by remember { mutableStateOf(false) }
     val dragState = rememberDraggableState { delta ->
-        val next = (offset.value + delta).coerceIn(-limit, if (isDone) 0f else limit)
+        // A drag that starts mid-spring continues from where the spring is, and takes over.
+        val base = if (settling) settle.value else drag
+        settling = false
+        val next = (base + delta).coerceIn(-limit, if (isDone) 0f else limit)
         val nowArmed = abs(next) >= threshold
         if (nowArmed && !armed) haptics.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
         armed = nowArmed
-        scope.launch { offset.snapTo(next) }
+        drag = next
     }
     Box(Modifier.fillMaxWidth()) {
-        val value = offset.value
+        val value = if (settling) settle.value else drag
         if (value != 0f) {
             val toDone = value > 0f
             val color = if (toDone) palette.boardBoarding else palette.boardDelayed
@@ -756,13 +763,21 @@ private fun SwipeableTaskCard(
                     orientation = Orientation.Horizontal,
                     enabled = enabled,
                     onDragStopped = {
-                        val settled = offset.value
+                        val released = drag
                         armed = false
                         when {
-                            settled >= threshold -> onComplete()
-                            settled <= -threshold -> onDelete()
+                            released >= threshold -> onComplete()
+                            released <= -threshold -> onDelete()
                         }
-                        offset.animateTo(0f, spring(stiffness = Spring.StiffnessMediumLow))
+                        settle.snapTo(released)
+                        settling = true
+                        settle.animateTo(0f, spring(stiffness = Spring.StiffnessMediumLow))
+                        // A new drag during the spring clears settling, so only an
+                        // uninterrupted spring resets the finger position.
+                        if (settling) {
+                            drag = 0f
+                            settling = false
+                        }
                     },
                 ),
         ) {
