@@ -20,11 +20,30 @@ class FakeCategoryRepository(
 
     override val categories: StateFlow<List<Category>> = state.asStateFlow()
 
+    override fun add(name: String, code: String, color: Int): Category? {
+        val id = (state.value.maxOfOrNull { it.id } ?: 0L) + 1
+        val saved = Category(id, name, color, code).normalized() ?: return null
+        if (codeTaken(saved)) return null
+        state.update { it + saved }
+        return saved
+    }
+
     override fun update(category: Category): Category? {
         if (state.value.none { it.id == category.id }) return null
-        state.update { list -> list.map { if (it.id == category.id) category else it } }
-        return category
+        val saved = category.normalized() ?: return null
+        if (codeTaken(saved)) return null
+        state.update { list -> list.map { if (it.id == saved.id) saved else it } }
+        return saved
     }
+
+    override fun delete(id: Long): Boolean {
+        if (state.value.none { it.id == id }) return false
+        state.update { list -> list.filter { it.id != id } }
+        return true
+    }
+
+    private fun codeTaken(category: Category): Boolean =
+        state.value.any { it.id != category.id && it.code.equals(category.code, ignoreCase = true) }
 }
 
 class FakeAppSettingsRepository(

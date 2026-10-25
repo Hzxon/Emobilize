@@ -13,6 +13,8 @@ object SettingsModule {
             SettingsViewModel(
                 categories = container.categories,
                 settings = container.appSettings,
+                tasks = container.tasks,
+                schedule = container.schedule,
                 saveSettings = SaveSettingsUseCase(container.categories, container.tasks, container.schedule, container.appSettings),
             )
         }

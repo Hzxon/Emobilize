@@ -136,7 +136,6 @@ internal fun MainShell(
         }
         val boardHeaderActions: @Composable () -> Unit = {
             HeaderButton(Icons.Outlined.Notifications, "Reminders", onBoard = true, onClick = openReminders)
-            Box(Modifier.width(1.dp).height(AppMetrics.boardHeaderHeight).background(colors.boardRule))
             HeaderButton(Icons.Outlined.Settings, "Settings", onBoard = true, onClick = openSettings)
         }
         Column(Modifier.fillMaxSize().statusBarsPadding()) {
@@ -337,8 +336,8 @@ private fun HeaderButton(
         Icon(
             imageVector = icon,
             contentDescription = contentDescription,
-            tint = if (onBoard) colors.boardMuted else colors.text,
-            modifier = Modifier.size(20.dp),
+            tint = if (onBoard) colors.boardText else colors.text,
+            modifier = Modifier.size(if (onBoard) 24.dp else 20.dp),
         )
     }
 }

@@ -89,6 +89,8 @@ fun RadialMenu(
     )
     var dragging by remember { mutableStateOf(false) }
     var highlighted by remember { mutableStateOf<FabAction?>(null) }
+    // Where the finger points while it drags over the dial, in degrees from straight up; null in the hub or at rest.
+    var pointerAngle by remember { mutableStateOf<Float?>(null) }
     val onOpenState = rememberUpdatedState(onMenuOpenChange)
     val menuOpenState = rememberUpdatedState(menuOpen)
     val onActionState = rememberUpdatedState(onAction)
@@ -115,16 +117,30 @@ fun RadialMenu(
     LaunchedEffect(menuOpen) {
         if (!menuOpen) {
             highlighted = null
+            pointerAngle = null
             dragging = false
         }
     }
 
     val slices = dialSlices(actions, tab)
+    // While the finger drags, the needle tracks it with a stiff spring so it feels weighted but
+    // never lags behind. On release it swings to the picked slice's centre, or back to rest.
+    val following = pointerAngle
     val needleAngle by animateFloatAsState(
-        targetValue = slices.firstOrNull { it.action == highlighted }?.center ?: 0f,
-        animationSpec = spring(dampingRatio = 0.6f, stiffness = Spring.StiffnessMedium),
+        targetValue = following ?: slices.firstOrNull { it.action == highlighted }?.center ?: 0f,
+        animationSpec = if (following != null) {
+            spring(dampingRatio = 0.9f, stiffness = Spring.StiffnessHigh)
+        } else {
+            spring(dampingRatio = 0.6f, stiffness = Spring.StiffnessMedium)
+        },
         label = "dialNeedle",
     )
+
+    fun angleOf(position: Offset, origin: Offset): Float {
+        val dx = position.x - origin.x
+        val dy = position.y - origin.y
+        return Math.toDegrees(atan2(dx.toDouble(), (-dy).toDouble())).toFloat()
+    }
 
     // The slice under the finger, or null inside the hub or past the dial's rim.
     fun nearest(position: Offset, origin: Offset): FabAction? {
@@ -132,8 +148,15 @@ fun RadialMenu(
         val dy = position.y - origin.y
         val distance = hypot(dx, dy)
         if (distance < innerLimit || distance > outerLimit) return null
-        val pointerAngle = Math.toDegrees(atan2(dx.toDouble(), (-dy).toDouble())).toFloat()
+        val pointerAngle = angleOf(position, origin)
         return slices.firstOrNull { pointerAngle >= it.start && pointerAngle < it.end }?.action
+    }
+
+    // The finger's angle clamped to the dial's sweep, or null while it sits in the hub.
+    fun fingerAngle(position: Offset, origin: Offset): Float? {
+        val distance = hypot(position.x - origin.x, position.y - origin.y)
+        if (distance < innerLimit || slices.isEmpty()) return null
+        return angleOf(position, origin).coerceIn(slices.first().start, slices.last().end)
     }
 
     Box(
@@ -219,7 +242,8 @@ fun RadialMenu(
                     slices.drop(1).forEach { slice ->
                         drawLine(DialSeam, at(inner, slice.start), at(outer - rim, slice.start), strokeWidth = 2.dp.toPx())
                     }
-                    // Needle from the hub to the picked slice; it rests pointing straight up.
+                    // Needle from the hub: follows the finger while dragging, settles on the picked
+                    // slice on release, and rests pointing straight up.
                     val tip = at(150.dp.toPx(), needleAngle)
                     drawLine(palette.signal, at(40.dp.toPx(), needleAngle), tip, strokeWidth = 4.dp.toPx())
                     drawPath(
@@ -375,6 +399,7 @@ fun RadialMenu(
                             dragging = true
 
                             fun updateHover(position: Offset) {
+                                pointerAngle = if (progressState.value < 0.5f) null else fingerAngle(position, origin)
                                 val next = if (progressState.value < 0.5f) {
                                     null
                                 } else {
@@ -403,6 +428,7 @@ fun RadialMenu(
 
                             val selected = highlighted
                             highlighted = null
+                            pointerAngle = null
                             dragging = false
                             when {
                                 selected != null -> {
