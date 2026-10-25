@@ -336,8 +336,8 @@ private fun HeaderButton(
         Icon(
             imageVector = icon,
             contentDescription = contentDescription,
-            tint = if (onBoard) colors.boardMuted else colors.text,
-            modifier = Modifier.size(20.dp),
+            tint = if (onBoard) colors.boardText else colors.text,
+            modifier = Modifier.size(if (onBoard) 24.dp else 20.dp),
         )
     }
 }
