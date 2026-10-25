@@ -1,0 +1,73 @@
+name: CI
+
+# Confirms that every teammate gets the same build setup and that the app
+# builds from a clean checkout on Windows, macOS and Linux.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  config:
+    name: Check shared configuration
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Validate Gradle wrapper JAR
+        uses: gradle/actions/wrapper-validation@v6
+
+      - name: Check committed build configuration
+        run: bash scripts/check-config.sh
+
+  build:
+    name: Build on ${{ matrix.os }}
+    needs: config
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            gradlew: .\gradlew.bat
+          - os: macos-latest
+            gradlew: ./gradlew
+          - os: ubuntu-latest
+            gradlew: ./gradlew
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # JDK 21 only launches the wrapper. The build itself must run on the
+      # JDK pinned in gradle/gradle-daemon-jvm.properties, which Gradle
+      # downloads when it is missing, as it would on a new laptop.
+      - name: Set up launcher JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: ""
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Show Gradle and JDK versions
+        run: ${{ matrix.gradlew }} --version
+
+      - name: Build debug APK and run unit tests
+        run: ${{ matrix.gradlew }} assembleDebug testDebugUnitTest --stacktrace
