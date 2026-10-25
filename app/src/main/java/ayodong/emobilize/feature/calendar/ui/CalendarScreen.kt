@@ -1,5 +1,10 @@
 package ayodong.emobilize.feature.calendar.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,6 +23,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -123,8 +129,10 @@ fun CalendarScreen(
         CalendarHeader(
             month = visibleMonth,
             view = view,
+            showToday = activeDate != today,
             onPrev = { shiftMonth(-1) },
             onNext = { shiftMonth(1) },
+            onToday = { selectDate(today) },
             onView = { viewName = it.name },
         )
         if (pending == FabAction.Edit || pending == FabAction.Delete) {
@@ -194,8 +202,10 @@ fun CalendarScreen(
 private fun CalendarHeader(
     month: YearMonth,
     view: CalView,
+    showToday: Boolean,
     onPrev: () -> Unit,
     onNext: () -> Unit,
+    onToday: () -> Unit,
     onView: (CalView) -> Unit,
 ) {
     val palette = LocalPalette.current
@@ -216,31 +226,54 @@ private fun CalendarHeader(
             }
         }
         Spacer(Modifier.height(12.dp))
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(ShadcnRadius.lg))
-                .background(palette.scheme.muted)
-                .padding(3.dp),
-            horizontalArrangement = Arrangement.spacedBy(2.dp),
-        ) {
-            listOf(CalView.Month, CalView.Week).forEach { item ->
-                val selected = item == view
-                Box(
-                    Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(ShadcnRadius.lg))
-                        .background(if (selected) palette.scheme.background else Color.Transparent)
-                        .clickable(role = Role.Tab) { onView(item) }
-                        .heightIn(min = 40.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = item.name.lowercase().replaceFirstChar { it.titlecase(Locale.US) },
-                        style = appStyle(14.sp, FontWeight.Medium),
-                        color = if (selected) palette.text else palette.textMuted,
-                    )
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(ShadcnRadius.lg))
+                    .background(palette.scheme.muted)
+                    .padding(3.dp),
+                horizontalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
+                listOf(CalView.Month, CalView.Week).forEach { item ->
+                    val selected = item == view
+                    Box(
+                        Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(ShadcnRadius.lg))
+                            .background(if (selected) palette.scheme.background else Color.Transparent)
+                            .clickable(role = Role.Tab) { onView(item) }
+                            .heightIn(min = 40.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = item.name.lowercase().replaceFirstChar { it.titlecase(Locale.US) },
+                            style = appStyle(14.sp, FontWeight.Medium),
+                            color = if (selected) palette.text else palette.textMuted,
+                        )
+                    }
                 }
+            }
+            // Jumps the selection back to today. Hidden while today is already selected.
+            AnimatedVisibility(
+                visible = showToday,
+                enter = fadeIn() + expandHorizontally(expandFrom = Alignment.Start),
+                exit = fadeOut() + shrinkHorizontally(shrinkTowards = Alignment.Start),
+            ) {
+                Text(
+                    text = "Today",
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .clip(RoundedCornerShape(ShadcnRadius.lg))
+                        .background(palette.scheme.secondary)
+                        .border(1.dp, palette.scheme.border, RoundedCornerShape(ShadcnRadius.lg))
+                        .clickable(onClick = onToday, role = Role.Button)
+                        .heightIn(min = 46.dp)
+                        .padding(horizontal = 16.dp)
+                        .wrapContentHeight(),
+                    style = appStyle(14.sp, FontWeight.SemiBold),
+                    color = palette.text,
+                )
             }
         }
     }
