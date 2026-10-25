@@ -192,7 +192,7 @@ Jarak layar yang sudah dipakai:
 | Token | Nilai | Pemakaian |
 | --- | --- | --- |
 | header-horizontal | 24 dp | Judul dan filter |
-| page-horizontal | 18 dp | Daftar tugas |
+| page-horizontal | 16 dp | Daftar tugas, agenda kalender |
 | card min height | 68 dp | Kartu tugas |
 | action height | 44 dp | Tombol aksi bawah |
 | nav height | 100 dp | Dock |

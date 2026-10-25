@@ -1,9 +1,15 @@
 package ayodong.emobilize.feature.tasks.ui
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,21 +29,41 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarData
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import ayodong.emobilize.core.model.FilterKey
 import ayodong.emobilize.core.model.ReminderOption
@@ -55,7 +82,11 @@ import ayodong.emobilize.core.ui.theme.at
 import ayodong.emobilize.core.ui.theme.categoryColor
 import ayodong.emobilize.core.ui.theme.menuColor
 import ayodong.emobilize.core.ui.theme.priorityColor
+import ayodong.emobilize.core.ui.theme.roleInk
 import java.time.LocalTime
+import kotlin.math.abs
+import kotlin.math.roundToInt
+import kotlinx.coroutines.launch
 
 private val filters = listOf(
     FilterKey.All to "All",
@@ -76,9 +107,18 @@ fun TasksScreen(
     onCancelPending: () -> Unit,
     onConfirmDelete: () -> Unit,
     onApplyStatus: (TaskStatus) -> Unit,
+    onAddTask: () -> Unit,
+    onCompleteTask: (Long) -> Unit,
+    onDeleteTask: (Long) -> Unit,
+    onUndo: () -> Unit,
+    onDismissUndo: () -> Unit,
     modifier: Modifier = Modifier,
+    // Lets the shell wrap each card (for the shared transition into the detail sheet) without the
+    // list knowing about navigation or animation scopes.
+    cardContainer: @Composable (taskId: Long, content: @Composable () -> Unit) -> Unit = { _, content -> content() },
 ) {
     val palette = LocalPalette.current
+    val haptics = LocalHapticFeedback.current
     val visible = state.visibleTasks()
     val doneIds = state.doneIds
     val progressIds = state.progressIds
@@ -95,6 +135,21 @@ fun TasksScreen(
         }
         status to if (status == TaskStatus.Done) group else group.sortedBy { deadlineRank(it) }
     }.filter { it.second.isNotEmpty() && (it.first != TaskStatus.Done || state.showCompletedTasks) }
+
+    val snackbarHost = remember { SnackbarHostState() }
+    val undo = state.undo
+    LaunchedEffect(undo) {
+        if (undo == null) {
+            snackbarHost.currentSnackbarData?.dismiss()
+            return@LaunchedEffect
+        }
+        val result = snackbarHost.showSnackbar(
+            message = undo.message,
+            actionLabel = "Undo",
+            duration = SnackbarDuration.Short,
+        )
+        if (result == SnackbarResult.ActionPerformed) onUndo() else onDismissUndo()
+    }
 
     Column(modifier.fillMaxSize()) {
         Text(
@@ -125,8 +180,9 @@ fun TasksScreen(
                             .weight(1f)
                             .clip(RoundedCornerShape(ShadcnRadius.md))
                             .background(if (active) palette.scheme.background else Color.Transparent)
-                            .clickable { onSelectFilter(key) }
-                            .padding(vertical = 6.dp),
+                            .clickable(role = Role.Tab) { onSelectFilter(key) }
+                            .heightIn(min = 40.dp)
+                            .padding(horizontal = 4.dp),
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
@@ -154,44 +210,64 @@ fun TasksScreen(
             )
         }
 
-        if (groups.isEmpty()) {
-            Box(
-                Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    "No tasks in this view.",
-                    style = appStyle(14.sp, FontWeight.Medium),
-                    color = palette.textMuted,
+        Box(Modifier.weight(1f).fillMaxWidth()) {
+            if (groups.isEmpty()) {
+                EmptyTasks(
+                    filter = state.filter,
+                    hasAnyTask = state.tasks.isNotEmpty(),
+                    allDone = visible.isNotEmpty() && visible.all { it.id in doneIds },
+                    onAddTask = onAddTask,
                 )
-            }
-        } else LazyColumn(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .padding(top = 14.dp),
-            contentPadding = PaddingValues(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, bottom = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            groups.forEach { (status, groupTasks) ->
-                item(key = "header-$status") { StatusHeader(status) }
-                items(groupTasks, key = { it.id }) { task ->
-                    TaskCard(
-                        task = task,
-                        isDone = task.id in doneIds,
-                        isSelected = selectedTaskId == task.id,
-                        pending = pending,
-                        overdue = task.id !in doneIds && isOverdue(task, nowHours),
-                        onClick = {
-                            if (pending == null) onOpenTask(task.id)
-                            else onSelectTask(task.id)
-                        },
-                    )
+            } else LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 14.dp),
+                contentPadding = PaddingValues(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, bottom = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                groups.forEach { (status, groupTasks) ->
+                    item(key = "header-$status") {
+                        Box(Modifier.animateItem()) { StatusHeader(status, groupTasks.size) }
+                    }
+                    items(groupTasks, key = { it.id }) { task ->
+                        val isDone = task.id in doneIds
+                        Box(Modifier.animateItem()) {
+                            cardContainer(task.id) {
+                                SwipeableTaskCard(
+                                    task = task,
+                                    isDone = isDone,
+                                    enabled = pending == null,
+                                    onComplete = {
+                                        haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                                        onCompleteTask(task.id)
+                                    },
+                                    onDelete = {
+                                        haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                                        onDeleteTask(task.id)
+                                    },
+                                ) {
+                                    TaskCard(
+                                        task = task,
+                                        isDone = isDone,
+                                        isSelected = selectedTaskId == task.id,
+                                        pending = pending,
+                                        overdue = !isDone && isOverdue(task, nowHours),
+                                        onClick = {
+                                            if (pending == null) onOpenTask(task.id)
+                                            else onSelectTask(task.id)
+                                        },
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    item(key = "gap-$status") { Spacer(Modifier.height(6.dp)) }
                 }
-                item(key = "gap-$status") { Spacer(Modifier.height(2.dp)) }
             }
+            SnackbarHost(
+                hostState = snackbarHost,
+                modifier = Modifier.align(Alignment.BottomCenter),
+            ) { data -> UndoSnackbar(data) }
         }
 
         val selected = selectedTaskId
@@ -207,16 +283,21 @@ fun TasksScreen(
                     .clip(shape)
                     .background(color.copy(alpha = 0.12f))
                     .border(1.5.dp, color.copy(alpha = 0.40f), shape)
-                    .clickable {
+                    .clickable(role = Role.Button) {
                         val id = selectedTaskId ?: return@clickable
-                        if (delete) onConfirmDelete() else onEditTask(id)
+                        if (delete) {
+                            haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                            onConfirmDelete()
+                        } else {
+                            onEditTask(id)
+                        }
                     },
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text = if (delete) "Delete task" else "Edit task",
                     style = appStyle(14.sp, FontWeight.Medium),
-                    color = color,
+                    color = palette.roleInk(color),
                 )
             }
         }
@@ -232,21 +313,168 @@ fun TasksScreen(
                     StatusChoice(
                         label = "Progress",
                         container = palette.progBtnBg,
-                        content = palette.progBtnColor,
+                        content = palette.roleInk(palette.progBtnColor),
                         border = palette.progBtnBorder,
                         modifier = Modifier.weight(1f),
-                        onClick = { onApplyStatus(TaskStatus.Progress) },
+                        onClick = {
+                            haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                            onApplyStatus(TaskStatus.Progress)
+                        },
                     )
                     StatusChoice(
                         label = "Done",
                         container = palette.statusDone.copy(alpha = 0.12f),
-                        content = palette.statusDone,
+                        content = palette.roleInk(palette.statusDone),
                         border = palette.statusDone.copy(alpha = 0.40f),
                         modifier = Modifier.weight(1f),
-                        onClick = { onApplyStatus(TaskStatus.Done) },
+                        onClick = {
+                            haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                            onApplyStatus(TaskStatus.Done)
+                        },
                     )
                 }
             }
+        }
+    }
+}
+
+// One empty state per cause: nothing added yet, nothing in this filter, or everything done.
+@Composable
+private fun EmptyTasks(
+    filter: FilterKey,
+    hasAnyTask: Boolean,
+    allDone: Boolean,
+    onAddTask: () -> Unit,
+) {
+    val palette = LocalPalette.current
+    val (title, body) = when {
+        !hasAnyTask -> "No tasks yet" to "Add your first task and it shows up here."
+        allDone -> "All done" to "Every task in this view is finished."
+        filter == FilterKey.Today -> "Nothing due today" to "Tasks with today's date land here."
+        filter == FilterKey.Tomorrow -> "Nothing due tomorrow" to "Tasks with tomorrow's date land here."
+        filter == FilterKey.Later -> "Nothing later" to "Tasks dated after tomorrow land here."
+        else -> "No tasks in this view." to "Add a task to get started."
+    }
+    Column(
+        Modifier
+            .fillMaxSize()
+            .padding(horizontal = AppMetrics.headerHorizontal),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Text(title, style = appStyle(16.sp, FontWeight.SemiBold), color = palette.text)
+        Spacer(Modifier.height(6.dp))
+        Text(
+            body,
+            style = appStyle(13.sp, FontWeight.Medium, lineHeight = 18.sp),
+            color = palette.textMuted,
+            textAlign = TextAlign.Center,
+        )
+        Spacer(Modifier.height(16.dp))
+        EmptyAction(label = if (hasAnyTask) "Add a task" else "Add your first task", onClick = onAddTask)
+    }
+}
+
+@Composable
+private fun EmptyAction(label: String, onClick: () -> Unit) {
+    val palette = LocalPalette.current
+    val shape = RoundedCornerShape(ShadcnRadius.lg)
+    Text(
+        text = label,
+        modifier = Modifier
+            .clip(shape)
+            .background(palette.primary)
+            .clickable(onClick = onClick, role = Role.Button)
+            .heightIn(min = AppMetrics.actionHeight)
+            .padding(horizontal = 20.dp, vertical = 12.dp),
+        style = appStyle(14.sp, FontWeight.Bold),
+        color = palette.onFilled,
+    )
+}
+
+@Composable
+private fun UndoSnackbar(data: SnackbarData) {
+    val palette = LocalPalette.current
+    Snackbar(
+        snackbarData = data,
+        shape = RoundedCornerShape(ShadcnRadius.lg),
+        containerColor = palette.primary,
+        contentColor = palette.onFilled,
+        actionColor = palette.onFilled,
+        modifier = Modifier.padding(horizontal = AppMetrics.pageHorizontal, vertical = 8.dp),
+    )
+}
+
+// Swipe right marks the task done, swipe left deletes it. The card springs back and the list
+// animates the change, and the snackbar offers Undo. The radial Update and Delete modes stay
+// as the non-gesture path. A plain draggable is used instead of SwipeToDismissBox, whose
+// anchors produce NaN under the shared-transition lookahead pass and crash.
+@Composable
+private fun SwipeableTaskCard(
+    task: Task,
+    isDone: Boolean,
+    enabled: Boolean,
+    onComplete: () -> Unit,
+    onDelete: () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    val palette = LocalPalette.current
+    val haptics = LocalHapticFeedback.current
+    val density = LocalDensity.current
+    val threshold = with(density) { 96.dp.toPx() }
+    val limit = with(density) { 160.dp.toPx() }
+    val offset = remember(task.id) { Animatable(0f) }
+    val scope = rememberCoroutineScope()
+    var armed by remember { mutableStateOf(false) }
+    val shape = RoundedCornerShape(AppMetrics.cardRadius)
+    val dragState = rememberDraggableState { delta ->
+        val next = (offset.value + delta).coerceIn(-limit, if (isDone) 0f else limit)
+        val nowArmed = abs(next) >= threshold
+        if (nowArmed && !armed) haptics.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
+        armed = nowArmed
+        scope.launch { offset.snapTo(next) }
+    }
+    Box(Modifier.fillMaxWidth()) {
+        val value = offset.value
+        if (value != 0f) {
+            val toDone = value > 0f
+            val color = if (toDone) palette.statusDone else palette.danger
+            Row(
+                Modifier
+                    .matchParentSize()
+                    .clip(shape)
+                    .background(color.copy(alpha = 0.16f))
+                    .padding(horizontal = 20.dp)
+                    .alpha((abs(value) / threshold).coerceIn(0.3f, 1f)),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = if (toDone) Arrangement.Start else Arrangement.End,
+            ) {
+                Text(
+                    if (toDone) "Done" else "Delete",
+                    style = appStyle(12.sp, FontWeight.Bold),
+                    color = palette.roleInk(color),
+                )
+            }
+        }
+        Box(
+            Modifier
+                .offset { IntOffset(value.roundToInt(), 0) }
+                .draggable(
+                    state = dragState,
+                    orientation = Orientation.Horizontal,
+                    enabled = enabled,
+                    onDragStopped = {
+                        val settled = offset.value
+                        armed = false
+                        when {
+                            settled >= threshold -> onComplete()
+                            settled <= -threshold -> onDelete()
+                        }
+                        offset.animateTo(0f, spring(stiffness = Spring.StiffnessMediumLow))
+                    },
+                ),
+        ) {
+            content()
         }
     }
 }
@@ -301,7 +529,7 @@ private fun SelectionBanner(
             .clip(RoundedCornerShape(12.dp))
             .background(color.copy(alpha = 0.12f))
             .border(1.dp, color.copy(alpha = 0.45f), RoundedCornerShape(12.dp))
-            .padding(horizontal = 14.dp, vertical = 10.dp),
+            .padding(start = 14.dp, end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(Modifier.size(8.dp).clip(CircleShape).background(color))
@@ -315,16 +543,18 @@ private fun SelectionBanner(
         Text(
             text = "Cancel",
             modifier = Modifier
-                .clickable(onClick = onCancel)
-                .padding(horizontal = 6.dp, vertical = 2.dp),
-            style = appStyle(11.sp, FontWeight.SemiBold),
+                .clip(RoundedCornerShape(ShadcnRadius.md))
+                .clickable(onClick = onCancel, role = Role.Button)
+                .minimumInteractiveComponentSize()
+                .padding(horizontal = 6.dp),
+            style = appStyle(12.sp, FontWeight.SemiBold),
             color = color,
         )
     }
 }
 
 @Composable
-private fun StatusHeader(status: TaskStatus) {
+private fun StatusHeader(status: TaskStatus, count: Int) {
     val palette = LocalPalette.current
     val color = when (status) {
         TaskStatus.Todo -> palette.statusTodo
@@ -336,11 +566,24 @@ private fun StatusHeader(status: TaskStatus) {
         TaskStatus.Progress -> "In progress"
         TaskStatus.Done -> "Done"
     }
-    Row(Modifier.padding(top = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        Modifier.padding(top = 6.dp, bottom = 2.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         Box(Modifier.size(8.dp).clip(CircleShape).background(color))
         Spacer(Modifier.width(8.dp))
-        Text(label, style = appStyle(14.sp, FontWeight.Medium), color = color)
-        Spacer(Modifier.width(8.dp))
+        Text(
+            label.uppercase(),
+            style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 0.1.em),
+            color = palette.roleInk(color),
+        )
+        Spacer(Modifier.width(6.dp))
+        Text(
+            count.toString(),
+            style = appStyle(11.sp, FontWeight.SemiBold),
+            color = palette.textMuted,
+        )
+        Spacer(Modifier.width(10.dp))
         Box(Modifier.weight(1f).height(1.dp).background(palette.scheme.border))
     }
 }
@@ -368,37 +611,51 @@ private fun TaskCard(
             .fillMaxWidth()
             .alpha(if (pending != null && !isSelected) 0.6f else 1f)
             .heightIn(min = AppMetrics.cardMinHeight)
+            .shadow(if (isSelected) 0.dp else 1.dp, shape, ambientColor = palette.shadow, spotColor = palette.shadow)
             .clip(shape)
             .background(background)
             .border(if (isSelected) 2.dp else 1.dp, borderColor, shape)
-            .then(Modifier.clickable(onClick = onClick)),
+            .clickable(onClick = onClick, role = Role.Button),
     ) {
-            Row(
-                modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-            Spacer(Modifier.width(4.dp))
-            Column(
-                Modifier
-                    .weight(1f)
-                    .padding(horizontal = 10.dp, vertical = 14.dp),
-            ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 12.dp),
+            verticalAlignment = Alignment.Top,
+        ) {
+            Column(Modifier.weight(1f)) {
                 Text(
                     text = task.name,
-                    style = appStyle(15.sp, FontWeight.SemiBold, lineHeight = 19.5.sp),
+                    style = appStyle(15.sp, FontWeight.SemiBold, lineHeight = 20.sp),
                     color = if (isDone) palette.textSubtle else palette.text,
                     textDecoration = if (isDone) TextDecoration.LineThrough else null,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
-                task.priority?.let { level ->
-                    Spacer(Modifier.height(6.dp))
-                    RoleBadge(level.name, palette.priorityColor(level))
+                if (task.priority != null || accent != null) {
+                    Spacer(Modifier.height(8.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        task.priority?.let { level -> RoleBadge(level.name, palette.priorityColor(level)) }
+                        task.category?.let { category ->
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Box(Modifier.size(6.dp).clip(CircleShape).background(accent ?: palette.textMuted))
+                                Spacer(Modifier.width(5.dp))
+                                Text(
+                                    text = category.name,
+                                    style = appStyle(12.sp, FontWeight.Medium),
+                                    color = if (isDone) palette.textSubtle else palette.textMuted,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            }
+                        }
+                    }
                 }
                 if (task.reminder != ReminderOption.None) {
-                    Spacer(Modifier.height(if (task.priority == null) 6.dp else 4.dp))
+                    Spacer(Modifier.height(6.dp))
                     Text(
                         text = task.reminder.label,
                         style = appStyle(12.sp, FontWeight.Medium),
@@ -409,9 +666,10 @@ private fun TaskCard(
                 }
             }
             if (task.range != null || task.deadline.isNotBlank()) {
-                TaskMeta(task, overdue)
+                Spacer(Modifier.width(12.dp))
+                TaskMeta(task, overdue, isDone)
             }
-            }
+        }
         if (accent != null) {
             Box(Modifier.matchParentSize()) {
                 Box(
@@ -433,48 +691,51 @@ private fun RoleBadge(label: String, color: Color) {
             .clip(RoundedCornerShape(ShadcnRadius.md))
             .background(color.at(0x18))
             .padding(horizontal = 8.dp, vertical = 2.dp),
-        style = appStyle(12.sp, FontWeight.Medium),
-        color = color,
+        style = appStyle(11.sp, FontWeight.SemiBold),
+        color = LocalPalette.current.roleInk(color),
     )
 }
 
 @Composable
-private fun TaskMeta(task: Task, overdue: Boolean) {
+private fun TaskMeta(task: Task, overdue: Boolean, isDone: Boolean) {
     val palette = LocalPalette.current
     val range = task.range
     val dateLabel = if (range != null) {
         val start = formatInputDate(range.startDate)
         val end = formatInputDate(range.endDate)
-        if (start == end) start else "$start -> $end"
+        if (start == end) start else "$start \u2013 $end"
     } else {
         task.deadline
     }
     val timeLabel = when {
-        range != null -> "${formatInputTime(range.startTime)} -> ${formatInputTime(range.endTime)}"
+        range != null -> "${formatInputTime(range.startTime)} \u2013 ${formatInputTime(range.endTime)}"
         task.time != null -> task.time
         else -> null
     }
     Column(
-        modifier = Modifier.padding(end = 14.dp),
+        modifier = Modifier.padding(top = 2.dp),
         horizontalAlignment = Alignment.End,
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(5.dp),
     ) {
         Text(
             text = dateLabel,
-            modifier = Modifier.padding(bottom = if (timeLabel == null) 17.dp else 0.dp),
-            style = appStyle(if (range != null) 10.sp else 12.sp, FontWeight.Medium),
-            color = palette.textMuted,
+            style = appStyle(12.sp, FontWeight.Medium),
+            color = if (isDone) palette.textSubtle else palette.textMuted,
             maxLines = 1,
             softWrap = false,
         )
         if (timeLabel != null) {
-            val timeColor = if (overdue) palette.prioHigh else palette.primary
+            val timeColor = when {
+                isDone -> palette.textSubtle
+                overdue -> palette.roleInk(palette.danger)
+                else -> palette.text
+            }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 ClockIcon(timeColor)
-                Spacer(Modifier.width(3.dp))
+                Spacer(Modifier.width(4.dp))
                 Text(
                     text = timeLabel,
-                    style = appStyle(if (range != null) 10.sp else 11.sp, FontWeight.SemiBold),
+                    style = appStyle(12.sp, FontWeight.SemiBold),
                     color = timeColor,
                     maxLines = 1,
                     softWrap = false,

@@ -1,12 +1,20 @@
 package ayodong.emobilize.core.navigation
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,21 +26,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -45,16 +57,20 @@ import ayodong.emobilize.core.ui.dock.BottomDock
 import ayodong.emobilize.core.ui.dock.FabAction
 import ayodong.emobilize.core.ui.dock.NavTab
 import ayodong.emobilize.core.ui.dock.RadialMenu
+import ayodong.emobilize.core.ui.theme.AppMetrics
 import ayodong.emobilize.core.ui.theme.LocalPalette
+import ayodong.emobilize.core.ui.theme.ShadcnRadius
 import ayodong.emobilize.feature.calendar.di.CalendarModule
 import ayodong.emobilize.feature.calendar.ui.CalendarScreen
 import ayodong.emobilize.feature.calendar.ui.CalendarViewModel
 import ayodong.emobilize.feature.tasks.di.TasksModule
+import ayodong.emobilize.feature.tasks.ui.TaskDetailScreen
 import ayodong.emobilize.feature.tasks.ui.TasksScreen
 import ayodong.emobilize.feature.tasks.ui.TasksViewModel
 
-// The two-tab frame: top bar, Tasks and Calendar pages, bottom dock and radial menu.
+// The two-tab frame: top bar, Tasks and Calendar pages, bottom dock, radial menu and the task detail sheet.
 // It wires each feature screen to its ViewModel and to the shared action mode in ShellViewModel.
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun MainShell(
     navController: NavHostController,
@@ -69,12 +85,18 @@ internal fun MainShell(
     val calendarState by calendarViewModel.uiState.collectAsState()
     var menuOpen by rememberSaveable { mutableStateOf(false) }
     var tab by rememberSaveable { mutableStateOf(initialTab) }
+    // The open detail sheet. It is drawn inside this layout, not as a dialog route, so the card can
+    // morph into it with a shared transition. shownDetailId keeps the id while the sheet fades out.
+    var detailId by rememberSaveable { mutableStateOf<Long?>(null) }
+    var shownDetailId by remember { mutableStateOf<Long?>(null) }
+    detailId?.let { shownDetailId = it }
     val colors = LocalPalette.current
     val backEntry by navController.currentBackStackEntryAsState()
     val route = backEntry?.destination?.route
     val overlayOpen = route != AppRoute.Tasks && route != AppRoute.Calendar
+    BackHandler(enabled = !overlayOpen && detailId != null) { detailId = null }
     BackHandler(
-        enabled = !overlayOpen && (menuOpen || shellState.pendingAction != null || shellState.selectedBlockId != null),
+        enabled = !overlayOpen && detailId == null && (menuOpen || shellState.pendingAction != null || shellState.selectedBlockId != null),
     ) {
         when {
             menuOpen -> menuOpen = false
@@ -86,6 +108,7 @@ internal fun MainShell(
     }
     BackHandler(
         enabled = !overlayOpen &&
+            detailId == null &&
             tab == NavTab.Calendar &&
             !menuOpen &&
             shellState.pendingAction == null &&
@@ -93,54 +116,38 @@ internal fun MainShell(
     ) {
         tab = NavTab.Tasks
     }
-    Box(
+    SharedTransitionLayout(
         Modifier
             .fillMaxSize()
             .background(colors.surface),
     ) {
+        val cardShape = RoundedCornerShape(AppMetrics.cardRadius)
         Column(Modifier.fillMaxSize()) {
             Row(
                 Modifier
                     .fillMaxWidth()
                     .statusBarsPadding()
-                    .padding(start = 24.dp, end = 18.dp, top = 8.dp, bottom = 4.dp),
+                    .padding(start = 24.dp, end = 12.dp, top = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Spacer(Modifier.weight(1f))
-                Box(
-                    Modifier
-                        .size(44.dp)
-                        .clip(CircleShape)
-                        .clickable {
-                            menuOpen = false
-                            navController.navigate(AppRoute.Reminders) { launchSingleTop = true }
-                        },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Notifications,
-                        contentDescription = "Reminders",
-                        tint = colors.text,
-                        modifier = Modifier.size(22.dp),
-                    )
-                }
-                Box(
-                    Modifier
-                        .size(44.dp)
-                        .clip(CircleShape)
-                        .clickable {
-                            menuOpen = false
-                            navController.navigate(AppRoute.Settings) { launchSingleTop = true }
-                        },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Settings,
-                        contentDescription = "Settings",
-                        tint = colors.text,
-                        modifier = Modifier.size(22.dp),
-                    )
-                }
+                HeaderButton(
+                    icon = Icons.Outlined.Notifications,
+                    contentDescription = "Reminders",
+                    onClick = {
+                        menuOpen = false
+                        navController.navigate(AppRoute.Reminders) { launchSingleTop = true }
+                    },
+                )
+                HeaderButton(
+                    icon = Icons.Outlined.Settings,
+                    contentDescription = "Settings",
+                    onClick = {
+                        menuOpen = false
+                        navController.navigate(AppRoute.Settings) { launchSingleTop = true }
+                    },
+                )
             }
             Box(
                 Modifier
@@ -154,9 +161,7 @@ internal fun MainShell(
                         pending = shellState.pendingAction,
                         selectedTaskId = shellState.selectedTaskId,
                         onSelectFilter = tasksViewModel::selectFilter,
-                        onOpenTask = { taskId ->
-                            navController.navigate(AppRoute.taskDetail(taskId))
-                        },
+                        onOpenTask = { taskId -> detailId = taskId },
                         onEditTask = { taskId ->
                             navController.openEditor(shell, taskId)
                         },
@@ -164,6 +169,19 @@ internal fun MainShell(
                         onCancelPending = shell::cancelPending,
                         onConfirmDelete = shell::confirmAction,
                         onApplyStatus = shell::applyStatus,
+                        onAddTask = { navController.openForm(shell, AppRoute.AddTask) },
+                        onCompleteTask = tasksViewModel::completeTask,
+                        onDeleteTask = tasksViewModel::deleteTask,
+                        onUndo = tasksViewModel::undo,
+                        onDismissUndo = tasksViewModel::dismissUndo,
+                        cardContainer = { taskId, content ->
+                            SharedCard(
+                                key = "task-$taskId",
+                                hidden = taskId == detailId,
+                                shape = cardShape,
+                                content = content,
+                            )
+                        },
                     )
                 }
                 TabPage(visible = !onTasks, hiddenShift = 16.dp) {
@@ -209,6 +227,7 @@ internal fun MainShell(
                             shell.clearBlockSelection()
                             shell.cancelPending()
                         },
+                        onAdd = { navController.openForm(shell, AppRoute.CalendarAdd) },
                     )
                 }
             }
@@ -239,6 +258,27 @@ internal fun MainShell(
             },
             modifier = Modifier.zIndex(2f),
         )
+        AnimatedVisibility(
+            visible = detailId != null,
+            enter = fadeIn(),
+            exit = fadeOut(),
+            modifier = Modifier.zIndex(3f),
+        ) {
+            val taskId = detailId ?: shownDetailId ?: 0L
+            TaskDetailScreen(
+                task = tasksState.task(taskId),
+                taskId = taskId,
+                isDone = taskId in tasksState.doneIds,
+                inProgress = taskId in tasksState.progressIds,
+                onBack = { detailId = null },
+                onEdit = { navController.openEditor(shell, taskId) },
+                panelModifier = Modifier.sharedBounds(
+                    rememberSharedContentState(key = "task-$taskId"),
+                    animatedVisibilityScope = this,
+                    clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(ShadcnRadius.xl)),
+                ),
+            )
+        }
     }
 }
 
@@ -275,5 +315,64 @@ private fun TabPage(
             .graphicsLayer { this.alpha = alpha },
     ) {
         content()
+    }
+}
+
+// Round secondary button for the top-right header actions, matching the calendar's month arrows.
+@Composable
+private fun HeaderButton(
+    icon: ImageVector,
+    contentDescription: String,
+    onClick: () -> Unit,
+) {
+    val colors = LocalPalette.current
+    // 48dp touch target, 40dp visible circle.
+    Box(
+        Modifier
+            .size(48.dp)
+            .clip(CircleShape)
+            .clickable(onClick = onClick, role = Role.Button),
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(
+            Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(colors.scheme.secondary)
+                .border(1.dp, colors.scheme.border, CircleShape),
+        )
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            tint = colors.text,
+            modifier = Modifier.size(20.dp),
+        )
+    }
+}
+
+// The open card hides in the list while its bounds morph into the detail sheet. A separate
+// function so the call resolves to the plain AnimatedVisibility, not the ColumnScope one.
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun SharedTransitionScope.SharedCard(
+    key: String,
+    hidden: Boolean,
+    shape: RoundedCornerShape,
+    content: @Composable () -> Unit,
+) {
+    AnimatedVisibility(
+        visible = !hidden,
+        enter = fadeIn(),
+        exit = fadeOut(),
+    ) {
+        Box(
+            Modifier.sharedBounds(
+                rememberSharedContentState(key = key),
+                animatedVisibilityScope = this,
+                clipInOverlayDuringTransition = OverlayClip(shape),
+            ),
+        ) {
+            content()
+        }
     }
 }

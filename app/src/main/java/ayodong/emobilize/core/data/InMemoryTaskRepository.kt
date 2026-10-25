@@ -37,10 +37,10 @@ class InMemoryTaskRepository(
 
     override fun setStatus(id: Long, status: TaskStatus) {
         state.update { board ->
-            if (status == TaskStatus.Done) {
-                board.copy(doneIds = board.doneIds + id, progressIds = board.progressIds - id)
-            } else {
-                board.copy(progressIds = board.progressIds + id, doneIds = board.doneIds - id)
+            when (status) {
+                TaskStatus.Done -> board.copy(doneIds = board.doneIds + id, progressIds = board.progressIds - id)
+                TaskStatus.Progress -> board.copy(progressIds = board.progressIds + id, doneIds = board.doneIds - id)
+                TaskStatus.Todo -> board.copy(doneIds = board.doneIds - id, progressIds = board.progressIds - id)
             }
         }
     }

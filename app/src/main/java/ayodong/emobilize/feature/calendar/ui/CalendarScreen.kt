@@ -1,10 +1,12 @@
 package ayodong.emobilize.feature.calendar.ui
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,15 +18,16 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,14 +37,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import ayodong.emobilize.core.model.CalView
 import ayodong.emobilize.core.model.Category
+import ayodong.emobilize.core.model.Priority
 import ayodong.emobilize.core.model.ReminderOption
 import ayodong.emobilize.core.model.Task
 import ayodong.emobilize.core.model.TimeBlock
@@ -61,6 +71,8 @@ import ayodong.emobilize.core.ui.theme.appStyle
 import ayodong.emobilize.core.ui.theme.at
 import ayodong.emobilize.core.ui.theme.categoryColor
 import ayodong.emobilize.core.ui.theme.menuColor
+import ayodong.emobilize.core.ui.theme.priorityColor
+import ayodong.emobilize.core.ui.theme.roleInk
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -83,6 +95,7 @@ fun CalendarScreen(
     onSelectBlock: (LocalDate, TimeBlock) -> Unit,
     onDelete: () -> Unit,
     onCancel: () -> Unit,
+    onAdd: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val palette = LocalPalette.current
@@ -118,7 +131,7 @@ fun CalendarScreen(
             SelectionBanner(
                 action = pending,
                 onCancel = onCancel,
-                modifier = Modifier.padding(horizontal = 18.dp, vertical = 4.dp),
+                modifier = Modifier.padding(horizontal = AppMetrics.pageHorizontal, vertical = 4.dp),
             )
         }
         Box(Modifier.weight(1f).fillMaxWidth()) {
@@ -136,6 +149,7 @@ fun CalendarScreen(
                     onDate = selectDate,
                     onSelectTask = onSelectTask,
                     onSelectBlock = onSelectBlock,
+                    onAdd = onAdd,
                 )
                 CalView.Week, CalView.Day -> WeekBody(
                     activeDate = activeDate,
@@ -149,6 +163,7 @@ fun CalendarScreen(
                     onDate = selectDate,
                     onSelectTask = onSelectTask,
                     onSelectBlock = onSelectBlock,
+                    onAdd = onAdd,
                 )
             }
         }
@@ -156,7 +171,7 @@ fun CalendarScreen(
             val shape = RoundedCornerShape(12.dp)
             Box(
                 modifier = Modifier
-                    .padding(start = 18.dp, end = 18.dp, top = 8.dp, bottom = 12.dp)
+                    .padding(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, top = 8.dp, bottom = 12.dp)
                     .fillMaxWidth()
                     .height(44.dp)
                     .clip(shape)
@@ -184,7 +199,7 @@ private fun CalendarHeader(
     onView: (CalView) -> Unit,
 ) {
     val palette = LocalPalette.current
-    Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 14.dp, bottom = 10.dp)) {
+    Column(Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             CircleNav(onClick = onPrev) {
                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Previous month", tint = palette.text)
@@ -216,8 +231,8 @@ private fun CalendarHeader(
                         .weight(1f)
                         .clip(RoundedCornerShape(ShadcnRadius.lg))
                         .background(if (selected) palette.scheme.background else Color.Transparent)
-                        .clickable { onView(item) }
-                        .padding(vertical = 6.dp),
+                        .clickable(role = Role.Tab) { onView(item) }
+                        .heightIn(min = 40.dp),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
@@ -236,13 +251,18 @@ private fun CircleNav(onClick: () -> Unit, icon: @Composable () -> Unit) {
     val palette = LocalPalette.current
     Box(
         Modifier
-            .size(32.dp)
+            .size(48.dp)
             .clip(CircleShape)
-            .background(palette.scheme.secondary)
-            .border(1.dp, palette.scheme.border, CircleShape)
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick, role = Role.Button),
         contentAlignment = Alignment.Center,
     ) {
+        Box(
+            Modifier
+                .size(32.dp)
+                .clip(CircleShape)
+                .background(palette.scheme.secondary)
+                .border(1.dp, palette.scheme.border, CircleShape),
+        )
         icon()
     }
 }
@@ -260,19 +280,23 @@ private fun SelectionBanner(
             .clip(RoundedCornerShape(ShadcnRadius.xl))
             .background(color.copy(alpha = 0.12f))
             .border(1.dp, color.copy(alpha = 0.45f), RoundedCornerShape(ShadcnRadius.xl))
-            .padding(horizontal = 14.dp, vertical = 10.dp),
+            .padding(start = 14.dp, end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = if (action == FabAction.Delete) "Select a calendar item to delete" else "Select a calendar item to edit",
             modifier = Modifier.weight(1f),
-            style = appStyle(11.5.sp, FontWeight.Bold),
+            style = appStyle(12.sp, FontWeight.Bold),
             color = color,
         )
         Text(
             "Cancel",
-            modifier = Modifier.clickable(onClick = onCancel).padding(horizontal = 6.dp, vertical = 2.dp),
-            style = appStyle(11.sp, FontWeight.SemiBold),
+            modifier = Modifier
+                .clip(RoundedCornerShape(ShadcnRadius.md))
+                .clickable(onClick = onCancel, role = Role.Button)
+                .minimumInteractiveComponentSize()
+                .padding(horizontal = 6.dp),
+            style = appStyle(12.sp, FontWeight.SemiBold),
             color = color,
         )
     }
@@ -292,6 +316,7 @@ private fun MonthBody(
     onDate: (LocalDate) -> Unit,
     onSelectTask: (Task) -> Unit,
     onSelectBlock: (LocalDate, TimeBlock) -> Unit,
+    onAdd: () -> Unit,
 ) {
     val palette = LocalPalette.current
     val cells = monthCells(month, weekStart)
@@ -304,7 +329,7 @@ private fun MonthBody(
                 Text(
                     label,
                     modifier = Modifier.weight(1f),
-                    style = appStyle(10.sp, FontWeight.Bold, letterSpacing = 0.06.sp),
+                    style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 0.06.em),
                     color = palette.textMuted,
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                 )
@@ -333,7 +358,7 @@ private fun MonthBody(
                 .padding(horizontal = 16.dp, vertical = 10.dp)
                 .fillMaxWidth()
                 .height(1.dp)
-                .background(palette.primary.at(0x18)),
+                .background(palette.scheme.border),
         )
         DayAgenda(
             date = activeDate,
@@ -345,6 +370,7 @@ private fun MonthBody(
             selectedBlockId = selectedBlockId,
             onSelectTask = onSelectTask,
             onSelectBlock = { onSelectBlock(activeDate, it) },
+            onAdd = onAdd,
             modifier = Modifier.weight(1f),
         )
     }
@@ -363,22 +389,25 @@ private fun WeekBody(
     onDate: (LocalDate) -> Unit,
     onSelectTask: (Task) -> Unit,
     onSelectBlock: (LocalDate, TimeBlock) -> Unit,
+    onAdd: () -> Unit,
 ) {
     val palette = LocalPalette.current
     Column(Modifier.fillMaxSize()) {
-        Row(Modifier.padding(horizontal = 14.dp)) {
+        Row(Modifier.padding(horizontal = AppMetrics.pageHorizontal)) {
             weekOf(activeDate, weekStart).forEach { date ->
                 val active = date == activeDate
                 val marked = (blocks[date]?.isNotEmpty() == true) || tasks.any { taskOccursOn(it, date, today) }
                 Column(
                     Modifier
                         .weight(1f)
-                        .clickable { onDate(date) },
+                        .clip(RoundedCornerShape(ShadcnRadius.lg))
+                        .clickable(role = Role.Button) { onDate(date) }
+                        .padding(vertical = 4.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
                         date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.US).uppercase(Locale.US),
-                        style = appStyle(10.sp, FontWeight.SemiBold, letterSpacing = 0.04.sp),
+                        style = appStyle(11.sp, FontWeight.SemiBold, letterSpacing = 0.04.em),
                         color = if (active) palette.primary else palette.textMuted,
                     )
                     Spacer(Modifier.height(4.dp))
@@ -401,10 +430,10 @@ private fun WeekBody(
         }
         Box(
             Modifier
-                .padding(start = 14.dp, end = 14.dp, top = 10.dp)
+                .padding(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, top = 12.dp)
                 .fillMaxWidth()
                 .height(1.dp)
-                .background(palette.primary.at(0x18)),
+                .background(palette.scheme.border),
         )
         DayAgenda(
             date = activeDate,
@@ -416,6 +445,7 @@ private fun WeekBody(
             selectedBlockId = selectedBlockId,
             onSelectTask = onSelectTask,
             onSelectBlock = { onSelectBlock(activeDate, it) },
+            onAdd = onAdd,
             modifier = Modifier.weight(1f),
         )
     }
@@ -431,8 +461,13 @@ private fun DayCell(
 ) {
     val palette = LocalPalette.current
     Column(
-        Modifier.clickable(onClick = onClick).padding(vertical = 2.dp),
+        Modifier
+            .heightIn(min = 48.dp)
+            .clip(RoundedCornerShape(ShadcnRadius.lg))
+            .clickable(onClick = onClick, role = Role.Button)
+            .padding(horizontal = 4.dp, vertical = 2.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
         DayNumber(date.dayOfMonth, active = active, today = today, diameter = 30.dp)
         Spacer(Modifier.height(3.dp))
@@ -484,10 +519,11 @@ private fun DayNumber(
 }
 
 private data class AgendaCard(
+    val key: String,
     val title: String,
     val kind: String,
     val category: Category?,
-    val detail: String?,
+    val priority: Priority?,
     val whenLabel: String?,
     val reminder: String?,
     val sort: Float,
@@ -506,6 +542,7 @@ private fun DayAgenda(
     selectedBlockId: Long?,
     onSelectTask: (Task) -> Unit,
     onSelectBlock: (TimeBlock) -> Unit,
+    onAdd: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val palette = LocalPalette.current
@@ -514,10 +551,11 @@ private fun DayAgenda(
         blocks.forEach { block ->
             add(
                 AgendaCard(
+                    key = "block-${block.id}",
                     title = block.title,
                     kind = "Regular Schedule",
                     category = block.category,
-                    detail = null,
+                    priority = null,
                     whenLabel = "${formatBlockTime(block.start)} to ${formatBlockTime(block.end)}",
                     reminder = block.reminder.reminderLabel(),
                     sort = block.start,
@@ -530,10 +568,11 @@ private fun DayAgenda(
             val picked = selectedTaskId == task.id && choosing
             add(
                 AgendaCard(
+                    key = "task-${task.id}",
                     title = task.name,
                     kind = task.eventType.label,
                     category = task.category,
-                    detail = task.priority?.name,
+                    priority = task.priority,
                     whenLabel = taskWhenLabel(task),
                     reminder = task.reminder.reminderLabel(),
                     sort = taskSort(task),
@@ -548,24 +587,49 @@ private fun DayAgenda(
         }
     }.sortedBy { it.sort }
     if (cards.isEmpty()) {
-        Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Column(
+            modifier
+                .fillMaxSize()
+                .padding(horizontal = AppMetrics.headerHorizontal),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
             Text(
                 "Nothing scheduled",
-                style = appStyle(13.sp, FontWeight.Medium),
+                style = appStyle(16.sp, FontWeight.SemiBold),
+                color = palette.text,
+            )
+            Spacer(Modifier.height(6.dp))
+            Text(
+                "Events and regular schedules for this day show up here.",
+                style = appStyle(13.sp, FontWeight.Medium, lineHeight = 18.sp),
                 color = palette.textMuted,
+                textAlign = TextAlign.Center,
+            )
+            Spacer(Modifier.height(16.dp))
+            Text(
+                text = "Add an event",
+                modifier = Modifier
+                    .clip(RoundedCornerShape(ShadcnRadius.lg))
+                    .background(palette.primary)
+                    .clickable(onClick = onAdd, role = Role.Button)
+                    .heightIn(min = AppMetrics.actionHeight)
+                    .padding(horizontal = 20.dp, vertical = 12.dp),
+                style = appStyle(14.sp, FontWeight.Bold),
+                color = palette.onFilled,
             )
         }
         return
     }
-    Column(
-        modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 18.dp, vertical = 12.dp),
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = AppMetrics.pageHorizontal, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        cards.forEach { card ->
-            AgendaRow(card = card, pending = pending, dimmed = choosing && !card.selected)
+        items(cards, key = { it.key }) { card ->
+            Box(Modifier.animateItem()) {
+                AgendaRow(card = card, pending = pending, dimmed = choosing && !card.selected)
+            }
         }
     }
 }
@@ -577,61 +641,78 @@ private fun AgendaRow(card: AgendaCard, pending: FabAction?, dimmed: Boolean) {
     val accent = card.category?.let { palette.categoryColor(it) } ?: palette.scheme.border
     val menu = if (card.selected) pending?.let { palette.menuColor(it) } else null
     val click = card.onClick
-    val info = listOfNotNull(card.kind, card.category?.name, card.detail).joinToString(", ")
     Box(
         Modifier
             .fillMaxWidth()
             .alpha(if (dimmed) 0.6f else 1f)
             .heightIn(min = AppMetrics.cardMinHeight)
+            .shadow(if (card.selected) 0.dp else 1.dp, shape, ambientColor = palette.shadow, spotColor = palette.shadow)
             .clip(shape)
             .background(if (menu != null) menu.copy(alpha = 0.12f) else palette.card)
             .border(if (card.selected) 2.dp else 1.dp, menu ?: palette.scheme.border, shape)
-            .then(if (click != null) Modifier.clickable(onClick = click) else Modifier),
+            .then(if (click != null) Modifier.clickable(onClick = click, role = Role.Button) else Modifier),
     ) {
-        Row(
+        Column(
             Modifier
                 .fillMaxWidth()
-                .heightIn(min = AppMetrics.cardMinHeight),
-            verticalAlignment = Alignment.CenterVertically,
+                .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 12.dp),
         ) {
-            Column(
-                Modifier
-                    .weight(1f)
-                    .padding(horizontal = 12.dp, vertical = 14.dp),
-            ) {
-                Text(
-                    card.title,
-                    style = appStyle(15.sp, FontWeight.SemiBold, lineHeight = 19.5.sp),
-                    color = palette.text,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
+            Text(
+                card.kind.uppercase(),
+                style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 0.1.em),
+                color = palette.textMuted,
+                maxLines = 1,
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                card.title,
+                style = appStyle(15.sp, FontWeight.SemiBold, lineHeight = 20.sp),
+                color = palette.text,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+            if (card.whenLabel != null) {
                 Spacer(Modifier.height(4.dp))
-                Text(
-                    info,
-                    style = appStyle(12.sp, FontWeight.Medium),
-                    color = palette.textMuted,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                if (card.whenLabel != null) {
-                    Spacer(Modifier.height(2.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    ClockIcon(palette.text)
+                    Spacer(Modifier.width(5.dp))
                     Text(
                         card.whenLabel,
-                        style = appStyle(12.sp, FontWeight.Medium),
+                        style = appStyle(12.sp, FontWeight.SemiBold),
                         color = palette.text,
                         maxLines = 2,
                     )
                 }
-                if (card.reminder != null) {
-                    Spacer(Modifier.height(2.dp))
-                    Text(
-                        card.reminder,
-                        style = appStyle(12.sp, FontWeight.Medium),
-                        color = palette.textMuted,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
+            }
+            if (card.category != null || card.priority != null || card.reminder != null) {
+                Spacer(Modifier.height(8.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    card.priority?.let { level -> Badge(level.name, palette.priorityColor(level)) }
+                    card.category?.let { category ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(Modifier.size(6.dp).clip(CircleShape).background(accent))
+                            Spacer(Modifier.width(5.dp))
+                            Text(
+                                category.name,
+                                style = appStyle(12.sp, FontWeight.Medium),
+                                color = palette.textMuted,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
+                    card.reminder?.let { reminder ->
+                        Text(
+                            reminder,
+                            style = appStyle(12.sp, FontWeight.Medium),
+                            color = palette.textMuted,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
                 }
             }
         }
@@ -643,6 +724,30 @@ private fun AgendaRow(card: AgendaCard, pending: FabAction?, dimmed: Boolean) {
                     .background(accent),
             )
         }
+    }
+}
+
+@Composable
+private fun Badge(label: String, color: Color) {
+    Text(
+        text = label,
+        modifier = Modifier
+            .clip(RoundedCornerShape(ShadcnRadius.md))
+            .background(color.at(0x18))
+            .padding(horizontal = 8.dp, vertical = 2.dp),
+        style = appStyle(11.sp, FontWeight.SemiBold),
+        color = LocalPalette.current.roleInk(color),
+    )
+}
+
+@Composable
+private fun ClockIcon(color: Color) {
+    Canvas(Modifier.size(11.dp)) {
+        val stroke = 2.5f * size.minDimension / 24f
+        drawCircle(color = color, style = Stroke(width = stroke, cap = StrokeCap.Round))
+        val center = Offset(size.width / 2f, size.height / 2f)
+        drawLine(color, center, Offset(center.x, size.height * 0.28f), strokeWidth = stroke, cap = StrokeCap.Round)
+        drawLine(color, center, Offset(size.width * 0.68f, size.height * 0.58f), strokeWidth = stroke, cap = StrokeCap.Round)
     }
 }
 

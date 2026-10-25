@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
@@ -46,14 +47,15 @@ fun BottomDock(
     modifier: Modifier = Modifier,
 ) {
     val palette = LocalPalette.current
-    Row(
-        modifier
-            .fillMaxWidth()
-            .background(palette.navBg)
-            .navigationBarsPadding()
-            .height(AppMetrics.navHeight),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
+    Column(modifier.fillMaxWidth().background(palette.navBg)) {
+        Box(Modifier.fillMaxWidth().height(1.dp).background(palette.scheme.border))
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .height(AppMetrics.navHeight - 1.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
         DockTab(
             label = "Tasks",
             selected = tab == NavTab.Tasks,
@@ -69,6 +71,7 @@ fun BottomDock(
             onClick = { onTab(NavTab.Calendar) },
             modifier = Modifier.weight(1f),
         )
+        }
     }
 }
 @Composable
@@ -96,14 +99,22 @@ private fun DockTab(
         }
         Text(
             text = label,
-            style = appStyle(12.sp, FontWeight.Medium),
+            style = appStyle(12.sp, if (selected) FontWeight.SemiBold else FontWeight.Medium),
             color = if (selected) palette.text else palette.textMuted,
+        )
+        Box(
+            Modifier
+                .padding(top = 2.dp)
+                .size(width = 20.dp, height = 3.dp)
+                .clip(RoundedCornerShape(2.dp))
+                .background(if (selected) palette.primary else Color.Transparent),
         )
     }
 }
 
 @Composable
 internal fun FabFace(progress: Float, showCancel: Boolean) {
+    val palette = LocalPalette.current
     val lift = progress.coerceIn(0f, 1f)
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Box(
@@ -111,14 +122,14 @@ internal fun FabFace(progress: Float, showCancel: Boolean) {
                 .size(72.dp)
                 .shadow((8f * lift).dp, CircleShape)
                 .clip(CircleShape)
-                .background(Color.Black)
-                .border(2.dp, Color.White, CircleShape),
+                .background(palette.primary)
+                .border(2.dp, palette.surface, CircleShape),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
                 if (showCancel) Icons.Filled.Close else Icons.Filled.Add,
                 contentDescription = null,
-                tint = Color.White,
+                tint = palette.onFilled,
                 modifier = Modifier
                     .size(22.dp)
                     .rotate(progress * 90f),
