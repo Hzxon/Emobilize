@@ -66,7 +66,7 @@ Package: `ayodong.emobilize`. Satu modul Gradle: `:app`. `minSdk` 28. `compileSd
 | Bagian layar | File | Composable |
 | --- | --- | --- |
 | Daftar rute, kapan form muncul | `core/navigation/AppNavHost.kt` | `AppNavHost` |
-| Header, tab, dock, radial menu | `core/navigation/MainShell.kt` | `MainShell` |
+| Tombol header (Reminders, Settings), tab, dock, radial menu | `core/navigation/MainShell.kt` | `MainShell`, `HeaderButton` |
 | Preferensi aplikasi dan kategori | `feature/settings/ui/SettingsScreen.kt` | `SettingsScreen` |
 | Papan keberangkatan, filter, baris tugas | `feature/tasks/ui/TasksScreen.kt` | `TasksScreen`, `BoardRow`, `NextStrip`, `LastService` |
 | Kartu Add di tab Tasks | `feature/tasks/ui/AddTaskCard.kt` | `AddTaskCard` |
@@ -88,7 +88,8 @@ State data tidak diubah dari Composable. Setiap fitur punya ViewModel sendiri di
 - Warna kategori: `palette.categoryColor(...)` atau `lineColor(argb)`. Jangan `Color(category.color)`; ARGB tersimpan dipetakan ke warna jalur.
 - Semua radius 0 dp. Jangan tambah `RoundedCornerShape` dengan angka sendiri.
 - Jarak dan ukuran kartu: `AppMetrics` di `core/ui/theme/Metrics.kt`. Radius kartu `AppMetrics.cardRadius`. Tinggi minimum kartu `AppMetrics.cardMinHeight`.
-- Padding halaman: `AppMetrics.pageHorizontal` (16.dp). Header: `AppMetrics.headerHorizontal` (24.dp).
+- Padding halaman: `AppMetrics.pageHorizontal` (20.dp). Header: `AppMetrics.headerHorizontal` (20.dp).
+- Header ada di tiap layar tab (jam di Tasks, Route map di Calendar). Tombol Reminders dan Settings datang dari `MainShell` lewat parameter `headerActions`.
 - Aksi radial: Add hijau, Update biru, Edit `actionEdit`, Delete `danger`. Fungsi `menuColor`.
 
 Jangan menambah palet baru. Nilai token dijelaskan di `DESIGN.md`.

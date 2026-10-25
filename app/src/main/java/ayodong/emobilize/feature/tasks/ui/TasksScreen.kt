@@ -126,6 +126,8 @@ fun TasksScreen(
     onUndo: () -> Unit,
     onDismissUndo: () -> Unit,
     modifier: Modifier = Modifier,
+    // Header buttons from the shell (Reminders, Settings), drawn at the right of the clock row.
+    headerActions: @Composable () -> Unit = {},
     // Lets the shell wrap each card (for the shared transition into the detail sheet) without the
     // list knowing about navigation or animation scopes.
     cardContainer: @Composable (taskId: Long, content: @Composable () -> Unit) -> Unit = { _, content -> content() },
@@ -175,28 +177,31 @@ fun TasksScreen(
     }
 
     Column(modifier.fillMaxSize()) {
-        // Compact header: clock and date share one 44dp row so the board below keeps the space.
+        // Compact header: clock over date on the left, the shell's buttons on the right, one 44dp row.
         Row(
             Modifier
-                .padding(start = AppMetrics.headerHorizontal, end = AppMetrics.headerHorizontal, top = 8.dp)
+                .padding(start = AppMetrics.headerHorizontal, end = AppMetrics.headerHorizontal, top = 12.dp)
                 .heightIn(min = 44.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text(
-                text = now.format(boardClock),
-                style = appStyle(28.sp, FontWeight.ExtraBold, letterSpacing = (-1).sp, lineHeight = 32.sp)
-                    .copy(fontFeatureSettings = "tnum"),
-                color = palette.text,
-                maxLines = 1,
-            )
-            Text(
-                text = LocalDate.now().format(boardDate).uppercase(Locale.US),
-                style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 1.sp),
-                color = palette.textMuted,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+            Column(Modifier.weight(1f)) {
+                Text(
+                    text = now.format(boardClock),
+                    style = appStyle(28.sp, FontWeight.ExtraBold, letterSpacing = (-1).sp, lineHeight = 30.sp)
+                        .copy(fontFeatureSettings = "tnum"),
+                    color = palette.text,
+                    maxLines = 1,
+                )
+                Text(
+                    text = LocalDate.now().format(boardDate).uppercase(Locale.US),
+                    style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 1.sp),
+                    color = palette.textMuted,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+            headerActions()
         }
 
         Row(

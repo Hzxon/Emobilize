@@ -98,6 +98,8 @@ fun CalendarScreen(
     onCancel: () -> Unit,
     onAdd: () -> Unit,
     modifier: Modifier = Modifier,
+    // Header buttons from the shell (Reminders, Settings), drawn at the right of the title row.
+    headerActions: @Composable () -> Unit = {},
 ) {
     val palette = LocalPalette.current
     val today = LocalDate.now()
@@ -130,6 +132,7 @@ fun CalendarScreen(
             onNext = { shiftMonth(1) },
             onToday = { selectDate(today) },
             onView = { viewName = it.name },
+            actions = headerActions,
         )
         if (pending == FabAction.Edit || pending == FabAction.Delete) {
             SelectionBanner(
@@ -204,12 +207,17 @@ private fun CalendarHeader(
     onNext: () -> Unit,
     onToday: () -> Unit,
     onView: (CalView) -> Unit,
+    actions: @Composable () -> Unit,
 ) {
     val palette = LocalPalette.current
     val week = activeDate.get(WeekFields.ISO.weekOfWeekBasedYear())
     // Compact header: the title and week kicker share one 44dp row so the route below keeps the space.
-    Column(Modifier.padding(start = AppMetrics.headerHorizontal, end = AppMetrics.headerHorizontal, top = 8.dp, bottom = 6.dp)) {
-        Row(Modifier.heightIn(min = 44.dp), verticalAlignment = Alignment.CenterVertically) {
+    Column(Modifier.padding(start = AppMetrics.headerHorizontal, end = AppMetrics.headerHorizontal, top = 12.dp, bottom = 6.dp)) {
+        Row(
+            Modifier.heightIn(min = 44.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
             Column(Modifier.weight(1f)) {
                 Text(
                     "Route map",
@@ -232,12 +240,11 @@ private fun CalendarHeader(
             ) {
                 Box(
                     Modifier
-                        .padding(start = 8.dp)
                         .height(44.dp)
                         .background(palette.signal)
                         .border(2.dp, palette.signalInk)
                         .clickable(onClick = onToday, role = Role.Button)
-                        .padding(horizontal = 14.dp),
+                        .padding(horizontal = 12.dp),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
@@ -247,6 +254,7 @@ private fun CalendarHeader(
                     )
                 }
             }
+            actions()
         }
         Spacer(Modifier.height(8.dp))
         Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically) {

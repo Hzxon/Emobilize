@@ -147,7 +147,6 @@ Kedua font berlisensi SIL OFL, diambil dari repo `google/fonts`. `monoStyle` mem
 | Judul hari | 18 sp | ExtraBold | |
 | Nama tugas | 15–16 sp | SemiBold–Bold | |
 | Label kontrol, tab, tombol | 12–15 sp | Bold–ExtraBold | UPPERCASE, letter-spacing 1 sp |
-| Kicker (EMOBILIZE CENTRAL) | 13 sp | Bold | UPPERCASE, letter-spacing 1.5 sp |
 | Kicker minggu (WEEK 44 · OCT 2026) | 11 sp | Bold | UPPERCASE, letter-spacing 1 sp |
 | Header kolom papan, label fakta | 10–11 sp | Bold | UPPERCASE, letter-spacing 1.5 sp |
 | Jam papan | 15 sp mono | SemiBold | |
@@ -196,11 +195,13 @@ Garis kontrol 2 dp `foreground`. Tombol utama tinggi 52–56 dp. Target sentuh m
 
 ## Komponen
 
-### Header (`MainShell`)
+### Header
 
-- Pelat "E" persegi 28 dp: isi `primary`, huruf `primary-foreground`
-- Teks EMOBILIZE CENTRAL
-- Tombol Reminders dan Settings: persegi 48 dp, isi `card`, garis 2 dp `foreground`
+- Tidak ada baris header bersama. Tiap tab menggambar header sendiri dalam satu baris 44 dp:
+  - Tasks: jam 28 sp di atas tanggal 11 sp UPPERCASE
+  - Calendar: "Route map" 24 sp di atas minggu 11 sp, lalu tombol TODAY bila hari lain dipilih
+- Tombol Reminders dan Settings di kanan baris itu. `MainShell` mengirimnya lewat parameter `headerActions`.
+- Tombol header: persegi 44 dp, isi `card`, garis 2 dp `foreground`
 
 ### Dock (`RadialDock`)
 
