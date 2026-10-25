@@ -130,6 +130,7 @@ fun AppNavHost(shell: ShellViewModel) {
                 SettingsScreen(
                     appSettings = state.appSettings,
                     categories = state.categories,
+                    usage = state.usage,
                     onSave = viewModel::save,
                     onClose = { navController.leave() },
                 )
