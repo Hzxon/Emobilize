@@ -1,0 +1,169 @@
+# Konteks Emobilize
+
+Dokumen ini untuk AI lain yang mengubah UI. Baca file ini dan `DESIGN.md` sebelum menyentuh kode. Ini aplikasi Android Jetpack Compose, bukan React, bukan Tailwind, bukan Figma Make.
+
+`AGENTS.md` di root repo ini berlaku. Abaikan `AGENTS.md` di folder user; file itu milik proyek web lain.
+
+Branch: `tasks-radial-menu`. Remote: `https://github.com/Hzxon/Emobilize`.
+
+## Prompt yang bisa ditempel
+
+```
+Ini proyek Android Kotlin + Jetpack Compose di folder Emobilize.
+Baca AGENTS.md, CONTEXT.md, dan DESIGN.md dulu.
+Tugas ini hanya boleh mengubah folder: app/src/main/java/ayodong/emobilize/feature/<nama>/
+Jangan edit core/, file Gradle, atau AndroidManifest.xml. Kalau perlu, berhenti dan laporkan.
+Ubah hanya tampilan. Jangan ubah perilaku simpan, filter, atau arsitektur.
+Warna, font, dan ukuran ada di core/ui/theme/ dan DESIGN.md.
+Jangan menulis daftar tugas atau blok kalender dari Composable.
+Teks UI yang ada berbahasa Inggris.
+Setelah selesai, jalankan: .\gradlew.bat :app:compileDebugKotlin :app:testDebugUnitTest --offline
+```
+
+Ganti `<nama>` dengan folder fitur (tasks, calendar, settings, reminders, auth, splash). Nama file ada di tabel "Mau ubah apa" di bawah.
+
+## Struktur folder
+
+Yang dipakai aplikasi. Abaikan `app/build/`, `.gradle/`, dan `.idea/`. Kode dikelompokkan per fitur, lapisan ada di dalam fitur. Aturan lengkap ada di `AGENTS.md`.
+
+```
+Emobilize/
+  AGENTS.md                            <- aturan untuk agent AI (CLAUDE.md menunjuk ke sini)
+  CONTEXT.md
+  DESIGN.md
+  app/src/main/
+    AndroidManifest.xml
+    java/ayodong/emobilize/
+      EmobilizeApplication.kt          <- membuat AppContainer sekali
+      MainActivity.kt
+      core/                            <- satu pemilik; fitur tidak mengeditnya
+        model/       Task.kt, Calendar.kt, AppSettings.kt
+        domain/      Repositories.kt   (TaskRepository, ScheduleRepository, CategoryRepository, AppSettingsRepository)
+        data/        InMemory*Repository, Preferences*Repository, FakeRepositories.kt, SampleData.kt
+        di/          AppContainer.kt   (repository bersama saja)
+        navigation/  AppRoute.kt, AppNavHost.kt, MainShell.kt, ShellViewModel.kt
+        ui/theme/    Palette, Shadcn, Type, Metrics, Theme, EmobilizeLogo
+        ui/component/FormField.kt
+        ui/form/     TaskDraft.kt, FormPickers.kt (dipakai form Tasks dan Calendar)
+        ui/dock/     RadialDock.kt, RadialMenu.kt, DockModels.kt
+      feature/                         <- satu pemilik per folder
+        tasks/       ui/ (TasksScreen, TaskDetailScreen, AddTaskCard, TaskFormSheet, TasksViewModel, TaskFormViewModel), di/
+        calendar/    ui/ (CalendarScreen, CalendarFormSheet, CalendarViewModel, CalendarFormViewModel), di/
+        settings/    domain/SaveSettingsUseCase.kt, ui/ (SettingsScreen, SettingsViewModel), di/
+        reminders/   ui/ (ReminderScreen, ExpandableReminderCard, RemindersViewModel), di/
+        auth/        domain/ (AuthRepository, use case), data/ (Preferences, Fake), ui/, di/
+        splash/      ui/SplashScreen.kt
+    res/
+      font/                            <- Montserrat
+      values/themes.xml
+      values/colors.xml
+```
+
+Package: `ayodong.emobilize`. Satu modul Gradle: `:app`. `minSdk` 28. `compileSdk` dan `targetSdk` 37.
+
+## Mau ubah apa
+
+| Bagian layar | File | Composable |
+| --- | --- | --- |
+| Daftar rute, kapan form muncul | `core/navigation/AppNavHost.kt` | `AppNavHost` |
+| Header, tab, dock, radial menu | `core/navigation/MainShell.kt` | `MainShell` |
+| Preferensi aplikasi dan kategori | `feature/settings/ui/SettingsScreen.kt` | `SettingsScreen` |
+| Daftar tugas, filter, kartu tugas | `feature/tasks/ui/TasksScreen.kt` | `TasksScreen`, `TaskCard` |
+| Kartu Add di tab Tasks | `feature/tasks/ui/AddTaskCard.kt` | `AddTaskCard` |
+| Sheet edit tugas | `feature/tasks/ui/TaskFormSheet.kt` | `TaskFormSheet`, `DateField`, `TimeField` |
+| Form Add dan edit di tab Calendar | `feature/calendar/ui/CalendarFormSheet.kt` | `CalendarFormSheet` |
+| Header kalender, bulan, minggu, hari, daftar kartu | `feature/calendar/ui/CalendarScreen.kt` | `CalendarScreen`, `DayAgenda`, `AgendaRow` |
+| Dock bawah, tab, muka tombol tengah, orb tema | `core/ui/dock/RadialDock.kt` | `BottomDock`, `FabFace`, `ThemeOrb` |
+| Kipas Add / Update / Edit / Delete | `core/ui/dock/RadialMenu.kt` | `RadialMenu` |
+| Warna, radius, jarak, font | `core/ui/theme/` dan `DESIGN.md` | `LocalPalette`, `AppMetrics`, `appStyle` |
+
+State data tidak diubah dari Composable. Setiap fitur punya ViewModel sendiri di `feature/<x>/ui/`. Untuk ganti warna kartu atau jarak, jangan buka ViewModel.
+
+## Token tampilan
+
+- Warna layar: `LocalPalette.current` di `core/ui/theme/Palette.kt`. Dua tema: `NeutralLight` (id 1) dan `NeutralDark` (id 2).
+- Warna shadcn: `palette.scheme` dari `core/ui/theme/Shadcn.kt` (`background`, `popover`, `border`, `card`).
+- Teks: `appStyle(...)` dan `AppFont` di `core/ui/theme/Type.kt`. Font Montserrat.
+- Jarak dan ukuran kartu: `AppMetrics` di `core/ui/theme/Metrics.kt`. Radius kartu `AppMetrics.cardRadius`. Tinggi minimum kartu `AppMetrics.cardMinHeight`.
+- Padding halaman: `AppMetrics.pageHorizontal` (18.dp). Header: `AppMetrics.headerHorizontal` (24.dp).
+- Aksi radial: Add hijau, Update biru, Edit `actionEdit`, Delete `danger`. Fungsi `menuColor`.
+
+Jangan menambah palet baru. Nilai token dijelaskan di `DESIGN.md`.
+
+## Perilaku yang harus tetap
+
+Produk: aplikasi tugas dan kalender. Data di memori, hilang saat proses mati. Sampel di `core/data/SampleData.kt`.
+
+Dua tab: Tasks dan Calendar. Tombol tengah membuka radial menu. Ikon gear di header membuka Settings. Tema hanya diubah dari Settings.
+
+### Tasks
+
+Filter All, Today, Tomorrow, Later. Kartu menampilkan garis kategori, badge prioritas, dan tanggal hanya jika field itu ada. Tugas tanpa jadwal hanya muncul di All.
+
+### Add di tab Tasks
+
+`AddTaskCard`. Judul langsung fokus dan keyboard terbuka. Tiga ikon opsional: Category, Priority, Schedule. Schedule berisi Deadline atau Time range. Ketuk pilihan yang sama untuk menghapusnya. Tombol Add task menyimpan jika judul terisi. Close, ketuk luar, atau back menutup tanpa menyimpan. Time range tidak valid membuat Add task membuka panel Schedule dan tidak menyimpan.
+
+### Edit tugas
+
+Sheet penuh `TaskFormSheet`. Bukan `AddTaskCard`.
+
+### Calendar
+
+Month, Week, Day. Di bawah pemilih tanggal ada daftar kartu vertikal, bukan kisi jam. Item diurutkan waktu mulai. Item tanpa jam di bawah. Hari kosong: "Nothing scheduled".
+
+- Blok kalender: "Regular Schedule", kategori, jam mulai sampai selesai.
+- Tugas: jenis dari `EventType`, kategori, prioritas bila ada, tanggal atau jam.
+
+Edit dan Delete memilih kartu. Hapus blok lewat `ShellViewModel.deleteSelectedBlock()`.
+
+### Add di tab Calendar
+
+Membuka `CalendarFormSheet`, bukan `AddTaskCard`. Pilihan tipe hanya **Event** dan **Regular Schedule**. Task tidak ada di form Add. Saat mengedit item yang sudah ada, tipe terkunci pada jenis item itu.
+
+### Radial menu
+
+Aksi: Add, Update, Edit, Delete. Di tab Calendar, Update disembunyikan. Animasi: spring `dampingRatio = 0.75`, `Spring.StiffnessMediumLow`, kipas membesar dari hub, tombol naik dari dock, ikon berputar 90 derajat. Jangan mengganti aksi ini dengan menu navigasi.
+
+## Arsitektur
+
+Feature-first Clean Architecture + MVVM. Alasan dan aturan lengkap ada di `AGENTS.md`.
+
+UI (Screen stateless) -> ViewModel (`StateFlow<XUiState>`) -> interface repository -> data.
+
+- Repository yang dibaca banyak fitur (tugas, jadwal, kategori, pengaturan) ada di `core/domain` dan `core/data`. Semuanya mengekspos `StateFlow`, jadi tulisan dari satu layar langsung terlihat di layar lain.
+- Repository milik satu fitur ada di fitur itu (contoh: `feature/auth/domain/AuthRepository.kt`).
+- Use case hanya untuk aturan bisnis atau gabungan beberapa repository: `LoginUseCase`, `RegisterAccountUseCase`, `SaveSettingsUseCase`. Operasi CRUD biasa dipanggil langsung dari ViewModel.
+- Tiap fitur punya modul DI sendiri di `feature/<x>/di/` (`viewModelFactory`). `AppContainer` hanya berisi repository bersama dan dibuat sekali di `EmobilizeApplication`. Tidak ada Hilt.
+- `ShellViewModel` memegang tema dan mode aksi radial (Edit, Update, Delete) karena mode itu berlaku di dua tab.
+- Form memakai `TaskDraft` (field `mutableStateOf`) karena teks berubah setiap ketikan. Ini pengecualian dari pola UiState.
+
+State yang boleh di Composable: tab aktif, `menuOpen`, state animasi.
+
+## Model
+
+`Task` di `core/model/Task.kt`:
+
+- `category` dan `priority` boleh null.
+- `deadline` kosong berarti tidak ada tanggal.
+- `range` untuk time range.
+- `eventType`: Event, Task, Regular Schedule.
+- `time` dan `eventEndTime` seperti "10:30 AM". Field range seperti "09:00".
+
+`TimeBlock`: id, title, start, end (jam desimal), category. Disimpan per `LocalDate`.
+
+## Yang tidak boleh
+
+- Jangan edit `core/`, file Gradle, atau manifest dari tugas fitur. Minta pemilik `core/` lewat PR kecil.
+- Jangan simpan tugas atau blok dari Composable.
+- Jangan pindahkan `TaskDraft` ke domain.
+- Jangan tambah library DI.
+- Jangan ubah teks Inggris yang sudah ada (Title, Close, Tasks, Calendar, Nothing scheduled).
+
+Cek kompilasi:
+
+```
+.\gradlew.bat :app:compileDebugKotlin :app:testDebugUnitTest --offline
+```
+
+`adb` tidak ada di PATH. Compile berhasil belum berarti UI sudah dicoba di perangkat.
