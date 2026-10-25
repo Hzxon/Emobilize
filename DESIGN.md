@@ -142,12 +142,13 @@ Kedua font berlisensi SIL OFL, diambil dari repo `google/fonts`. `monoStyle` mem
 | Peran | Ukuran | Berat | Catatan |
 | --- | --- | --- | --- |
 | Jam besar | 64 sp | ExtraBold | letter-spacing −3 sp, `tnum` |
-| Judul layar (Route map) | 40 sp | ExtraBold | letter-spacing −1.5 sp |
+| Judul layar (Route map) | 24 sp | ExtraBold | letter-spacing −0.5 sp, satu baris 44 dp dengan kicker 11 sp di bawahnya |
 | Judul tiket | 30 sp | ExtraBold | letter-spacing −1 sp |
 | Judul hari | 18 sp | ExtraBold | |
 | Nama tugas | 15–16 sp | SemiBold–Bold | |
 | Label kontrol, tab, tombol | 12–15 sp | Bold–ExtraBold | UPPERCASE, letter-spacing 1 sp |
-| Kicker (WEEK 44 · OCT 2026, EMOBILIZE CENTRAL) | 13 sp | Bold | UPPERCASE, letter-spacing 1.5 sp |
+| Kicker (EMOBILIZE CENTRAL) | 13 sp | Bold | UPPERCASE, letter-spacing 1.5 sp |
+| Kicker minggu (WEEK 44 · OCT 2026) | 11 sp | Bold | UPPERCASE, letter-spacing 1 sp |
 | Header kolom papan, label fakta | 10–11 sp | Bold | UPPERCASE, letter-spacing 1.5 sp |
 | Jam papan | 15 sp mono | SemiBold | |
 | Status papan | 11 sp mono | SemiBold | letter-spacing 0.5 sp |

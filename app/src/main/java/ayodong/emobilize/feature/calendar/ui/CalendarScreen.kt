@@ -207,20 +207,20 @@ private fun CalendarHeader(
 ) {
     val palette = LocalPalette.current
     val week = activeDate.get(WeekFields.ISO.weekOfWeekBasedYear())
-    Column(Modifier.padding(start = AppMetrics.headerHorizontal, end = AppMetrics.headerHorizontal, top = 14.dp, bottom = 8.dp)) {
-        Row(verticalAlignment = Alignment.Bottom) {
+    // Compact header: the title and week kicker share one 44dp row so the route below keeps the space.
+    Column(Modifier.padding(start = AppMetrics.headerHorizontal, end = AppMetrics.headerHorizontal, top = 8.dp, bottom = 6.dp)) {
+        Row(Modifier.heightIn(min = 44.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text(
-                    "WEEK $week \u00B7 ${month.atDay(1).format(monthKicker).uppercase(Locale.US)}",
-                    style = appStyle(13.sp, FontWeight.Bold, letterSpacing = 1.5.sp),
-                    color = palette.textMuted,
+                    "Route map",
+                    style = appStyle(24.sp, FontWeight.ExtraBold, letterSpacing = (-0.5).sp, lineHeight = 28.sp),
+                    color = palette.text,
                     maxLines = 1,
                 )
                 Text(
-                    "Route map",
-                    modifier = Modifier.padding(top = 4.dp),
-                    style = appStyle(40.sp, FontWeight.ExtraBold, letterSpacing = (-1.5).sp, lineHeight = 42.sp),
-                    color = palette.text,
+                    "WEEK $week \u00B7 ${month.atDay(1).format(monthKicker).uppercase(Locale.US)}",
+                    style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 1.sp),
+                    color = palette.textMuted,
                     maxLines = 1,
                 )
             }
@@ -248,7 +248,7 @@ private fun CalendarHeader(
                 }
             }
         }
-        Spacer(Modifier.height(14.dp))
+        Spacer(Modifier.height(8.dp))
         Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically) {
             SquareNav(onClick = onPrev) {
                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Previous month", tint = palette.text)
