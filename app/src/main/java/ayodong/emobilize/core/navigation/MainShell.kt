@@ -6,7 +6,9 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,8 +21,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -32,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Dp
@@ -103,44 +106,27 @@ internal fun MainShell(
                 Modifier
                     .fillMaxWidth()
                     .statusBarsPadding()
-                    .padding(start = 24.dp, end = 18.dp, top = 8.dp, bottom = 4.dp),
+                    .padding(start = 24.dp, end = 18.dp, top = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Spacer(Modifier.weight(1f))
-                Box(
-                    Modifier
-                        .size(44.dp)
-                        .clip(CircleShape)
-                        .clickable {
-                            menuOpen = false
-                            navController.navigate(AppRoute.Reminders) { launchSingleTop = true }
-                        },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Notifications,
-                        contentDescription = "Reminders",
-                        tint = colors.text,
-                        modifier = Modifier.size(22.dp),
-                    )
-                }
-                Box(
-                    Modifier
-                        .size(44.dp)
-                        .clip(CircleShape)
-                        .clickable {
-                            menuOpen = false
-                            navController.navigate(AppRoute.Settings) { launchSingleTop = true }
-                        },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Settings,
-                        contentDescription = "Settings",
-                        tint = colors.text,
-                        modifier = Modifier.size(22.dp),
-                    )
-                }
+                HeaderButton(
+                    icon = Icons.Outlined.Notifications,
+                    contentDescription = "Reminders",
+                    onClick = {
+                        menuOpen = false
+                        navController.navigate(AppRoute.Reminders) { launchSingleTop = true }
+                    },
+                )
+                HeaderButton(
+                    icon = Icons.Outlined.Settings,
+                    contentDescription = "Settings",
+                    onClick = {
+                        menuOpen = false
+                        navController.navigate(AppRoute.Settings) { launchSingleTop = true }
+                    },
+                )
             }
             Box(
                 Modifier
@@ -275,5 +261,31 @@ private fun TabPage(
             .graphicsLayer { this.alpha = alpha },
     ) {
         content()
+    }
+}
+
+// Round secondary button for the top-right header actions, matching the calendar's month arrows.
+@Composable
+private fun HeaderButton(
+    icon: ImageVector,
+    contentDescription: String,
+    onClick: () -> Unit,
+) {
+    val colors = LocalPalette.current
+    Box(
+        Modifier
+            .size(40.dp)
+            .clip(CircleShape)
+            .background(colors.scheme.secondary)
+            .border(1.dp, colors.scheme.border, CircleShape)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            tint = colors.text,
+            modifier = Modifier.size(20.dp),
+        )
     }
 }

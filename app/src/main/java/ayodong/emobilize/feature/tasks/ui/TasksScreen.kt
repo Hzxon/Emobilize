@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import ayodong.emobilize.core.model.FilterKey
 import ayodong.emobilize.core.model.ReminderOption
@@ -176,7 +177,7 @@ fun TasksScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             groups.forEach { (status, groupTasks) ->
-                item(key = "header-$status") { StatusHeader(status) }
+                item(key = "header-$status") { StatusHeader(status, groupTasks.size) }
                 items(groupTasks, key = { it.id }) { task ->
                     TaskCard(
                         task = task,
@@ -190,7 +191,7 @@ fun TasksScreen(
                         },
                     )
                 }
-                item(key = "gap-$status") { Spacer(Modifier.height(2.dp)) }
+                item(key = "gap-$status") { Spacer(Modifier.height(6.dp)) }
             }
         }
 
@@ -324,7 +325,7 @@ private fun SelectionBanner(
 }
 
 @Composable
-private fun StatusHeader(status: TaskStatus) {
+private fun StatusHeader(status: TaskStatus, count: Int) {
     val palette = LocalPalette.current
     val color = when (status) {
         TaskStatus.Todo -> palette.statusTodo
@@ -336,11 +337,24 @@ private fun StatusHeader(status: TaskStatus) {
         TaskStatus.Progress -> "In progress"
         TaskStatus.Done -> "Done"
     }
-    Row(Modifier.padding(top = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        Modifier.padding(top = 6.dp, bottom = 2.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         Box(Modifier.size(8.dp).clip(CircleShape).background(color))
         Spacer(Modifier.width(8.dp))
-        Text(label, style = appStyle(14.sp, FontWeight.Medium), color = color)
-        Spacer(Modifier.width(8.dp))
+        Text(
+            label.uppercase(),
+            style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 0.1.em),
+            color = color,
+        )
+        Spacer(Modifier.width(6.dp))
+        Text(
+            count.toString(),
+            style = appStyle(11.sp, FontWeight.SemiBold),
+            color = palette.textMuted,
+        )
+        Spacer(Modifier.width(10.dp))
         Box(Modifier.weight(1f).height(1.dp).background(palette.scheme.border))
     }
 }
@@ -368,37 +382,51 @@ private fun TaskCard(
             .fillMaxWidth()
             .alpha(if (pending != null && !isSelected) 0.6f else 1f)
             .heightIn(min = AppMetrics.cardMinHeight)
+            .shadow(if (isSelected) 0.dp else 1.dp, shape, ambientColor = palette.shadow, spotColor = palette.shadow)
             .clip(shape)
             .background(background)
             .border(if (isSelected) 2.dp else 1.dp, borderColor, shape)
             .then(Modifier.clickable(onClick = onClick)),
     ) {
-            Row(
-                modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-            Spacer(Modifier.width(4.dp))
-            Column(
-                Modifier
-                    .weight(1f)
-                    .padding(horizontal = 10.dp, vertical = 14.dp),
-            ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 14.dp, top = 14.dp, bottom = 14.dp),
+            verticalAlignment = Alignment.Top,
+        ) {
+            Column(Modifier.weight(1f)) {
                 Text(
                     text = task.name,
-                    style = appStyle(15.sp, FontWeight.SemiBold, lineHeight = 19.5.sp),
+                    style = appStyle(15.sp, FontWeight.SemiBold, lineHeight = 20.sp),
                     color = if (isDone) palette.textSubtle else palette.text,
                     textDecoration = if (isDone) TextDecoration.LineThrough else null,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
-                task.priority?.let { level ->
-                    Spacer(Modifier.height(6.dp))
-                    RoleBadge(level.name, palette.priorityColor(level))
+                if (task.priority != null || accent != null) {
+                    Spacer(Modifier.height(8.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        task.priority?.let { level -> RoleBadge(level.name, palette.priorityColor(level)) }
+                        task.category?.let { category ->
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Box(Modifier.size(6.dp).clip(CircleShape).background(accent ?: palette.textMuted))
+                                Spacer(Modifier.width(5.dp))
+                                Text(
+                                    text = category.name,
+                                    style = appStyle(12.sp, FontWeight.Medium),
+                                    color = if (isDone) palette.textSubtle else palette.textMuted,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            }
+                        }
+                    }
                 }
                 if (task.reminder != ReminderOption.None) {
-                    Spacer(Modifier.height(if (task.priority == null) 6.dp else 4.dp))
+                    Spacer(Modifier.height(6.dp))
                     Text(
                         text = task.reminder.label,
                         style = appStyle(12.sp, FontWeight.Medium),
@@ -409,9 +437,10 @@ private fun TaskCard(
                 }
             }
             if (task.range != null || task.deadline.isNotBlank()) {
-                TaskMeta(task, overdue)
+                Spacer(Modifier.width(12.dp))
+                TaskMeta(task, overdue, isDone)
             }
-            }
+        }
         if (accent != null) {
             Box(Modifier.matchParentSize()) {
                 Box(
@@ -433,48 +462,51 @@ private fun RoleBadge(label: String, color: Color) {
             .clip(RoundedCornerShape(ShadcnRadius.md))
             .background(color.at(0x18))
             .padding(horizontal = 8.dp, vertical = 2.dp),
-        style = appStyle(12.sp, FontWeight.Medium),
+        style = appStyle(11.sp, FontWeight.SemiBold),
         color = color,
     )
 }
 
 @Composable
-private fun TaskMeta(task: Task, overdue: Boolean) {
+private fun TaskMeta(task: Task, overdue: Boolean, isDone: Boolean) {
     val palette = LocalPalette.current
     val range = task.range
     val dateLabel = if (range != null) {
         val start = formatInputDate(range.startDate)
         val end = formatInputDate(range.endDate)
-        if (start == end) start else "$start -> $end"
+        if (start == end) start else "$start \u2013 $end"
     } else {
         task.deadline
     }
     val timeLabel = when {
-        range != null -> "${formatInputTime(range.startTime)} -> ${formatInputTime(range.endTime)}"
+        range != null -> "${formatInputTime(range.startTime)} \u2013 ${formatInputTime(range.endTime)}"
         task.time != null -> task.time
         else -> null
     }
     Column(
-        modifier = Modifier.padding(end = 14.dp),
+        modifier = Modifier.padding(top = 2.dp),
         horizontalAlignment = Alignment.End,
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(5.dp),
     ) {
         Text(
             text = dateLabel,
-            modifier = Modifier.padding(bottom = if (timeLabel == null) 17.dp else 0.dp),
-            style = appStyle(if (range != null) 10.sp else 12.sp, FontWeight.Medium),
-            color = palette.textMuted,
+            style = appStyle(12.sp, FontWeight.Medium),
+            color = if (isDone) palette.textSubtle else palette.textMuted,
             maxLines = 1,
             softWrap = false,
         )
         if (timeLabel != null) {
-            val timeColor = if (overdue) palette.prioHigh else palette.primary
+            val timeColor = when {
+                isDone -> palette.textSubtle
+                overdue -> palette.danger
+                else -> palette.text
+            }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 ClockIcon(timeColor)
-                Spacer(Modifier.width(3.dp))
+                Spacer(Modifier.width(4.dp))
                 Text(
                     text = timeLabel,
-                    style = appStyle(if (range != null) 10.sp else 11.sp, FontWeight.SemiBold),
+                    style = appStyle(12.sp, FontWeight.SemiBold),
                     color = timeColor,
                     maxLines = 1,
                     softWrap = false,

@@ -21,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -238,22 +237,6 @@ fun RadialMenu(
                     }
                 }
             }
-        }
-
-        if (progress < 0.05f && widthPx > 0f) {
-            Icon(
-                Icons.Filled.KeyboardArrowUp,
-                contentDescription = null,
-                tint = palette.textMuted,
-                modifier = Modifier
-                    .offset {
-                        IntOffset(
-                            (centerX - 9.dp.toPx()).roundToInt(),
-                            (restY - fabPx / 2f - 26.dp.toPx()).roundToInt(),
-                        )
-                    }
-                    .size(18.dp),
-            )
         }
 
         if (widthPx > 0f) {

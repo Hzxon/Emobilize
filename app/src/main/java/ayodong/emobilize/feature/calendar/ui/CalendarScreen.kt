@@ -1,5 +1,6 @@
 package ayodong.emobilize.feature.calendar.ui
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -34,7 +35,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -42,6 +47,7 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import ayodong.emobilize.core.model.CalView
 import ayodong.emobilize.core.model.Category
+import ayodong.emobilize.core.model.Priority
 import ayodong.emobilize.core.model.ReminderOption
 import ayodong.emobilize.core.model.Task
 import ayodong.emobilize.core.model.TimeBlock
@@ -61,6 +67,7 @@ import ayodong.emobilize.core.ui.theme.appStyle
 import ayodong.emobilize.core.ui.theme.at
 import ayodong.emobilize.core.ui.theme.categoryColor
 import ayodong.emobilize.core.ui.theme.menuColor
+import ayodong.emobilize.core.ui.theme.priorityColor
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -333,7 +340,7 @@ private fun MonthBody(
                 .padding(horizontal = 16.dp, vertical = 10.dp)
                 .fillMaxWidth()
                 .height(1.dp)
-                .background(palette.primary.at(0x18)),
+                .background(palette.scheme.border),
         )
         DayAgenda(
             date = activeDate,
@@ -401,10 +408,10 @@ private fun WeekBody(
         }
         Box(
             Modifier
-                .padding(start = 14.dp, end = 14.dp, top = 10.dp)
+                .padding(start = 14.dp, end = 14.dp, top = 12.dp)
                 .fillMaxWidth()
                 .height(1.dp)
-                .background(palette.primary.at(0x18)),
+                .background(palette.scheme.border),
         )
         DayAgenda(
             date = activeDate,
@@ -487,7 +494,7 @@ private data class AgendaCard(
     val title: String,
     val kind: String,
     val category: Category?,
-    val detail: String?,
+    val priority: Priority?,
     val whenLabel: String?,
     val reminder: String?,
     val sort: Float,
@@ -517,7 +524,7 @@ private fun DayAgenda(
                     title = block.title,
                     kind = "Regular Schedule",
                     category = block.category,
-                    detail = null,
+                    priority = null,
                     whenLabel = "${formatBlockTime(block.start)} to ${formatBlockTime(block.end)}",
                     reminder = block.reminder.reminderLabel(),
                     sort = block.start,
@@ -533,7 +540,7 @@ private fun DayAgenda(
                     title = task.name,
                     kind = task.eventType.label,
                     category = task.category,
-                    detail = task.priority?.name,
+                    priority = task.priority,
                     whenLabel = taskWhenLabel(task),
                     reminder = task.reminder.reminderLabel(),
                     sort = taskSort(task),
@@ -577,61 +584,78 @@ private fun AgendaRow(card: AgendaCard, pending: FabAction?, dimmed: Boolean) {
     val accent = card.category?.let { palette.categoryColor(it) } ?: palette.scheme.border
     val menu = if (card.selected) pending?.let { palette.menuColor(it) } else null
     val click = card.onClick
-    val info = listOfNotNull(card.kind, card.category?.name, card.detail).joinToString(", ")
     Box(
         Modifier
             .fillMaxWidth()
             .alpha(if (dimmed) 0.6f else 1f)
             .heightIn(min = AppMetrics.cardMinHeight)
+            .shadow(if (card.selected) 0.dp else 1.dp, shape, ambientColor = palette.shadow, spotColor = palette.shadow)
             .clip(shape)
             .background(if (menu != null) menu.copy(alpha = 0.12f) else palette.card)
             .border(if (card.selected) 2.dp else 1.dp, menu ?: palette.scheme.border, shape)
             .then(if (click != null) Modifier.clickable(onClick = click) else Modifier),
     ) {
-        Row(
+        Column(
             Modifier
                 .fillMaxWidth()
-                .heightIn(min = AppMetrics.cardMinHeight),
-            verticalAlignment = Alignment.CenterVertically,
+                .padding(start = 16.dp, end = 14.dp, top = 12.dp, bottom = 12.dp),
         ) {
-            Column(
-                Modifier
-                    .weight(1f)
-                    .padding(horizontal = 12.dp, vertical = 14.dp),
-            ) {
-                Text(
-                    card.title,
-                    style = appStyle(15.sp, FontWeight.SemiBold, lineHeight = 19.5.sp),
-                    color = palette.text,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
+            Text(
+                card.kind.uppercase(),
+                style = appStyle(10.sp, FontWeight.Bold, letterSpacing = 0.1.em),
+                color = palette.textMuted,
+                maxLines = 1,
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                card.title,
+                style = appStyle(15.sp, FontWeight.SemiBold, lineHeight = 20.sp),
+                color = palette.text,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+            if (card.whenLabel != null) {
                 Spacer(Modifier.height(4.dp))
-                Text(
-                    info,
-                    style = appStyle(12.sp, FontWeight.Medium),
-                    color = palette.textMuted,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                if (card.whenLabel != null) {
-                    Spacer(Modifier.height(2.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    ClockIcon(palette.text)
+                    Spacer(Modifier.width(5.dp))
                     Text(
                         card.whenLabel,
-                        style = appStyle(12.sp, FontWeight.Medium),
+                        style = appStyle(12.sp, FontWeight.SemiBold),
                         color = palette.text,
                         maxLines = 2,
                     )
                 }
-                if (card.reminder != null) {
-                    Spacer(Modifier.height(2.dp))
-                    Text(
-                        card.reminder,
-                        style = appStyle(12.sp, FontWeight.Medium),
-                        color = palette.textMuted,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
+            }
+            if (card.category != null || card.priority != null || card.reminder != null) {
+                Spacer(Modifier.height(8.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    card.priority?.let { level -> Badge(level.name, palette.priorityColor(level)) }
+                    card.category?.let { category ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(Modifier.size(6.dp).clip(CircleShape).background(accent))
+                            Spacer(Modifier.width(5.dp))
+                            Text(
+                                category.name,
+                                style = appStyle(12.sp, FontWeight.Medium),
+                                color = palette.textMuted,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
+                    card.reminder?.let { reminder ->
+                        Text(
+                            reminder,
+                            style = appStyle(12.sp, FontWeight.Medium),
+                            color = palette.textMuted,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
                 }
             }
         }
@@ -643,6 +667,30 @@ private fun AgendaRow(card: AgendaCard, pending: FabAction?, dimmed: Boolean) {
                     .background(accent),
             )
         }
+    }
+}
+
+@Composable
+private fun Badge(label: String, color: Color) {
+    Text(
+        text = label,
+        modifier = Modifier
+            .clip(RoundedCornerShape(ShadcnRadius.md))
+            .background(color.at(0x18))
+            .padding(horizontal = 8.dp, vertical = 2.dp),
+        style = appStyle(11.sp, FontWeight.SemiBold),
+        color = color,
+    )
+}
+
+@Composable
+private fun ClockIcon(color: Color) {
+    Canvas(Modifier.size(11.dp)) {
+        val stroke = 2.5f * size.minDimension / 24f
+        drawCircle(color = color, style = Stroke(width = stroke, cap = StrokeCap.Round))
+        val center = Offset(size.width / 2f, size.height / 2f)
+        drawLine(color, center, Offset(center.x, size.height * 0.28f), strokeWidth = stroke, cap = StrokeCap.Round)
+        drawLine(color, center, Offset(size.width * 0.68f, size.height * 0.58f), strokeWidth = stroke, cap = StrokeCap.Round)
     }
 }
 
