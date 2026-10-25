@@ -7,16 +7,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ayodong.emobilize.data.repository.PreferencesAppSettingsRepository
-import ayodong.emobilize.di.AppContainer
-import ayodong.emobilize.di.AuthViewModelFactory
-import ayodong.emobilize.di.TasksViewModelFactory
-import ayodong.emobilize.domain.model.ThemeMode
-import ayodong.emobilize.ui.EmobilizeApp
+import ayodong.emobilize.core.di.LocalAppContainer
+import ayodong.emobilize.core.model.ThemeMode
+import ayodong.emobilize.core.navigation.AppNavHost
+import ayodong.emobilize.core.navigation.ShellViewModel
 
 class MainActivity : ComponentActivity() {
-    private val container by lazy { AppContainer(applicationContext) }
+    private val container by lazy { (application as EmobilizeApplication).container }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val dark = savedThemeIsDark()
@@ -31,15 +30,14 @@ class MainActivity : ComponentActivity() {
         )
         enableEdgeToEdge()
         setContent {
-            EmobilizeApp(
-                viewModel = viewModel(factory = TasksViewModelFactory(container)),
-                authViewModel = viewModel(factory = AuthViewModelFactory(container)),
-            )
+            CompositionLocalProvider(LocalAppContainer provides container) {
+                AppNavHost(shell = viewModel(factory = ShellViewModel.factory(container)))
+            }
         }
     }
 
     private fun savedThemeIsDark(): Boolean {
-        val mode = PreferencesAppSettingsRepository(this).get().themeMode
+        val mode = container.appSettings.settings.value.themeMode
         return when (mode) {
             ThemeMode.Dark -> true
             ThemeMode.Light -> false

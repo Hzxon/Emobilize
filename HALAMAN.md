@@ -1,6 +1,6 @@
 # Halaman Emobilize
 
-Aplikasi Android (Kotlin, Jetpack Compose). Satu activity: `MainActivity` memasang `EmobilizeApp`. Data tugas, blok kalender, kategori, dan pengaturan tinggal di memori lewat repository. Data hilang saat proses aplikasi mati. Sampel awal ada di `data/repository/SampleData.kt`.
+Aplikasi Android (Kotlin, Jetpack Compose). Satu activity: `MainActivity` memasang `AppNavHost`. Data tugas, blok kalender, kategori, dan pengaturan tinggal di memori lewat repository. Data hilang saat proses aplikasi mati. Sampel awal ada di `core/data/SampleData.kt`.
 
 Teks antarmuka yang tampil ke pengguna berbahasa Inggris. Nama di bawah mengikuti teks itu.
 
@@ -17,11 +17,11 @@ Kerangka aplikasi
        Radial menu    (tombol tengah)
 ```
 
-`AuthScreen` dan `ExpandableReminderCard` ada di kode, tetapi `EmobilizeApp` tidak memasangnya. Keduanya dijelaskan di bagian akhir.
+`AuthScreen` (rute `auth`) dan `ExpandableReminderCard` (dipakai `ReminderScreen`) dijelaskan di bagian akhir.
 
 ## Kerangka aplikasi
 
-File: `ui/EmobilizeApp.kt`, composable `EmobilizeApp`.
+File: `core/navigation/AppNavHost.kt` (`AppNavHost`) dan `core/navigation/MainShell.kt` (`MainShell`).
 
 Layar punya tiga lapis yang selalu ada:
 
@@ -44,7 +44,7 @@ Tombol back sistem, dari yang paling atas:
 
 ## Tasks
 
-File: `ui/tasks/TasksScreen.kt`. State di `TasksViewModel`.
+File: `feature/tasks/ui/TasksScreen.kt`. State di `TasksViewModel` (`TasksUiState`). Mode aksi radial (Edit, Update, Delete) di `core/navigation/ShellViewModel.kt`.
 
 ### Isi layar
 
@@ -99,7 +99,7 @@ Di dalam To-do dan In progress, urutan memakai jarak deadline (`deadlineRank`). 
 
 ## Add task
 
-File: `ui/tasks/AddTaskCard.kt`. Hanya dari tab Tasks.
+File: `feature/tasks/ui/AddTaskCard.kt`. Hanya dari tab Tasks.
 
 Kartu menempel di bawah, di atas lapisan gelap (`modalBg`). Judul langsung fokus dan keyboard terbuka. Placeholder: `Title`.
 
@@ -127,7 +127,7 @@ Kategori dan prioritas awal mengikuti Settings (`Default category`, `Default pri
 
 ## Edit task
 
-File: `ui/tasks/TaskFormSheet.kt`. Judul sheet: `Edit Task`. Tombol simpan: `Save Changes`.
+File: `feature/tasks/ui/TaskFormSheet.kt`. Judul sheet: `Edit Task`. Tombol simpan: `Save Changes`.
 
 Sheet dari bawah. Ketuk luar, tanda tutup, atau back menutup tanpa menyimpan.
 
@@ -144,7 +144,7 @@ Field:
 
 ## Calendar
 
-File: `ui/calendar/CalendarScreen.kt`.
+File: `feature/calendar/ui/CalendarScreen.kt`.
 
 ### Header
 
@@ -205,7 +205,7 @@ Tanpa aksi Edit atau Delete, ketuk kartu tugas tidak melakukan apa-apa. Ketuk bl
 
 ## Form kalender
 
-File: `ui/tasks/CalendarFormSheet.kt`.
+File: `feature/calendar/ui/CalendarFormSheet.kt`.
 
 Sheet bawah, pegangan abu-abu di atas, judul field placeholder `Add title`. Ketuk luar atau `Cancel` menutup tanpa menyimpan.
 
@@ -237,7 +237,7 @@ Tombol simpan: `Save` untuk item baru, `Save Changes` untuk edit. Warna tombol m
 
 ## Settings
 
-File: `ui/settings/SettingsScreen.kt`. Layar penuh di atas tab, bukan sheet.
+File: `feature/settings/ui/SettingsScreen.kt`. Layar penuh di atas tab, bukan sheet.
 
 Header: panah `Back` dan judul `Settings`.
 
@@ -291,7 +291,7 @@ Menyimpan menulis kategori yang berubah, lalu menulis `AppSettings`, lalu memuat
 
 ## Radial menu dan dock
 
-File: `ui/dock/RadialMenu.kt`, `ui/dock/RadialDock.kt`.
+File: `core/ui/dock/RadialMenu.kt`, `core/ui/dock/RadialDock.kt`.
 
 Tombol tengah membuka kipas. Aksi:
 
@@ -312,7 +312,7 @@ Dock tidak mengganti halaman lain. Ia hanya memilih Tasks atau Calendar.
 
 ### Auth
 
-File: `ui/auth/AuthScreen.kt`, `AuthViewModel`. `MainActivity` tidak membuat ViewModel ini dan tidak menampilkan layarnya.
+File: `feature/auth/ui/AuthScreen.kt`, `AuthViewModel`. ViewModel dibuat di `AppNavHost` lewat `feature/auth/di/AuthModule.kt`.
 
 Dua halaman dalam satu composable:
 
@@ -343,11 +343,11 @@ Pesan gagal, dari `AuthViewModel`:
 | Login salah | `Email or password is incorrect` |
 | Konfirmasi tidak sama | `Passwords do not match` |
 
-Sukses hanya mengubah `signedIn` di ViewModel. Tidak ada navigasi ke Tasks.
+Sukses mengubah `signedIn` di `AuthUiState`. `AppNavHost` lalu membuka Tasks.
 
 ### Kartu pengingat
 
-File: `ui/notifications/ExpandableReminderCard.kt`. Tidak diimpor oleh layar mana pun.
+File: `feature/reminders/ui/ExpandableReminderCard.kt`. Dipakai oleh `ReminderScreen`.
 
 Kartu untuk satu `Task`. Tertutup: logo, label `Emobilize`, nama tugas, jam. Baris waktu saat ini adalah teks tetap `Due in 30 mins • ` ditambah `task.time`, atau `Scheduled time` jika jam kosong. Angka 30 menit tidak dihitung dari deadline.
 
@@ -362,9 +362,9 @@ Tidak ada pemanggil, jadi kedua aksi itu belum terhubung ke penyimpanan.
 
 ## Model yang dipakai semua halaman
 
-`Task` (`domain/model/Task.kt`): id, nama, kategori (boleh kosong), deadline (string kosong berarti tidak ada tanggal), jam tampilan seperti `10:30 AM` (boleh kosong), `filterKey`, prioritas (boleh kosong), `range` (tanggal dan jam mulai-selesai, format jam `09:00`), `eventType`, `eventEndTime`.
+`Task` (`core/model/Task.kt`): id, nama, kategori (boleh kosong), deadline (string kosong berarti tidak ada tanggal), jam tampilan seperti `10:30 AM` (boleh kosong), `filterKey`, prioritas (boleh kosong), `range` (tanggal dan jam mulai-selesai, format jam `09:00`), `eventType`, `eventEndTime`.
 
-`TimeBlock` (`domain/model/Calendar.kt`): id, judul, start, end (jam desimal), kategori. Disimpan per `LocalDate`.
+`TimeBlock` (`core/model/Calendar.kt`): id, judul, start, end (jam desimal), kategori. Disimpan per `LocalDate`.
 
 `AppSettings`: themeMode, defaultCalendarView, weekStart, defaultCategoryId, defaultPriority, showCompletedTasks.
 
