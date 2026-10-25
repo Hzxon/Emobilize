@@ -16,3 +16,7 @@ app/build/
 .cxx
 local.properties
 
+# Per-machine Android Studio state (JDK name, selected emulator path)
+/.idea/misc.xml
+/.idea/deploymentTargetSelector.xml
+/.idea/deviceManager.xml

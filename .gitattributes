@@ -1,0 +1,6 @@
+# Keep line endings the same on every laptop. A CRLF gradlew fails on
+# macOS and Linux with "bad interpreter".
+* text=auto
+/gradlew text eol=lf
+*.bat text eol=crlf
+*.jar binary

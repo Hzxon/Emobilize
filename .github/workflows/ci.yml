@@ -1,0 +1,89 @@
+name: CI
+
+# Confirms that every teammate gets the same build setup and that the app
+# builds from a clean checkout on Windows and macOS, the systems the team
+# uses.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  config:
+    name: Check shared configuration
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Validate Gradle wrapper JAR
+        uses: gradle/actions/wrapper-validation@v6
+
+      - name: Check committed build configuration
+        run: bash scripts/check-config.sh
+
+  build:
+    name: Build on ${{ matrix.os }}
+    needs: config
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            gradlew: .\gradlew.bat
+          - os: macos-latest
+            gradlew: ./gradlew
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # JDK 21 only launches the wrapper. The build itself must run on the
+      # JDK pinned in gradle/gradle-daemon-jvm.properties, which Gradle
+      # downloads when it is missing, as it would on a new laptop.
+      - name: Set up launcher JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: ""
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Show Gradle and JDK versions
+        run: ${{ matrix.gradlew }} --version
+
+      - name: Build debug APK and run unit tests
+        run: ${{ matrix.gradlew }} assembleDebug testDebugUnitTest --stacktrace
+
+  # The one check that main's branch rule requires. It fails when any job
+  # above fails, is cancelled or is skipped, so the rule does not need
+  # updating when jobs or OSes change. GitHub treats a skipped required
+  # check as passed, which is why this job always runs.
+  ci-passed:
+    name: CI passed
+    if: always()
+    needs: [config, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Fail if any job did not succeed
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
+        run: |
+          echo "config: ${{ needs.config.result }}, build: ${{ needs.build.result }}"
+          exit 1
