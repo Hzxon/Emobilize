@@ -1,8 +1,7 @@
 # Emobilize — Mobile Task & Schedule Management
 ## Comprehensive Project Report & Architecture Analysis
 
-> **Sumber Analisis**: Laporan ini disusun berdasarkan analisis arsitektur basis kode dan graf pengetahuan terverifikasi **Graphify** (`graphify-out/graph.json` dan `graphify-out/GRAPH_REPORT.md`, snapshot commit `192a0f82`).  
-> **Status Basis Kode**: 1001 node, 2680 edge, 55 komunitas arsitektur, 0 siklus impor (*zero circular dependencies*). Deskripsi fitur di bawah mengikuti cabang `tasks-radial-menu` sampai commit `93d523a`.
+> Deskripsi fitur di bawah mengikuti cabang `tasks-radial-menu` sampai commit `93d523a`.
 
 ---
 
@@ -84,7 +83,7 @@ Kelompok pengembang terdiri dari **4 orang anggota**:
 ## c. Explanation of How Tasks Were Divided and the Group's Working System
 
 ### 1. Metode Pembagian Tugas (*Separation of Concerns*)
-Berdasarkan pemetaan komunitas Graphify, basis kode dibagi menjadi domain tanggung jawab terisolasi untuk menghindari konflik penggabungan kode (*merge conflicts*):
+Basis kode dibagi menjadi domain tanggung jawab terisolasi untuk menghindari konflik penggabungan kode (*merge conflicts*):
 
 - **Arsitektur Presentasi & Navigasi (Louis Alexander Andreas)**:
   - Mengelola shell navigasi tingkat atas (`EmobilizeApp`, `AppRoute`, `NavHost`), menu radial gestural (`RadialDock`, `RadialMenu`), serta orkestrator state tampilan (`TasksScreen`, `TasksViewModel`).
@@ -101,8 +100,6 @@ Berdasarkan pemetaan komunitas Graphify, basis kode dibagi menjadi domain tanggu
   - Mutasi tugas dan jadwal lewat `TasksViewModel`; akun lokal lewat `AuthViewModel`. Keduanya disuntikkan dari `AppContainer`.
   - Settings memakai draf di layar dan baru menulis `AppSettings` saat **Save Changes**, termasuk sakelar notifikasi.
   - Tugas dan blok waktu hidup di memori proses. Preferensi aplikasi hidup di SharedPreferences. Data sampel hilang saat proses ditutup.
-- **Audit Kode & Knowledge Graph (Graphify)**:
-  - Pemantauan berkala menggunakan Graphify untuk menjaga kohesi modul, memastikan tidak ada siklus impor (*zero import cycles*), dan memantau konektivitas *God Nodes*.
 - **Quality Assurance & Verification**:
   - Setiap perubahan divalidasi melalui kompilasi Kotlin tanpa error (`.\gradlew compileDebugKotlin` / `assembleDebug`).
   - Pratinjau multi-tema (Light/Dark, Collapsed/Expanded) diuji visual melalui Android Studio Compose Preview (`@Preview`).
@@ -137,24 +134,4 @@ Berdasarkan pemetaan komunitas Graphify, basis kode dibagi menjadi domain tanggu
 - **Design System Audit & Visual QA (`Previews.kt`, `DESIGN.md`)**: Memastikan kepatuhan token desain Shadcn (warna netral, Montserrat typography via `appStyle()`, dan `ShadcnRadius`), serta menyusun kumpulan `@Preview` multi-konfigurasi untuk validasi UI instan di Android Studio.
 
 ---
-
-## e. Graphify Knowledge Graph Insights
-
-Berdasarkan ekstraksi AST dan topologi graf:
-
-1. **Top God Nodes (Abstraksi Paling Terhubung)**:
-   - `appStyle()` (66 edge) — Fondasi tipografi Montserrat.
-   - `TasksViewModel` (63 edge) — Pusat orkestrasi data dan state tugas.
-   - `TimeBlock` (27 edge) — Entitas inti jadwal kalender.
-   - `AppContainer` (26 edge) — Pusat injeksi dependensi manual.
-   - `FabAction` (26 edge) — Enum pemicu aksi menu radial.
-   - `AppSettings` (24 edge) — Preferensi yang ikut menyimpan sakelar notifikasi.
-2. **Kesehatan Arsitektur (Architectural Health)**:
-   - **Import Cycles**: 0 (bebas dari dependensi melingkar).
-   - **Separation Level**: Modul UI tidak mengakses repositori secara langsung. Tugas lewat use case dan `TasksViewModel`; akun lewat `AuthViewModel`; preferensi lewat repository SharedPreferences.
-   - Snapshot graf ini dibuat dari commit `192a0f82`. Hyperedge lama yang menandai Auth dan kartu pengingat sebagai "belum dipasang" sudah kedaluwarsa: keduanya punya rute di `NavHost`.
-3. **Komunitas Utama**:
-   - `EmobilizeApp`, `TasksViewModel.kt`, `Task.kt`, `Design system tokens`, `Add task card`, `Radial dock menu`, `Settings and theme`, `In-memory task store`, `App settings prefs`, `ExpandableReminderCard`, `Auth account store`.
-
----
-*Dokumen ini diperbarui pada 22 Oktober 2026 dari snapshot Graphify commit `192a0f82` dan kondisi cabang `tasks-radial-menu` pada commit `93d523a`.*
+*Dokumen ini diperbarui pada 22 Oktober 2026 dari kondisi cabang `tasks-radial-menu` pada commit `93d523a`.*
