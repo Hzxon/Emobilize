@@ -39,7 +39,7 @@ Setiap baris `FAIL` diikuti cara memperbaikinya. Penjelasan singkat:
 
 Buka job yang merah di tab **Actions** dan cari error pertama di step **Build debug APK and run unit tests**.
 
-- Gagal hanya di Windows, atau hanya di macOS/Linux: biasanya path dengan huruf besar/kecil yang salah. Windows tidak membedakan `Task.kt` dan `task.kt`, macOS/Linux membedakannya. Samakan nama file dengan import-nya.
+- Gagal hanya di Windows atau hanya di macOS: biasanya ada path yang ditulis langsung dengan `\` atau `/`, atau file dengan line ending yang salah. Minta teman yang memakai OS itu menjalankan `./gradlew assembleDebug testDebugUnitTest` untuk melihat error yang sama.
 - Gagal di semua OS: kodenya memang tidak compile atau tes gagal. Jalankan `./gradlew assembleDebug testDebugUnitTest` di laptopmu dan perbaiki error yang sama.
 
 ## Error di laptop

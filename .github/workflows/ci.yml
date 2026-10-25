@@ -1,7 +1,8 @@
 name: CI
 
 # Confirms that every teammate gets the same build setup and that the app
-# builds from a clean checkout on Windows, macOS and Linux.
+# builds from a clean checkout on Windows and macOS, the systems the team
+# uses.
 
 on:
   push:
@@ -42,8 +43,6 @@ jobs:
           - os: windows-latest
             gradlew: .\gradlew.bat
           - os: macos-latest
-            gradlew: ./gradlew
-          - os: ubuntu-latest
             gradlew: ./gradlew
     steps:
       - name: Checkout
