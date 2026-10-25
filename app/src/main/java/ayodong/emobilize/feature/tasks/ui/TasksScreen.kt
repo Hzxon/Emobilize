@@ -80,6 +80,7 @@ import ayodong.emobilize.core.model.parseDisplayTime
 import ayodong.emobilize.core.ui.dock.FabAction
 import ayodong.emobilize.core.ui.theme.AppMetrics
 import ayodong.emobilize.core.ui.theme.LocalPalette
+import ayodong.emobilize.core.ui.theme.NeutralDark
 import ayodong.emobilize.core.ui.theme.appStyle
 import ayodong.emobilize.core.ui.theme.categoryColor
 import ayodong.emobilize.core.ui.theme.menuColor
@@ -188,14 +189,15 @@ fun TasksScreen(
     }
 
     Column(modifier.fillMaxSize()) {
-        // Board clock: one band in the board colour, like the departure board under it. The clock
-        // is the station's LED clock in signal yellow, the screen name and date sit beside it, and
-        // the shell's buttons occupy the right edge of the band without boxes.
+        // Board clock: one band on the page colour, flush with the status bar like the Route map
+        // header. The clock is the station's LED clock in signal yellow (ink in the light theme,
+        // where yellow on the pale wall is unreadable), the screen name and date sit beside it,
+        // and the shell's buttons occupy the right edge of the band without boxes.
         Row(
             Modifier
                 .fillMaxWidth()
                 .height(AppMetrics.boardHeaderHeight)
-                .background(palette.board)
+                .background(palette.surface)
                 .padding(start = AppMetrics.headerHorizontal, end = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(14.dp),
@@ -203,20 +205,20 @@ fun TasksScreen(
             Text(
                 text = now.format(boardClock),
                 style = monoStyle(26.sp, letterSpacing = (-0.5).sp),
-                color = palette.signal,
+                color = if (palette.id == NeutralDark.id) palette.signal else palette.text,
                 maxLines = 1,
             )
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
                     text = "DEPARTURES",
                     style = appStyle(11.sp, FontWeight.ExtraBold, letterSpacing = 1.5.sp),
-                    color = palette.boardText,
+                    color = palette.text,
                     maxLines = 1,
                 )
                 Text(
                     text = LocalDate.now().format(dividerDate).uppercase(Locale.US),
                     style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 1.sp),
-                    color = palette.boardMuted,
+                    color = palette.textMuted,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
