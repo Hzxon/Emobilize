@@ -125,16 +125,3 @@ val AppShapes = Shapes(
     large = RoundedCornerShape(ShadcnRadius.xl),
     extraLarge = RoundedCornerShape(ShadcnRadius.xl + 4.dp),
 )
-
-/** Tailwind spacing scale used by shadcn layouts. */
-object ShadcnSpace {
-    val px = 1.dp
-    val s1 = 4.dp
-    val s2 = 8.dp
-    val s3 = 12.dp
-    val s4 = 16.dp
-    val s5 = 20.dp
-    val s6 = 24.dp
-    val s8 = 32.dp
-    val s10 = 40.dp
-}

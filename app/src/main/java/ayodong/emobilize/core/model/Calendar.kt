@@ -57,13 +57,6 @@ fun inputToHours(value: String): Float {
     return hours + minutes / 60f
 }
 
-fun formatHourLabel(hour: Int): String = when (hour) {
-    0, 24 -> "12 AM"
-    12 -> "12 PM"
-    in 13..23 -> "${hour - 12} PM"
-    else -> "$hour AM"
-}
-
 fun formatBlockTime(value: Float): String {
     val hours = value.toInt()
     val minutes = ((value - hours) * 60f).roundToInt()
