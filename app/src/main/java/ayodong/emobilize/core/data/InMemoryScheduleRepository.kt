@@ -38,4 +38,14 @@ class InMemoryScheduleRepository(
             }
         }
     }
+
+    override fun replaceCategory(id: Long, replacement: Category) {
+        state.update { stored ->
+            stored.mapValues { (_, list) ->
+                list.map { block ->
+                    if (block.category.id == id) block.copy(category = replacement) else block
+                }
+            }
+        }
+    }
 }

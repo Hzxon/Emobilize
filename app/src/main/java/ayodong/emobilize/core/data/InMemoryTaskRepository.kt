@@ -54,4 +54,14 @@ class InMemoryTaskRepository(
             )
         }
     }
+
+    override fun clearCategory(id: Long) {
+        state.update { board ->
+            board.copy(
+                tasks = board.tasks.map { task ->
+                    if (task.category?.id == id) task.copy(category = null) else task
+                },
+            )
+        }
+    }
 }

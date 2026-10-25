@@ -7,24 +7,72 @@ import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
+/**
+ * A transit line on the board. [color] is one of [lineColors]; [code] is the 1–2 character
+ * line code drawn inside the station ring, so two lines that share a colour stay apart.
+ */
 data class Category(
     val id: Long,
     val name: String,
     val color: Int,
+    val code: String = codeFor(name),
 ) {
     companion object {
-        const val Limit = 3
-        val Study = Category(1L, "Study", 0xFFE76E50.toInt())
-        val Work = Category(2L, "Work", 0xFFF4A462.toInt())
-        val Health = Category(3L, "Health", 0xFF2A9D90.toInt())
+        const val NameLimit = 24
+        const val CodeLimit = 2
+
+        val Study = Category(1L, "Study", 0xFFD6001C.toInt(), "S")
+        val Work = Category(2L, "Work", 0xFF0057B8.toInt(), "W")
+        val Health = Category(3L, "Health", 0xFF007A4D.toInt(), "H")
         val defaults = listOf(Study, Work, Health)
-        val colorChoices = listOf(
-            0xFFE76E50.toInt(),
-            0xFF2A9D90.toInt(),
-            0xFF274754.toInt(),
-            0xFFE8C468.toInt(),
-            0xFFF4A462.toInt(),
+
+        /** Line colours, in the order the colour picker shows them. All legible under white text. */
+        val lineColors = listOf(
+            0xFFD6001C.toInt(), // red
+            0xFF0057B8.toInt(), // blue
+            0xFF007A4D.toInt(), // green
+            0xFF5C2D91.toInt(), // purple
+            0xFFB35900.toInt(), // orange
+            0xFFE6007E.toInt(), // pink
+            0xFF00858F.toInt(), // teal
+            0xFF7A4B1E.toInt(), // brown
+            0xFF1B2A6B.toInt(), // navy
+            0xFF6E9A00.toInt(), // lime
+            0xFFA0007A.toInt(), // magenta
+            0xFF5A5A5A.toInt(), // grey
         )
+
+        /** Colours stored by earlier versions, mapped to the line colour they were drawn with. */
+        val legacyLineColors = mapOf(
+            0xFFE76E50.toInt() to 0xFFD6001C.toInt(),
+            0xFF2A9D90.toInt() to 0xFF007A4D.toInt(),
+            0xFF274754.toInt() to 0xFF5C2D91.toInt(),
+            0xFFE8C468.toInt() to 0xFFB35900.toInt(),
+            0xFFF4A462.toInt() to 0xFF0057B8.toInt(),
+        )
+
+        fun isValidName(name: String): Boolean =
+            name.isNotEmpty() && name.length <= NameLimit && name.none { it.isISOControl() }
+
+        fun isValidCode(code: String): Boolean =
+            code.isNotEmpty() && code.length <= CodeLimit && code.none { it.isWhitespace() || it.isISOControl() }
+
+        /** First letter of the name; the first two when [taken] already has the single letter. */
+        fun codeFor(name: String, taken: Set<String> = emptySet()): String {
+            val letters = name.trim().filter { it.isLetterOrDigit() }
+            if (letters.isEmpty()) return "?"
+            val one = letters.take(1).uppercase()
+            if (one !in taken.map { it.uppercase() }) return one
+            return letters.take(2).replaceFirstChar { it.uppercaseChar() }
+        }
+    }
+
+    /** Trimmed copy when name, code and colour pass validation, else null. */
+    fun normalized(): Category? {
+        val name = name.trim()
+        val code = code.trim()
+        if (!isValidName(name) || !isValidCode(code) || color !in lineColors) return null
+        return copy(name = name, code = code)
     }
 }
 

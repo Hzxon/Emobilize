@@ -193,19 +193,12 @@ val NeutralDark = paletteFrom(2, ShadcnDark, dark = true)
 val LocalPalette = staticCompositionLocalOf { NeutralLight }
 
 /**
- * Line colour for a stored category colour. Categories keep their saved ARGB values (the repository
- * validates them against Category.colorChoices), and each one is drawn as a transit line colour.
+ * Line colour for a stored category colour. Categories store one of Category.lineColors and are
+ * drawn with it as is; values written by earlier versions map through Category.legacyLineColors.
  */
-fun lineColor(argb: Int): Color = when (argb.toLong() and 0xFFFFFFFFL) {
-    0xFFE76E50L -> Color(0xFFD6001C)
-    0xFF2A9D90L -> Color(0xFF007A4D)
-    0xFF274754L -> Color(0xFF5C2D91)
-    0xFFE8C468L -> Color(0xFFB35900)
-    0xFFF4A462L -> Color(0xFF0057B8)
-    else -> Color(argb)
-}
+fun lineColor(argb: Int): Color = Color(Category.legacyLineColors[argb] ?: argb)
 
-fun AppPalette.categoryColor(category: ayodong.emobilize.core.model.Category): Color = lineColor(category.color)
+fun AppPalette.categoryColor(category: Category): Color = lineColor(category.color)
 
 fun AppPalette.priorityColor(priority: ayodong.emobilize.core.model.Priority): Color = when (priority) {
     ayodong.emobilize.core.model.Priority.Low -> prioLow
