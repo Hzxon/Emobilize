@@ -98,15 +98,24 @@ Teks di atas warna isi dipilih dengan luminance. Di atas 0.72 pakai `ink` (gelap
 
 ## Warna jalur (kategori)
 
-Kategori disimpan dengan ARGB lama, karena `PreferencesCategoryRepository` menolak warna di luar `Category.colorChoices`. Warna tampilan diambil lewat `lineColor(argb)` di `Palette.kt`. Selalu pakai `palette.categoryColor(category)` atau `lineColor(...)`, jangan `Color(category.color)`.
+Kategori menyimpan ARGB jalur langsung, salah satu dari `Category.lineColors` (12 warna). Warna tampilan diambil lewat `lineColor(argb)` di `Palette.kt`; nilai lama dari versi sebelumnya dipetakan lewat `Category.legacyLineColors`. Selalu pakai `palette.categoryColor(category)` atau `lineColor(...)`, jangan `Color(category.color)`.
 
-| ARGB tersimpan | Warna jalur | Default |
+Jumlah kategori tidak dibatasi. Dua kategori boleh berbagi warna; yang membedakan adalah kode jalur (`Category.code`, 1–2 huruf, unik) yang digambar di dalam lingkaran stasiun dan di legenda.
+
+| Warna jalur | Nama | Default |
 | --- | --- | --- |
-| `#E76E50` | `#D6001C` merah | Study |
-| `#F4A462` | `#0057B8` biru | Work |
-| `#2A9D90` | `#007A4D` hijau | Health |
-| `#274754` | `#5C2D91` ungu | |
-| `#E8C468` | `#B35900` oranye tua | |
+| `#D6001C` | merah | Study (S) |
+| `#0057B8` | biru | Work (W) |
+| `#007A4D` | hijau | Health (H) |
+| `#5C2D91` | ungu | |
+| `#B35900` | oranye tua | |
+| `#E6007E` | pink | |
+| `#00858F` | teal | |
+| `#7A4B1E` | cokelat | |
+| `#1B2A6B` | navy | |
+| `#6E9A00` | lime | |
+| `#A0007A` | magenta | |
+| `#5A5A5A` | abu | |
 
 Teks di badge jalur selalu putih. Tugas tanpa kategori memakai jalur abu `boardGone` dengan huruf "X".
 

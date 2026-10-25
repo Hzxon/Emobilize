@@ -8,6 +8,8 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -228,7 +230,7 @@ fun SettingsScreen(
             Spacer(Modifier.height(24.dp))
             SectionLabel("CATEGORIES")
             Text(
-                "Edit up to ${Category.Limit} categories and choose a color for each.",
+                "Rename your lines and choose a color for each.",
                 style = appStyle(13.sp),
                 color = palette.textMuted,
             )
@@ -358,6 +360,7 @@ private fun OptionChip(label: String, selected: Boolean, onClick: () -> Unit) {
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun CategoryEditor(
     category: Category,
@@ -382,8 +385,8 @@ private fun CategoryEditor(
             )
             Spacer(Modifier.height(12.dp))
             Text("Color", style = appStyle(13.sp, FontWeight.Medium), color = palette.textMuted)
-            Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                Category.colorChoices.forEach { color ->
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                Category.lineColors.forEach { color ->
                     val selected = category.color == color
                     Box(
                         Modifier

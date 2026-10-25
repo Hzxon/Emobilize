@@ -25,6 +25,9 @@ interface TaskRepository {
     fun delete(id: Long)
     fun setStatus(id: Long, status: TaskStatus)
     fun applyCategory(category: Category)
+
+    /** Tasks on the deleted line keep running without a category. */
+    fun clearCategory(id: Long)
 }
 
 interface ScheduleRepository {
@@ -32,11 +35,18 @@ interface ScheduleRepository {
     fun place(block: TimeBlock, date: LocalDate)
     fun delete(id: Long)
     fun applyCategory(category: Category)
+
+    /** A time block always has a line, so blocks on a deleted line move to [replacement]. */
+    fun replaceCategory(id: Long, replacement: Category)
 }
 
 interface CategoryRepository {
     val categories: StateFlow<List<Category>>
+
+    /** Null when the name or code is invalid, or the code is already taken (colours may repeat). */
+    fun add(name: String, code: String, color: Int): Category?
     fun update(category: Category): Category?
+    fun delete(id: Long): Boolean
 }
 
 interface AppSettingsRepository {
