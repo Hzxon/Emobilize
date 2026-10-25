@@ -141,7 +141,7 @@ Kedua font berlisensi SIL OFL, diambil dari repo `google/fonts`. `monoStyle` mem
 
 | Peran | Ukuran | Berat | Catatan |
 | --- | --- | --- | --- |
-| Jam besar | 64 sp | ExtraBold | letter-spacing −3 sp, `tnum` |
+| Jam papan (header Departures) | 28 sp | ExtraBold | letter-spacing −1 sp, `tnum`, satu baris 44 dp dengan tanggal 11 sp UPPERCASE |
 | Judul layar (Route map) | 24 sp | ExtraBold | letter-spacing −0.5 sp, satu baris 44 dp dengan kicker 11 sp di bawahnya |
 | Judul tiket | 30 sp | ExtraBold | letter-spacing −1 sp |
 | Judul hari | 18 sp | ExtraBold | |

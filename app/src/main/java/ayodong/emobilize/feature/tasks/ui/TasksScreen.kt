@@ -175,25 +175,33 @@ fun TasksScreen(
     }
 
     Column(modifier.fillMaxSize()) {
-        Text(
-            text = now.format(boardClock),
-            modifier = Modifier.padding(start = AppMetrics.headerHorizontal, end = AppMetrics.headerHorizontal, top = 10.dp),
-            style = appStyle(64.sp, FontWeight.ExtraBold, letterSpacing = (-3).sp, lineHeight = 64.sp)
-                .copy(fontFeatureSettings = "tnum"),
-            color = palette.text,
-            maxLines = 1,
-        )
-        Text(
-            text = LocalDate.now().format(boardDate),
-            modifier = Modifier.padding(start = AppMetrics.headerHorizontal, end = AppMetrics.headerHorizontal, top = 4.dp),
-            style = appStyle(15.sp, FontWeight.Medium),
-            color = palette.textMuted,
-            maxLines = 1,
-        )
+        // Compact header: clock and date share one 44dp row so the board below keeps the space.
+        Row(
+            Modifier
+                .padding(start = AppMetrics.headerHorizontal, end = AppMetrics.headerHorizontal, top = 8.dp)
+                .heightIn(min = 44.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Text(
+                text = now.format(boardClock),
+                style = appStyle(28.sp, FontWeight.ExtraBold, letterSpacing = (-1).sp, lineHeight = 32.sp)
+                    .copy(fontFeatureSettings = "tnum"),
+                color = palette.text,
+                maxLines = 1,
+            )
+            Text(
+                text = LocalDate.now().format(boardDate).uppercase(Locale.US),
+                style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 1.sp),
+                color = palette.textMuted,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
 
         Row(
             Modifier
-                .padding(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, top = 18.dp)
+                .padding(start = AppMetrics.pageHorizontal, end = AppMetrics.pageHorizontal, top = 8.dp)
                 .fillMaxWidth()
                 .border(2.dp, palette.text),
         ) {
