@@ -1,175 +1,164 @@
 # Emobilize Design System
 
-Design system aplikasi Emobilize. Token warna diambil dari registry shadcn `@shadcn/theme-neutral`. Tipografi memakai Montserrat. Satuan layout mengikuti skala Tailwind yang dipakai shadcn.
+Design system aplikasi Emobilize: **Departures**. Metafornya papan keberangkatan stasiun. Tugas adalah keberangkatan, kategori adalah jalur (line), kalender adalah peta rute, dan detail tugas adalah tiket. Tipografi memakai Inter Tight dan IBM Plex Mono. Semua sudut persegi.
+
+Desain sumber: artifact "Emobilize Departures" (artboard Departures, Route map, Ticket, Last service).
 
 Sumber di kode:
 
-- `app/src/main/java/ayodong/emobilize/ui/theme/Shadcn.kt`
-- `app/src/main/java/ayodong/emobilize/ui/theme/Palette.kt`
-- `app/src/main/java/ayodong/emobilize/ui/theme/Type.kt`
-- `app/src/main/java/ayodong/emobilize/ui/theme/Metrics.kt`
-- `app/src/main/java/ayodong/emobilize/ui/theme/Theme.kt`
+- `app/src/main/java/ayodong/emobilize/core/ui/theme/Shadcn.kt`
+- `app/src/main/java/ayodong/emobilize/core/ui/theme/Palette.kt`
+- `app/src/main/java/ayodong/emobilize/core/ui/theme/Type.kt`
+- `app/src/main/java/ayodong/emobilize/core/ui/theme/Metrics.kt`
+- `app/src/main/java/ayodong/emobilize/core/ui/theme/Theme.kt`
 
-Ada dua palet, Neutral Light dan Neutral Dark. Pilihan tema ada di Settings dengan opsi System, Light, dan Dark; ikon gear di header membuka Settings.
+Ada dua palet, Departures Light dan Departures Dark. Nama di kode tetap `NeutralLight` dan `NeutralDark`. Pilihan tema ada di Settings dengan opsi System, Light, dan Dark; ikon gear di header membuka Settings.
 
 | Tema | Kode | Kapan dipakai |
 | --- | --- | --- |
-| Neutral Light | `NeutralLight` | Default. Status bar dan navigation bar berwarna gelap di atas latar terang. |
-| Neutral Dark | `NeutralDark` | Latar hampir hitam. Status bar dan navigation bar berwarna terang. |
+| Departures Light | `NeutralLight` | Default. Dinding stasiun abu-abu, panel putih, tinta hitam, sinyal kuning di atas hitam. |
+| Departures Dark | `NeutralDark` | Stasiun malam. Latar hampir hitam, aksi utama kuning. |
 
 ---
 
 ## Warna
 
-Nilai disimpan sebagai HSL, sama seperti registry shadcn. Hex di tabel adalah hasil konversi sRGB.
+Token tetap berbentuk shadcn (`ShadcnColors`), tapi nilainya hex Departures.
 
-### Neutral Light
+### Departures Light
 
-| Token | HSL | Hex | Pemakaian |
-| --- | --- | --- | --- |
-| background | `0 0% 100%` | `#FFFFFF` | Latar halaman |
-| foreground | `0 0% 3.9%` | `#0A0A0A` | Teks utama |
-| card | `0 0% 100%` | `#FFFFFF` | Permukaan kartu |
-| card-foreground | `0 0% 3.9%` | `#0A0A0A` | Teks di atas kartu |
-| popover | `0 0% 100%` | `#FFFFFF` | Sheet dan popover |
-| popover-foreground | `0 0% 3.9%` | `#0A0A0A` | Teks di atas sheet |
-| primary | `0 0% 9%` | `#171717` | Aksi utama, tab aktif, filter aktif |
-| primary-foreground | `0 0% 98%` | `#FAFAFA` | Teks di atas primary |
-| secondary | `0 0% 96.1%` | `#F5F5F5` | Tombol sekunder, tombol tutup |
-| secondary-foreground | `0 0% 9%` | `#171717` | Teks di atas secondary |
-| muted | `0 0% 96.1%` | `#F5F5F5` | Bidang isi yang tenang |
-| muted-foreground | `0 0% 45.1%` | `#737373` | Label, placeholder, tab nonaktif |
-| accent | `0 0% 96.1%` | `#F5F5F5` | Sorotan netral |
-| accent-foreground | `0 0% 9%` | `#171717` | Teks di atas accent |
-| destructive | `0 84.2% 60.2%` | `#EF4444` | Hapus, error, prioritas tinggi |
-| destructive-foreground | `0 0% 98%` | `#FAFAFA` | Teks di atas destructive |
-| border | `0 0% 89.8%` | `#E5E5E5` | Garis kartu dan sheet |
-| input | `0 0% 89.8%` | `#E5E5E5` | Garis field |
-| ring | `0 0% 3.9%` | `#0A0A0A` | Fokus |
-| chart-1 | `12 76% 61%` | `#E76E50` | Study, status progress |
-| chart-2 | `173 58% 39%` | `#2A9D90` | Health, status selesai, prioritas rendah |
-| chart-3 | `197 37% 24%` | `#274754` | University, aksi update |
-| chart-4 | `43 74% 66%` | `#E8C468` | Personal, prioritas sedang, aksi edit |
-| chart-5 | `27 87% 67%` | `#F4A462` | Work |
+| Token | Hex | Pemakaian |
+| --- | --- | --- |
+| background | `#EEF0F2` | Latar halaman |
+| foreground | `#111214` | Teks utama, garis kontrol |
+| card | `#FFFFFF` | Panel, tombol outline, dock |
+| popover | `#FFFFFF` | Sheet |
+| primary | `#111214` | Filter aktif, tombol tengah, tab aktif |
+| primary-foreground | `#FFD400` | Teks dan ikon di atas primary |
+| secondary | `#FFFFFF` | Tombol sekunder |
+| muted | `#E3E6EA` | Stasiun kosong, bidang tenang |
+| muted-foreground | `#4A4D55` | Label, tab nonaktif |
+| accent | `#FFD400` | Sorotan sinyal |
+| destructive | `#C4161C` | Hapus, error |
+| destructive-foreground | `#FFFFFF` | Teks di atas destructive |
+| border, input | `#111214` | Garis kartu, field, kontrol |
+| ring | `#FFD400` | Fokus |
+| chart-1 | `#D6001C` | Status progress |
+| chart-2 | `#007A4D` | Status done, prioritas rendah |
+| chart-3 | `#5C2D91` | Aksi update (palet) |
+| chart-4 | `#B35900` | Aksi edit |
+| chart-5 | `#0057B8` | Cadangan |
 
-### Neutral Dark
+### Departures Dark
 
-| Token | HSL | Hex | Pemakaian |
-| --- | --- | --- | --- |
-| background | `0 0% 3.9%` | `#0A0A0A` | Latar halaman |
-| foreground | `0 0% 98%` | `#FAFAFA` | Teks utama |
-| card | `0 0% 3.9%` | `#0A0A0A` | Permukaan kartu |
-| card-foreground | `0 0% 98%` | `#FAFAFA` | Teks di atas kartu |
-| popover | `0 0% 3.9%` | `#0A0A0A` | Sheet dan popover |
-| popover-foreground | `0 0% 98%` | `#FAFAFA` | Teks di atas sheet |
-| primary | `0 0% 98%` | `#FAFAFA` | Aksi utama |
-| primary-foreground | `0 0% 9%` | `#171717` | Teks di atas primary |
-| secondary | `0 0% 14.9%` | `#262626` | Tombol sekunder |
-| secondary-foreground | `0 0% 98%` | `#FAFAFA` | Teks di atas secondary |
-| muted | `0 0% 14.9%` | `#262626` | Bidang isi yang tenang |
-| muted-foreground | `0 0% 63.9%` | `#A3A3A3` | Label dan teks sekunder |
-| accent | `0 0% 14.9%` | `#262626` | Sorotan netral |
-| accent-foreground | `0 0% 98%` | `#FAFAFA` | Teks di atas accent |
-| destructive | `0 62.8% 30.6%` | `#7F1D1D` | Hapus dan error |
-| destructive-foreground | `0 0% 98%` | `#FAFAFA` | Teks di atas destructive |
-| border | `0 0% 14.9%` | `#262626` | Garis kartu dan sheet |
-| input | `0 0% 14.9%` | `#262626` | Garis field |
-| ring | `0 0% 83.1%` | `#D4D4D4` | Fokus |
-| chart-1 | `220 70% 50%` | `#2662D9` | Study, status progress |
-| chart-2 | `160 60% 45%` | `#2EB88A` | Health, status selesai, prioritas rendah |
-| chart-3 | `30 80% 55%` | `#E88C30` | University, aksi update |
-| chart-4 | `280 65% 60%` | `#AF57DB` | Personal, prioritas sedang, aksi edit |
-| chart-5 | `340 75% 55%` | `#E23670` | Work |
+| Token | Hex | Pemakaian |
+| --- | --- | --- |
+| background | `#111214` | Latar halaman |
+| foreground | `#FFFFFF` | Teks utama |
+| card, popover | `#1B1D21` | Panel, sheet, dock |
+| primary | `#FFD400` | Aksi utama |
+| primary-foreground | `#111214` | Teks di atas primary |
+| secondary, muted | `#22242A` | Bidang tenang |
+| muted-foreground | `#A9ACB3` | Label |
+| destructive | `#FF7A5C` | Hapus, error |
+| destructive-foreground | `#111214` | Teks di atas destructive |
+| border, input | `#5C5F66` | Garis |
+| ring | `#FFD400` | Fokus |
+| chart-1 … chart-5 | `#FF5A6A`, `#3DDC84`, `#B18CFF`, `#FFB020`, `#5AA2FF` | Sama dengan Light |
 
-Kartu dan latar memakai warna yang sama. Pemisahnya adalah `border` 1 dp, bukan isi kartu yang lebih terang.
+### Papan dan sinyal
+
+Papan keberangkatan dan tiket tetap gelap/putih di kedua tema, seperti layar stasiun sungguhan. Token ada di `AppPalette`.
+
+| Token | Hex | Pemakaian |
+| --- | --- | --- |
+| board | `#111214` (Dark: `#000000`) | Latar papan, scrim tiket |
+| boardRule | `#2A2C31` | Garis antar baris papan |
+| boardText | `#FFFFFF` | Nama tugas di papan |
+| boardMuted | `#A9ACB3` | Header kolom, baris kedua |
+| boardGone | `#8A8D93` | DEPARTED, jalur tanpa kategori |
+| boardBoarding | `#3DDC84` | BOARDING, swipe selesai |
+| boardBoardingRow | `#1A2A20` | Latar baris yang sedang berjalan |
+| boardDelayed | `#FF7A5C` | DELAYED, swipe hapus |
+| signal | `#FFD400` | Jam, strip Next, banner pilihan, YOU ARE HERE |
+| signalInk | `#111214` | Teks di atas signal |
 
 ### Lapisan
 
 | Token | Light | Dark | Pemakaian |
 | --- | --- | --- | --- |
 | scrim | `#000000` 40% | `#000000` 62% | Overlay menu radial dan sheet |
-| nav | background 96% | background 97% | Dock bawah |
-| shadow | `#000000` 6% | `#000000` 35% | Bayangan kartu |
-| text-subtle | muted-foreground 62% | muted-foreground 62% | Tugas selesai |
+| nav | background 96% | background 97% | Cadangan; dock memakai `card` |
+| shadow | transparan | transparan | Departures tidak memakai bayangan |
+| text-subtle | muted-foreground 62% | muted-foreground 62% | Teks redup |
 
-Teks di atas warna isi dipilih dengan luminance. Di atas 0.72 pakai `ink` (gelap). Di bawahnya pakai `on-dark` (`#FAFAFA`).
+Teks di atas warna isi dipilih dengan luminance. Di atas 0.72 pakai `ink` (gelap). Di bawahnya pakai `on-dark` (`#FFFFFF`).
 
 ---
 
-## Warna produk
+## Warna jalur (kategori)
 
-Warna ini tidak berdiri sendiri. Semuanya menunjuk ke token chart atau destructive.
+Kategori disimpan dengan ARGB lama, karena `PreferencesCategoryRepository` menolak warna di luar `Category.colorChoices`. Warna tampilan diambil lewat `lineColor(argb)` di `Palette.kt`. Selalu pakai `palette.categoryColor(category)` atau `lineColor(...)`, jangan `Color(category.color)`.
+
+| ARGB tersimpan | Warna jalur | Default |
+| --- | --- | --- |
+| `#E76E50` | `#D6001C` merah | Study |
+| `#F4A462` | `#0057B8` biru | Work |
+| `#2A9D90` | `#007A4D` hijau | Health |
+| `#274754` | `#5C2D91` ungu | |
+| `#E8C468` | `#B35900` oranye tua | |
+
+Teks di badge jalur selalu putih. Tugas tanpa kategori memakai jalur abu `boardGone` dengan huruf "X".
+
+## Warna produk
 
 | Peran | Token |
 | --- | --- |
-| Status todo | muted-foreground |
-| Status progress | chart-1 |
-| Status done | chart-2 |
-| Kategori Study | chart-1 |
-| Kategori Work | chart-5 |
-| Kategori Health | chart-2 |
-| Kategori Personal | chart-4 |
-| Kategori University | chart-3 |
+| Status todo, ON TIME, ANY TIME | signal |
+| Status progress, BOARDING | boardBoarding |
+| Status done, DEPARTED | boardGone, dicoret |
+| Terlambat, DELAYED | boardDelayed |
 | Prioritas low | chart-2 |
-| Prioritas medium | chart-4 |
-| Prioritas high | destructive |
-| Aksi add | primary |
-| Aksi update | chart-3 |
+| Prioritas medium | `#EAB308` |
+| Prioritas high | `#FF6B6B` |
+| Aksi add | `#007A4D` |
+| Aksi update | `#0057B8` |
 | Aksi edit | chart-4 |
 | Aksi delete | destructive |
 
-Keadaan terpilih:
-
-| Keadaan | Isi | Garis |
-| --- | --- | --- |
-| Hapus | destructive 10–12% | destructive 45% |
-| Update | chart-4 12–16% | chart-4 55% |
-| Progress | chart-1 12% | chart-1 40% |
+Keadaan terpilih (mode Edit, Update, Delete): baris diberi garis 2 dp warna aksi dan isi warna aksi 14–28%. Baris lain redup 60%.
 
 ---
 
 ## Tipografi
 
-Font: **Montserrat**.
+| Keluarga | Kode | File | Pemakaian |
+| --- | --- | --- | --- |
+| Inter Tight | `AppFont`, `appStyle(...)` | `res/font/inter_tight.ttf` (variable, sumbu `wght`) | Semua teks |
+| IBM Plex Mono | `MonoFont`, `monoStyle(...)` | `ibm_plex_mono_medium.ttf`, `ibm_plex_mono_semibold.ttf` | Jam, kode tiket, status papan, fakta tiket |
 
-File: `montserrat_regular`, `montserrat_medium`, `montserrat_semibold`, `montserrat_bold`.
+Kedua font berlisensi SIL OFL, diambil dari repo `google/fonts`. `monoStyle` memakai angka tabular (`tnum`).
 
-| Token | Ukuran | Line height | Berat default | Pemakaian |
-| --- | --- | --- | --- | --- |
-| xs | 12 sp | 16 sp | Regular | Meta, caption |
-| sm | 14 sp | 20 sp | Regular | Body sekunder, label |
-| base | 16 sp | 24 sp | Regular | Body |
-| lg | 18 sp | 28 sp | Regular | Judul sheet |
-| xl | 20 sp | 28 sp | Regular | Judul bagian |
-| 2xl | 24 sp | 32 sp | Regular | Judul layar kecil |
-| 3xl | 30 sp | 36 sp | Regular | Judul besar |
-| 4xl | 36 sp | 40 sp | Regular | Display |
+| Peran | Ukuran | Berat | Catatan |
+| --- | --- | --- | --- |
+| Jam besar | 64 sp | ExtraBold | letter-spacing −3 sp, `tnum` |
+| Judul layar (Route map) | 40 sp | ExtraBold | letter-spacing −1.5 sp |
+| Judul tiket | 30 sp | ExtraBold | letter-spacing −1 sp |
+| Judul hari | 18 sp | ExtraBold | |
+| Nama tugas | 15–16 sp | SemiBold–Bold | |
+| Label kontrol, tab, tombol | 12–15 sp | Bold–ExtraBold | UPPERCASE, letter-spacing 1 sp |
+| Kicker (WEEK 44 · OCT 2026, EMOBILIZE CENTRAL) | 13 sp | Bold | UPPERCASE, letter-spacing 1.5 sp |
+| Header kolom papan, label fakta | 10–11 sp | Bold | UPPERCASE, letter-spacing 1.5 sp |
+| Jam papan | 15 sp mono | SemiBold | |
+| Status papan | 11 sp mono | SemiBold | letter-spacing 0.5 sp |
 
-Berat yang dipakai di komponen:
-
-| Berat | Pemakaian |
-| --- | --- |
-| Regular | Judul layar, body |
-| Medium | Label, judul sedang |
-| SemiBold | Nama tugas, isi field |
-| Bold | Tab, filter, chip, tombol |
-
-Label bagian ditulis uppercase dengan letter-spacing sekitar `0.1 em`.
+Skala `ShadcnType` (xs sampai 4xl) tetap ada untuk form dan Settings.
 
 ---
 
 ## Radius
 
-Dasar shadcn: `--radius: 0.5rem` (8 dp).
-
-| Token | Rumus | Nilai | Pemakaian |
-| --- | --- | --- | --- |
-| sm | radius − 4 | 4 dp | Kontrol kecil |
-| md | radius − 2 | 6 dp | Chip, badge, toggle |
-| lg | radius | 8 dp | Tombol, input, field tanggal |
-| xl | radius + 4 | 12 dp | Kartu tugas, sudut atas sheet |
-
-Sudut luar kartu yang sedang dipilih: `xl + 4 dp`.
+Semua token `ShadcnRadius` bernilai 0 dp. Sudut persegi di kartu, tombol, input, sheet, dan chip. Bentuk bulat hanya untuk badge jalur dan titik stasiun. Stempel tiket persegi, diputar −6°.
 
 ---
 
@@ -187,68 +176,80 @@ Sudut luar kartu yang sedang dipilih: `xl + 4 dp`.
 | 8 | 32 dp |
 | 10 | 40 dp |
 
-Jarak layar yang sudah dipakai:
+Jarak layar yang sudah dipakai (`AppMetrics`):
 
 | Token | Nilai | Pemakaian |
 | --- | --- | --- |
-| header-horizontal | 24 dp | Judul dan filter |
-| page-horizontal | 16 dp | Daftar tugas, agenda kalender |
-| card min height | 68 dp | Kartu tugas |
-| action height | 44 dp | Tombol aksi bawah |
-| nav height | 100 dp | Dock |
-| fab | 88 dp | Tombol tengah |
-| node | 48 dp | Item menu radial |
+| headerHorizontal | 20 dp | Header, jam, judul |
+| pageHorizontal | 20 dp | Papan, filter, peta rute |
+| cardMinHeight | 68 dp | Kartu form |
+| actionHeight | 44 dp | Tombol aksi |
+| navHeight | 96 dp | Dock |
+| fabSize | 96 dp | Tombol tengah, setinggi dock |
+| fabCenterFromBottom | 48 dp | Pusat tombol tengah |
+| nodeSize | 48 dp | Item menu radial |
+
+Garis kontrol 2 dp `foreground`. Tombol utama tinggi 52–56 dp. Target sentuh minimal 44 dp.
 
 ---
 
 ## Komponen
 
-### Kartu tugas
+### Header (`MainShell`)
 
-- Sudut `xl` (12 dp)
-- Isi `card`
-- Garis 1 dp `border` saat tidak dipilih
-- Garis 2 dp memakai warna aksi saat dipilih
-- Bayangan mengikuti token shadow
+- Pelat "E" persegi 28 dp: isi `primary`, huruf `primary-foreground`
+- Teks EMOBILIZE CENTRAL
+- Tombol Reminders dan Settings: persegi 48 dp, isi `card`, garis 2 dp `foreground`
 
-### Sheet
+### Dock (`RadialDock`)
 
-- Sudut atas `xl`
-- Isi `popover`
-- Garis 1 dp `border`
-- Scrim memakai token lapisan
-- Tombol tutup: lingkaran `secondary` dengan ikon `secondary-foreground`
+- Isi `card`, garis atas 2 dp `foreground`
+- Tab DEPARTURES dan ROUTE MAP, UPPERCASE
+- Tab aktif: teks `foreground` dan bilah atas 4 dp `foreground`
+- Tombol tengah: persegi penuh 96 dp, isi `primary`, ikon plus `primary-foreground`. Tetap membuka menu radial.
 
-### Input
+### Menu radial (`RadialMenu`)
 
-- Sudut `lg`
-- Isi `background`
-- Garis 1 dp `input`
+- Sektor buram: isi `card`, garis 2 dp `foreground`
+- Ikon warna aksi, label UPPERCASE ExtraBold `foreground`
+- Sektor yang disorot: isi warna aksi, ikon dan label putih
+
+### Filter dan toggle tersegmen
+
+- Garis luar 2 dp `foreground`, pemisah 2 dp
+- Aktif: isi `primary`, teks `primary-foreground`
+- Diam: isi `card`, teks `foreground`
+
+### Papan keberangkatan (Tasks)
+
+- Kolom TIME 52 dp, DESTINATION fleksibel, LN 30 dp, STATUS 78 dp, jarak 10 dp
+- Baris min 48 dp, garis bawah 1 dp `boardRule`
+- Badge jalur bulat 26 dp dengan huruf awal kategori
+- Strip bawah `signal`: "Next: tugas · jalur · waktu tunggu", atau "N of M departed"
+- Semua tugas di filter selesai: panel kuning "The last service has left."
+
+### Peta rute (Calendar)
+
+- Minggu: tujuh stasiun pada garis 8 dp. Hari terpilih bulat 52 dp `signal`, hari lain 28 dp, hari kosong isi `muted`
+- Bulan: sel persegi 44 dp; terpilih isi `primary`, hari ini garis 2 dp
+- Agenda: kolom jam mono 48 dp, rel 8 dp warna jalur, titik stasiun 20 dp
+- Penanda YOU ARE HERE di antara stop, hanya untuk hari ini
+- Legenda jalur untuk kategori yang ada di hari itu
+
+### Tiket (detail tugas)
+
+- Scrim `board` 96%, tautan BOARD dan kode `TKT 0006 · 26 OCT`
+- Kertas putih dengan tinta `#111214` di kedua tema
+- Pita atas warna jalur, FROM/TO, judul, deskripsi, enam fakta mono
+- Perforasi putus-putus, barcode dekoratif, stempel status: ON TIME, DELAYED, BOARDING, ARRIVED
+- Tombol EDIT THIS TICKET (`signal`) dan CLOSE (outline)
+
+### Banner pilihan
+
+- Isi `signal`, garis 2 dp `signalInk`, kotak 12 dp warna aksi, tombol CANCEL
+
+### Input dan sheet
+
+- Sudut persegi, garis 1 dp `input` (hitam di Light)
 - Garis tidak valid: `destructive`
-- Kursor: `primary`
-- Placeholder: `muted-foreground`
-
-### Toggle
-
-- Sudut `md`
-- Aktif: isi dan garis `primary`, teks `primary-foreground`
-- Diam: isi transparan, garis `border`, teks `muted-foreground`
-
-### Chip
-
-- Sudut `md`
-- Aktif: isi warna peran, teks mengikuti luminance
-- Diam: isi warna peran pada alpha `0x18`
-
-### Tombol utama
-
-- Tinggi 44 dp
-- Sudut `lg`
-- Isi warna aksi
-- Teks mengikuti luminance warna isi
-
-### Dock
-
-- Latar `nav`
-- Tab aktif: `foreground` plus garis `primary`
-- Tab diam: `muted-foreground`
+- Isi sheet `popover`

@@ -4,7 +4,7 @@ Dokumen ini untuk AI lain yang mengubah UI. Baca file ini dan `DESIGN.md` sebelu
 
 `AGENTS.md` di root repo ini berlaku. Abaikan `AGENTS.md` di folder user; file itu milik proyek web lain.
 
-Branch: `tasks-radial-menu`. Remote: `https://github.com/Hzxon/Emobilize`.
+Branch: `departures-redesign`. Remote: `https://github.com/Hzxon/Emobilize`.
 
 ## Prompt yang bisa ditempel
 
@@ -54,7 +54,7 @@ Emobilize/
         auth/        domain/ (AuthRepository, use case), data/ (Preferences, Fake), ui/, di/
         splash/      ui/SplashScreen.kt
     res/
-      font/                            <- Montserrat
+      font/                            <- Inter Tight (variable), IBM Plex Mono
       values/themes.xml
       values/colors.xml
 ```
@@ -68,22 +68,25 @@ Package: `ayodong.emobilize`. Satu modul Gradle: `:app`. `minSdk` 28. `compileSd
 | Daftar rute, kapan form muncul | `core/navigation/AppNavHost.kt` | `AppNavHost` |
 | Header, tab, dock, radial menu | `core/navigation/MainShell.kt` | `MainShell` |
 | Preferensi aplikasi dan kategori | `feature/settings/ui/SettingsScreen.kt` | `SettingsScreen` |
-| Daftar tugas, filter, kartu tugas | `feature/tasks/ui/TasksScreen.kt` | `TasksScreen`, `TaskCard` |
+| Papan keberangkatan, filter, baris tugas | `feature/tasks/ui/TasksScreen.kt` | `TasksScreen`, `BoardRow`, `NextStrip`, `LastService` |
 | Kartu Add di tab Tasks | `feature/tasks/ui/AddTaskCard.kt` | `AddTaskCard` |
 | Sheet edit tugas | `feature/tasks/ui/TaskFormSheet.kt` | `TaskFormSheet`, `DateField`, `TimeField` |
 | Form Add dan edit di tab Calendar | `feature/calendar/ui/CalendarFormSheet.kt` | `CalendarFormSheet` |
-| Header kalender, bulan, minggu, hari, daftar kartu | `feature/calendar/ui/CalendarScreen.kt` | `CalendarScreen`, `DayAgenda`, `AgendaRow` |
-| Dock bawah, tab, muka tombol tengah, orb tema | `core/ui/dock/RadialDock.kt` | `BottomDock`, `FabFace`, `ThemeOrb` |
+| Peta rute: header, garis minggu, kisi bulan, agenda | `feature/calendar/ui/CalendarScreen.kt` | `CalendarScreen`, `WeekLine`, `MonthGrid`, `DayAgenda`, `RouteRow` |
+| Tiket detail tugas | `feature/tasks/ui/TaskDetailScreen.kt` | `TaskDetailScreen`, `Ticket` |
+| Dock bawah, tab, muka tombol tengah | `core/ui/dock/RadialDock.kt` | `BottomDock`, `FabFace` |
 | Kipas Add / Update / Edit / Delete | `core/ui/dock/RadialMenu.kt` | `RadialMenu` |
-| Warna, radius, jarak, font | `core/ui/theme/` dan `DESIGN.md` | `LocalPalette`, `AppMetrics`, `appStyle` |
+| Warna, radius, jarak, font | `core/ui/theme/` dan `DESIGN.md` | `LocalPalette`, `AppMetrics`, `appStyle`, `monoStyle`, `lineColor` |
 
 State data tidak diubah dari Composable. Setiap fitur punya ViewModel sendiri di `feature/<x>/ui/`. Untuk ganti warna kartu atau jarak, jangan buka ViewModel.
 
 ## Token tampilan
 
-- Warna layar: `LocalPalette.current` di `core/ui/theme/Palette.kt`. Dua tema: `NeutralLight` (id 1) dan `NeutralDark` (id 2).
+- Warna layar: `LocalPalette.current` di `core/ui/theme/Palette.kt`. Tema Departures, dua palet: `NeutralLight` (id 1, Departures Light) dan `NeutralDark` (id 2, Departures Dark). Papan dan tiket memakai token `board*`, `signal`, `signalInk`.
 - Warna shadcn: `palette.scheme` dari `core/ui/theme/Shadcn.kt` (`background`, `popover`, `border`, `card`).
-- Teks: `appStyle(...)` dan `AppFont` di `core/ui/theme/Type.kt`. Font Montserrat.
+- Teks: `appStyle(...)` (Inter Tight) dan `monoStyle(...)` (IBM Plex Mono, untuk jam dan status) di `core/ui/theme/Type.kt`.
+- Warna kategori: `palette.categoryColor(...)` atau `lineColor(argb)`. Jangan `Color(category.color)`; ARGB tersimpan dipetakan ke warna jalur.
+- Semua radius 0 dp. Jangan tambah `RoundedCornerShape` dengan angka sendiri.
 - Jarak dan ukuran kartu: `AppMetrics` di `core/ui/theme/Metrics.kt`. Radius kartu `AppMetrics.cardRadius`. Tinggi minimum kartu `AppMetrics.cardMinHeight`.
 - Padding halaman: `AppMetrics.pageHorizontal` (16.dp). Header: `AppMetrics.headerHorizontal` (24.dp).
 - Aksi radial: Add hijau, Update biru, Edit `actionEdit`, Delete `danger`. Fungsi `menuColor`.
@@ -94,11 +97,11 @@ Jangan menambah palet baru. Nilai token dijelaskan di `DESIGN.md`.
 
 Produk: aplikasi tugas dan kalender. Data di memori, hilang saat proses mati. Sampel di `core/data/SampleData.kt`.
 
-Dua tab: Tasks dan Calendar. Tombol tengah membuka radial menu. Ikon gear di header membuka Settings. Tema hanya diubah dari Settings.
+Dua tab: Tasks (label dock DEPARTURES) dan Calendar (label dock ROUTE MAP). Tombol tengah persegi membuka radial menu. Ikon gear di header membuka Settings. Tema hanya diubah dari Settings.
 
 ### Tasks
 
-Filter All, Today, Tomorrow, Later. Kartu menampilkan garis kategori, badge prioritas, dan tanggal hanya jika field itu ada. Tugas tanpa jadwal hanya muncul di All.
+Filter Today, Tmrw, Later, All. Papan gelap dengan kolom TIME, DESTINATION, LN, STATUS. Urutan tetap: to-do, progress, done, masing-masing menurut deadline. Status: ON TIME, ANY TIME, DELAYED (lewat jam hari ini), BOARDING (progress), DEPARTED (done). Baris kedua: prioritas, durasi, dan hari bila bukan hari ini. Tugas tanpa jadwal hanya muncul di All. Swipe kanan selesai, swipe kiri hapus, snackbar Undo. Semua tugas di filter selesai: panel "The last service has left."
 
 ### Add di tab Tasks
 
@@ -110,7 +113,7 @@ Sheet penuh `TaskFormSheet`. Bukan `AddTaskCard`.
 
 ### Calendar
 
-Month, Week, Day. Di bawah pemilih tanggal ada daftar kartu vertikal, bukan kisi jam. Item diurutkan waktu mulai. Item tanpa jam di bawah. Hari kosong: "Nothing scheduled".
+Month dan Week (Day ditampilkan sebagai Week). Week berupa garis tujuh stasiun. Di bawahnya agenda sebagai rute vertikal, bukan kisi jam: jam mono, rel warna kategori, titik stasiun. Item diurutkan waktu mulai, item tanpa jam di bawah (ANY). Hari ini diberi penanda YOU ARE HERE. Hari kosong: "Nothing scheduled".
 
 - Blok kalender: "Regular Schedule", kategori, jam mulai sampai selesai.
 - Tugas: jenis dari `EventType`, kategori, prioritas bila ada, tanggal atau jam.
@@ -158,7 +161,7 @@ State yang boleh di Composable: tab aktif, `menuOpen`, state animasi.
 - Jangan simpan tugas atau blok dari Composable.
 - Jangan pindahkan `TaskDraft` ke domain.
 - Jangan tambah library DI.
-- Jangan ubah teks Inggris yang sudah ada (Title, Close, Tasks, Calendar, Nothing scheduled).
+- Jangan ubah teks Inggris yang sudah ada (Title, Close, Departures, Route map, Nothing scheduled). Nama tab di kode tetap Tasks dan Calendar.
 
 Cek kompilasi:
 
