@@ -105,7 +105,7 @@ fun ReminderScreen(
                     val dueLabel = when {
                         overdue -> "Deadline passed • ${task.time ?: task.deadline}"
                         task.reminder != ReminderOption.None -> "${task.reminder.label} • $due"
-                        task.filterKey == FilterKey.Today && !task.time.isNullOrBlank() -> "Due in 30 mins • ${task.time}"
+                        task.filterKey() == FilterKey.Today && !task.time.isNullOrBlank() -> "Due in 30 mins • ${task.time}"
                         else -> listOf(task.deadline, task.time).filter { !it.isNullOrBlank() }.joinToString(" • ")
                     }
                     ExpandableReminderCard(

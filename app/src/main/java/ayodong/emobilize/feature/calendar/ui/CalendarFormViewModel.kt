@@ -8,7 +8,6 @@ import ayodong.emobilize.core.domain.TaskRepository
 import ayodong.emobilize.core.model.Category
 import ayodong.emobilize.core.model.EventType
 import ayodong.emobilize.core.model.ScheduleMode
-import ayodong.emobilize.core.model.deadlineToInputDate
 import ayodong.emobilize.core.model.displayTimeToInput
 import ayodong.emobilize.core.model.hoursToInput
 import ayodong.emobilize.core.model.isoDate
@@ -74,7 +73,7 @@ class CalendarFormViewModel(
 
     private fun loadTask(taskId: Long): Boolean {
         val task = tasks.board.value.tasks.find { it.id == taskId } ?: return false
-        val date = deadlineToInputDate(task.deadline)
+        val date = task.date?.toString() ?: isoDate(LocalDate.now())
         val startTime = task.range?.startTime ?: displayTimeToInput(task.time).ifBlank {
             if (task.eventType == EventType.Event) "" else "09:00"
         }

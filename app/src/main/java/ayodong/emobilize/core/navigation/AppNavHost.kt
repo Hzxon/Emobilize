@@ -1,10 +1,12 @@
 package ayodong.emobilize.core.navigation
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -12,7 +14,9 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import kotlinx.coroutines.launch
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -78,10 +82,15 @@ fun AppNavHost(shell: ShellViewModel) {
             modifier = Modifier.fillMaxSize(),
         ) {
             composable(AppRoute.Splash) {
+                val scope = rememberCoroutineScope()
                 SplashScreen(isDark = isDark) {
-                    navController.navigate(AppRoute.Auth) {
-                        popUpTo(AppRoute.Splash) { inclusive = true }
-                        launchSingleTop = true
+                    // A saved session skips sign-in; guests see the sign-in screen each launch.
+                    scope.launch {
+                        val start = if (container.sync.isSignedIn()) AppRoute.Tasks else AppRoute.Auth
+                        navController.navigate(start) {
+                            popUpTo(AppRoute.Splash) { inclusive = true }
+                            launchSingleTop = true
+                        }
                     }
                 }
             }
@@ -127,12 +136,25 @@ fun AppNavHost(shell: ShellViewModel) {
             dialog(AppRoute.Settings, dialogProperties = overlayDialog) {
                 val viewModel: SettingsViewModel = viewModel(factory = SettingsModule.settingsViewModel(container))
                 val state by viewModel.uiState.collectAsState()
+                val scope = rememberCoroutineScope()
+                val context = LocalContext.current
+                val email = container.sync.email
                 SettingsScreen(
                     appSettings = state.appSettings,
                     categories = state.categories,
                     usage = state.usage,
                     onSave = viewModel::save,
                     onClose = { navController.leave() },
+                    accountEmail = email,
+                    onAccount = {
+                        scope.launch {
+                            if (email == null || container.sync.signOut()) {
+                                navController.navigate(AppRoute.Auth) { popUpTo(navController.graph.id) { inclusive = true } }
+                            } else {
+                                Toast.makeText(context, "Connect to the internet to sync before signing out", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    },
                 )
             }
             dialog(AppRoute.AddTask, dialogProperties = overlayDialog) {

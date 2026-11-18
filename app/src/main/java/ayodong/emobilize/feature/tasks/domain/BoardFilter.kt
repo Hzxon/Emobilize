@@ -2,7 +2,6 @@ package ayodong.emobilize.feature.tasks.domain
 
 import ayodong.emobilize.core.model.FilterKey
 import ayodong.emobilize.core.model.Task
-import ayodong.emobilize.core.model.deadlineToInputDate
 import ayodong.emobilize.core.model.isoDate
 import java.time.LocalDate
 
@@ -16,8 +15,7 @@ enum class BoardFilter { Today, Upcoming, NoDate }
 /** ISO date the task departs on, or null when it has no date. */
 fun departureDate(task: Task, today: LocalDate = LocalDate.now()): String? {
     task.range?.let { return it.startDate }
-    if (task.deadline.isBlank()) return null
-    return deadlineToInputDate(task.deadline, today)
+    return task.date?.let(::isoDate)
 }
 
 fun boardTasks(
@@ -29,16 +27,16 @@ fun boardTasks(
     return tasks.filter { task ->
         val range = task.range
         when (filter) {
-            BoardFilter.NoDate -> range == null && task.deadline.isBlank()
+            BoardFilter.NoDate -> range == null && task.date == null
             BoardFilter.Today -> if (range != null) {
                 range.startDate <= todayIso && range.endDate >= todayIso
             } else {
-                task.filterKey == FilterKey.Today
+                task.filterKey(today) == FilterKey.Today
             }
             BoardFilter.Upcoming -> if (range != null) {
                 range.startDate > todayIso
             } else {
-                task.filterKey == FilterKey.Tomorrow || task.filterKey == FilterKey.Later
+                task.filterKey(today).let { it == FilterKey.Tomorrow || it == FilterKey.Later }
             }
         }
     }

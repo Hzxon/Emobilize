@@ -7,7 +7,8 @@ import ayodong.emobilize.core.domain.TaskRepository
 import ayodong.emobilize.core.model.Category
 import ayodong.emobilize.core.model.EventType
 import ayodong.emobilize.core.model.ScheduleMode
-import ayodong.emobilize.core.model.deadlineToInputDate
+import ayodong.emobilize.core.model.isoDate
+import java.time.LocalDate
 import ayodong.emobilize.core.model.displayTimeToInput
 import ayodong.emobilize.core.ui.form.TaskDraft
 import kotlinx.coroutines.flow.StateFlow
@@ -60,14 +61,14 @@ class TaskFormViewModel(
 
     private fun loadForEdit(id: Long): Boolean {
         val task = tasks.board.value.tasks.find { it.id == id } ?: return false
-        val date = deadlineToInputDate(task.deadline)
+        val date = task.date?.toString() ?: isoDate(LocalDate.now())
         draft.name = task.name
         draft.description = task.description
         draft.category = task.category
         draft.priority = task.priority
-        draft.includeSchedule = task.range != null || task.deadline.isNotBlank()
+        draft.includeSchedule = task.range != null || task.date != null
         draft.scheduleMode = if (task.range != null) ScheduleMode.Range else ScheduleMode.Deadline
-        draft.date = if (task.deadline.isBlank()) "" else date
+        draft.date = if (task.date == null) "" else date
         draft.time = displayTimeToInput(task.time)
         draft.startDate = task.range?.startDate ?: date
         draft.startTime = task.range?.startTime ?: "09:00"

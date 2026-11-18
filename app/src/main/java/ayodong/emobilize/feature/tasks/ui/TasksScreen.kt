@@ -874,7 +874,7 @@ private fun via(task: Task): String? {
         else -> null
     }
     val day = when {
-        task.filterKey == FilterKey.Today -> null
+        task.filterKey() == FilterKey.Today -> null
         range != null -> formatInputDate(range.startDate)
         else -> task.deadline.takeIf { it.isNotBlank() }
     }

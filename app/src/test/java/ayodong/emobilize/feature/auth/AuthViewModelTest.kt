@@ -4,12 +4,18 @@ import ayodong.emobilize.feature.auth.data.FakeAuthRepository
 import ayodong.emobilize.feature.auth.domain.LoginUseCase
 import ayodong.emobilize.feature.auth.domain.RegisterAccountUseCase
 import ayodong.emobilize.feature.auth.ui.AuthViewModel
+import ayodong.emobilize.testing.MainDispatcherRule
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
 
 class AuthViewModelTest {
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
     private val repository = FakeAuthRepository()
     private val viewModel = AuthViewModel(LoginUseCase(repository), RegisterAccountUseCase(repository))
 
@@ -27,7 +33,7 @@ class AuthViewModelTest {
 
     @Test
     fun wrongPasswordShowsError() {
-        repository.register("Ayu", "ayu@example.com", "secret1")
+        runBlocking { repository.register("Ayu", "ayu@example.com", "secret1") }
         viewModel.updateEmail("ayu@example.com")
         viewModel.updatePassword("wrong-password")
         viewModel.submit()

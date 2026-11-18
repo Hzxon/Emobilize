@@ -36,7 +36,7 @@ class TasksViewModelTest {
         val state = viewModel.uiState.value
         assertEquals(BoardFilter.Upcoming, state.filter)
         assertTrue(state.visibleTasks().isNotEmpty())
-        assertTrue(state.visibleTasks().none { it.filterKey == FilterKey.Today })
+        assertTrue(state.visibleTasks().none { it.filterKey() == FilterKey.Today })
     }
 
     @Test

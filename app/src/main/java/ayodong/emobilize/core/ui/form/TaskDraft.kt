@@ -6,14 +6,11 @@ import androidx.compose.runtime.setValue
 import ayodong.emobilize.core.model.Category
 import ayodong.emobilize.core.model.DateRange
 import ayodong.emobilize.core.model.EventType
-import ayodong.emobilize.core.model.FilterKey
 import ayodong.emobilize.core.model.Priority
 import ayodong.emobilize.core.model.ReminderOption
 import ayodong.emobilize.core.model.ScheduleMode
 import ayodong.emobilize.core.model.Task
 import ayodong.emobilize.core.model.TimeBlock
-import ayodong.emobilize.core.model.filterKeyFor
-import ayodong.emobilize.core.model.formatInputDate
 import ayodong.emobilize.core.model.formatInputTime
 import ayodong.emobilize.core.model.inputToHours
 import ayodong.emobilize.core.model.isoDate
@@ -116,9 +113,8 @@ class TaskDraft {
             name = name.trim(),
             description = description.trim(),
             category = category,
-            deadline = if (scheduleDate.isBlank()) "" else formatInputDate(scheduleDate),
+            date = scheduleDate.takeIf { it.isNotBlank() }?.let(LocalDate::parse),
             time = scheduleTime.takeIf { it.isNotBlank() }?.let(::formatInputTime),
-            filterKey = if (scheduleDate.isBlank()) FilterKey.All else filterKeyFor(scheduleDate),
             priority = priority,
             range = if (isRange) DateRange(startDate, startTime, endDate, endTime) else null,
             eventType = eventType,
@@ -135,9 +131,8 @@ class TaskDraft {
                 name = name.trim(),
                 description = description.trim(),
                 category = category,
-                deadline = formatInputDate(date),
+                date = LocalDate.parse(date),
                 time = startTime.takeIf { it.isNotBlank() }?.let(::formatInputTime),
-                filterKey = filterKeyFor(date),
                 priority = priority,
                 eventType = EventType.Event,
                 eventEndTime = endTime.takeIf { it.isNotBlank() }?.let(::formatInputTime),

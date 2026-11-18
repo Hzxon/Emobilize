@@ -1,5 +1,6 @@
 package ayodong.emobilize.core.navigation
 
+import java.time.LocalDate
 import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
@@ -281,9 +282,8 @@ private val previewReminder = Task(
     id = 42,
     name = "Team standup",
     category = Category.Work,
-    deadline = "Today",
+    date = LocalDate.now(),
     time = "10:30 AM",
-    filterKey = FilterKey.Today,
     priority = Priority.Medium,
     eventType = EventType.Event,
     reminder = ReminderOption.TenMinutesBefore,

@@ -109,9 +109,8 @@ data class Task(
     val id: Long,
     val name: String,
     val category: Category?,
-    val deadline: String,
+    val date: LocalDate?,
     val time: String? = null,
-    val filterKey: FilterKey,
     val priority: Priority? = null,
     val range: DateRange? = null,
     val eventType: EventType = EventType.Task,
@@ -119,14 +118,13 @@ data class Task(
     val reminder: ReminderOption = ReminderOption.None,
     val description: String = "",
     val estimateMinutes: Int? = null,
-)
+) {
+    // Worked out from [date] on every read, so "Today" moves on at midnight.
+    val deadline: String get() = date?.let { formatInputDate(isoDate(it)) }.orEmpty()
+    fun filterKey(today: LocalDate = LocalDate.now()): FilterKey = date?.let { filterKeyFor(isoDate(it), today) } ?: FilterKey.All
+}
 
 private val monthDay: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d", Locale.US)
-private val monthNames = listOf(
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December",
-)
-
 fun isoDate(date: LocalDate): String = date.toString()
 
 fun formatInputDate(iso: String, today: LocalDate = LocalDate.now()): String {
@@ -136,17 +134,6 @@ fun formatInputDate(iso: String, today: LocalDate = LocalDate.now()): String {
         today.plusDays(1) -> "Tomorrow"
         else -> date.format(monthDay)
     }
-}
-
-fun deadlineToInputDate(deadline: String, today: LocalDate = LocalDate.now()): String {
-    if (deadline == "Today") return isoDate(today)
-    if (deadline == "Tomorrow") return isoDate(today.plusDays(1))
-    val match = Regex("""([A-Za-z]{3}) (\d+)""").find(deadline) ?: return isoDate(today)
-    val month = monthNames.indexOfFirst { it.startsWith(match.groupValues[1]) } + 1
-    if (month <= 0) return isoDate(today)
-    val day = match.groupValues[2].toInt()
-    val date = runCatching { LocalDate.of(today.year, month, day) }.getOrNull() ?: return isoDate(today)
-    return isoDate(date)
 }
 
 fun parseDisplayTime(time: String): Float {
@@ -196,7 +183,7 @@ fun rangeIsValid(startDate: String, startTime: String, endDate: String, endTime:
 }
 
 fun deadlineRank(task: Task, today: LocalDate = LocalDate.now()): Int {
-    if (task.range == null && task.deadline.isBlank()) return Int.MAX_VALUE
+    if (task.range == null && task.date == null) return Int.MAX_VALUE
     val range = task.range
     if (range != null) {
         val end = runCatching { LocalDate.parse(range.endDate) }.getOrNull() ?: return Int.MAX_VALUE
@@ -208,15 +195,14 @@ fun deadlineRank(task: Task, today: LocalDate = LocalDate.now()): Int {
         }
         return dayDistance * 24 * 60 + endMinutes
     }
-    val deadlineDate = runCatching { LocalDate.parse(deadlineToInputDate(task.deadline, today)) }.getOrNull()
-        ?: return Int.MAX_VALUE
+    val deadlineDate = task.date ?: return Int.MAX_VALUE
     val minutes = task.time?.let { (parseDisplayTime(it) * 60f).roundToInt() } ?: (24 * 60)
     val dayDistance = abs(ChronoUnit.DAYS.between(today, deadlineDate)).toInt()
     return dayDistance * 24 * 60 + minutes
 }
 
 fun isOverdue(task: Task, nowHours: Float): Boolean {
-    if (task.filterKey != FilterKey.Today || task.time.isNullOrBlank()) return false
+    if (task.filterKey() != FilterKey.Today || task.time.isNullOrBlank()) return false
     return parseDisplayTime(task.time) < nowHours
 }
 
@@ -231,7 +217,7 @@ fun filteredTasks(
     return tasks.filter { task ->
         val range = task.range
         if (range == null) {
-            task.filterKey == filter
+            task.filterKey(today) == filter
         } else when (filter) {
             FilterKey.Today -> range.startDate <= todayIso && range.endDate >= todayIso
             FilterKey.Tomorrow -> range.startDate <= tomorrowIso && range.endDate >= tomorrowIso

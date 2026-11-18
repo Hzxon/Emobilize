@@ -78,6 +78,8 @@ fun SettingsScreen(
     onSave: (AppSettings, LineEdits) -> Unit,
     onClose: () -> Unit,
     usage: Map<Long, LineUsage> = emptyMap(),
+    accountEmail: String? = null,
+    onAccount: () -> Unit = {},
 ) {
     val palette = LocalPalette.current
     var draftSettings by remember(appSettings) { mutableStateOf(appSettings) }
@@ -134,6 +136,23 @@ fun SettingsScreen(
             }
 
             Spacer(Modifier.height(20.dp))
+            SectionLabel("ACCOUNT")
+            SettingsCard {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text(accountEmail ?: "Guest", style = appStyle(14.sp, FontWeight.SemiBold), color = palette.text)
+                        Spacer(Modifier.height(2.dp))
+                        Text(
+                            if (accountEmail != null) "Synced to the cloud" else "Saved on this phone only",
+                            style = appStyle(12.sp),
+                            color = palette.textMuted,
+                        )
+                    }
+                    OptionChip(label = if (accountEmail != null) "Sign out" else "Sign in", selected = false, onClick = onAccount)
+                }
+            }
+
+            Spacer(Modifier.height(24.dp))
             SectionLabel("APPEARANCE")
             SettingsCard {
                 SettingHeading("Theme", "Choose how Emobilize looks")

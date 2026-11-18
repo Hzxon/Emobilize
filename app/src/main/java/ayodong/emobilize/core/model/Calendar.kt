@@ -29,10 +29,6 @@ fun monthCells(month: YearMonth, firstDay: DayOfWeek = DayOfWeek.SUNDAY): List<L
     return List(leading) { null } + days
 }
 
-fun taskDate(task: Task, today: LocalDate = LocalDate.now()): LocalDate? {
-    if (task.deadline.isBlank()) return null
-    return runCatching { LocalDate.parse(deadlineToInputDate(task.deadline, today)) }.getOrNull()
-}
 
 fun taskOccursOn(task: Task, date: LocalDate, today: LocalDate = LocalDate.now()): Boolean {
     val range = task.range
@@ -41,7 +37,7 @@ fun taskOccursOn(task: Task, date: LocalDate, today: LocalDate = LocalDate.now()
         val end = runCatching { LocalDate.parse(range.endDate) }.getOrNull() ?: return false
         return !date.isBefore(start) && !date.isAfter(end)
     }
-    return taskDate(task, today) == date
+    return task.date == date
 }
 
 fun hoursToInput(value: Float): String {

@@ -1,6 +1,7 @@
 package ayodong.emobilize.feature.auth.ui
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import ayodong.emobilize.feature.auth.domain.AuthError
 import ayodong.emobilize.feature.auth.domain.AuthOutcome
 import ayodong.emobilize.feature.auth.domain.LoginUseCase
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 enum class AuthPage { Login, Register }
 
@@ -24,6 +26,7 @@ data class AuthUiState(
     val emailError: String? = null,
     val passwordError: String? = null,
     val confirmError: String? = null,
+    val busy: Boolean = false,
 )
 
 class AuthViewModel(
@@ -46,6 +49,7 @@ class AuthViewModel(
     fun updateConfirm(value: String) = state.update { it.copy(confirm = value, confirmError = null) }
 
     fun submit() {
+        if (state.value.busy) return
         if (state.value.page == AuthPage.Login) submitLogin() else submitRegister()
     }
 
@@ -59,9 +63,15 @@ class AuthViewModel(
             state.value = checked
             return
         }
-        state.value = when (val outcome = login(current.email, current.password)) {
-            is AuthOutcome.Success -> checked.copy(signedIn = true)
-            is AuthOutcome.Failure -> checked.copy(passwordError = message(outcome.error))
+        state.value = checked.copy(busy = true)
+        viewModelScope.launch {
+            state.value = when (val outcome = login(current.email, current.password)) {
+                is AuthOutcome.Success -> checked.copy(signedIn = true)
+                is AuthOutcome.Failure -> when (outcome.error) {
+                    AuthError.ConfirmEmail -> checked.copy(emailError = message(outcome.error))
+                    else -> checked.copy(passwordError = message(outcome.error))
+                }
+            }
         }
     }
 
@@ -85,18 +95,26 @@ class AuthViewModel(
             state.value = checked
             return
         }
-        state.value = when (val outcome = register(current.name, current.email, current.password)) {
-            is AuthOutcome.Success -> checked.copy(signedIn = true)
-            is AuthOutcome.Failure -> when (outcome.error) {
-                AuthError.EmailTaken, AuthError.InvalidEmail -> checked.copy(emailError = message(outcome.error))
-                AuthError.InvalidName -> checked.copy(nameError = message(outcome.error))
-                AuthError.ShortPassword, AuthError.WrongCredentials -> checked.copy(passwordError = message(outcome.error))
+        state.value = checked.copy(busy = true)
+        viewModelScope.launch {
+            state.value = when (val outcome = register(current.name, current.email, current.password)) {
+                is AuthOutcome.Success -> checked.copy(signedIn = true)
+                is AuthOutcome.Failure -> when (outcome.error) {
+                    AuthError.EmailTaken, AuthError.InvalidEmail -> checked.copy(emailError = message(outcome.error))
+                    AuthError.InvalidName -> checked.copy(nameError = message(outcome.error))
+                    AuthError.ShortPassword, AuthError.WrongCredentials, AuthError.Offline ->
+                        checked.copy(passwordError = message(outcome.error))
+                    // The account exists but needs the link in the email before it can log in.
+                    AuthError.ConfirmEmail -> showPageState(checked, AuthPage.Login).copy(emailError = message(outcome.error))
+                }
             }
         }
     }
 
-    private fun showPage(page: AuthPage) = state.update {
-        it.copy(
+    private fun showPage(page: AuthPage) = state.update { showPageState(it, page) }
+
+    private fun showPageState(current: AuthUiState, page: AuthPage) =
+        current.copy(
             page = page,
             password = "",
             confirm = "",
@@ -105,7 +123,6 @@ class AuthViewModel(
             passwordError = null,
             confirmError = null,
         )
-    }
 
     private fun emailProblem(value: String): String? {
         val trimmed = value.trim()
@@ -120,5 +137,7 @@ class AuthViewModel(
         AuthError.ShortPassword -> "Use at least 6 characters"
         AuthError.EmailTaken -> "That email is already registered"
         AuthError.WrongCredentials -> "Email or password is incorrect"
+        AuthError.ConfirmEmail -> "Open the link we emailed you, then log in"
+        AuthError.Offline -> "Can't reach the server. Check your connection, or tap Skip"
     }
 }

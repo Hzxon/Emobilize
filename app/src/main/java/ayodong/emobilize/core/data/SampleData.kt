@@ -3,43 +3,37 @@ package ayodong.emobilize.core.data
 import ayodong.emobilize.core.model.Category
 import ayodong.emobilize.core.model.DateRange
 import ayodong.emobilize.core.model.EventType
-import ayodong.emobilize.core.model.FilterKey
 import ayodong.emobilize.core.model.Priority
 import ayodong.emobilize.core.model.Task
 import ayodong.emobilize.core.model.TimeBlock
-import ayodong.emobilize.core.model.formatInputDate
 import ayodong.emobilize.core.model.isoDate
 import ayodong.emobilize.core.model.weekOf
 import java.time.LocalDate
 
 internal fun sampleTasks(today: LocalDate = LocalDate.now()): List<Task> {
-    val later = isoDate(today.plusDays(2))
     val tomorrow = isoDate(today.plusDays(1))
-    val dentist = isoDate(today.plusDays(3))
     return listOf(
-        Task(1, "Read research paper", Category.Study, "Today", "10:30 AM", FilterKey.Today, Priority.High, description = "Read the method section and write three notes.", estimateMinutes = 90),
-        Task(2, "Finish backend API", Category.Work, "Today", "4:00 PM", FilterKey.Today, Priority.High, description = "Ship the task list endpoint and check the error cases.", estimateMinutes = 120),
-        Task(3, "Gym", Category.Health, "Tomorrow", "6:00 PM", FilterKey.Tomorrow, Priority.Medium, description = "Strength session, then a short stretch.", estimateMinutes = 60),
+        Task(1, "Read research paper", Category.Study, today, "10:30 AM", Priority.High, description = "Read the method section and write three notes.", estimateMinutes = 90),
+        Task(2, "Finish backend API", Category.Work, today, "4:00 PM", Priority.High, description = "Ship the task list endpoint and check the error cases.", estimateMinutes = 120),
+        Task(3, "Gym", Category.Health, today.plusDays(1), "6:00 PM", Priority.Medium, description = "Strength session, then a short stretch.", estimateMinutes = 60),
         Task(
             4,
             "Design portfolio draft",
             Category.Work,
-            formatInputDate(later, today),
+            today.plusDays(2),
             "11:00 AM",
-            FilterKey.Later,
             Priority.Medium,
             description = "Lay out the first three case studies.",
             estimateMinutes = 180,
         ),
-        Task(5, "Buy groceries", Category.Health, "Today", null, FilterKey.Today, Priority.Low, description = "Rice, eggs, and fruit for the week."),
-        Task(6, "Reply to client email", Category.Work, "Today", "8:00 AM", FilterKey.Today, Priority.Medium, description = "Confirm the revised delivery date and attach the invoice.", estimateMinutes = 15),
+        Task(5, "Buy groceries", Category.Health, today, null, Priority.Low, description = "Rice, eggs, and fruit for the week."),
+        Task(6, "Reply to client email", Category.Work, today, "8:00 AM", Priority.Medium, description = "Confirm the revised delivery date and attach the invoice.", estimateMinutes = 15),
         Task(
             7,
             "Group project sprint",
             Category.Study,
-            formatInputDate(tomorrow, today),
+            today.plusDays(1),
             "3 PM",
-            FilterKey.Tomorrow,
             Priority.High,
             range = DateRange(isoDate(today), "13:00", tomorrow, "15:00"),
             description = "Build the prototype screens with the team and merge before the review.",
@@ -49,15 +43,14 @@ internal fun sampleTasks(today: LocalDate = LocalDate.now()): List<Task> {
             8,
             "Dentist appointment",
             Category.Health,
-            formatInputDate(dentist, today),
+            today.plusDays(3),
             "2 PM",
-            FilterKey.Later,
             Priority.Medium,
             eventType = EventType.Event,
             eventEndTime = "3 PM",
             description = "Routine check-up and cleaning at the campus clinic.",
         ),
-        Task(9, "Plan weekend trip", null, "", null, FilterKey.All, description = "Pick a place, check the train times, and share the plan."),
+        Task(9, "Plan weekend trip", null, null, null, description = "Pick a place, check the train times, and share the plan."),
     )
 }
 
