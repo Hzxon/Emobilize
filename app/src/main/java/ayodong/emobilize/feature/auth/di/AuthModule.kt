@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import ayodong.emobilize.core.di.AppContainer
-import ayodong.emobilize.feature.auth.data.PreferencesAuthRepository
+import ayodong.emobilize.feature.auth.data.SupabaseAuthRepository
 import ayodong.emobilize.feature.auth.domain.LoginUseCase
 import ayodong.emobilize.feature.auth.domain.RegisterAccountUseCase
 import ayodong.emobilize.feature.auth.ui.AuthViewModel
@@ -13,7 +13,7 @@ import ayodong.emobilize.feature.auth.ui.AuthViewModel
 object AuthModule {
     fun authViewModel(container: AppContainer): ViewModelProvider.Factory = viewModelFactory {
         initializer {
-            val repository = PreferencesAuthRepository(container.appContext)
+            val repository = SupabaseAuthRepository(container.supabase)
             AuthViewModel(login = LoginUseCase(repository), register = RegisterAccountUseCase(repository))
         }
     }

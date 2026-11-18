@@ -10,12 +10,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class InMemoryTaskRepository(
+open class InMemoryTaskRepository(
     initial: TaskBoard = TaskBoard(sampleTasks(), doneIds = setOf(1L), progressIds = setOf(4L, 7L)),
 ) : TaskRepository {
     private val state = MutableStateFlow(initial)
 
     override val board: StateFlow<TaskBoard> = state.asStateFlow()
+
+    protected fun replace(board: TaskBoard) {
+        state.value = board
+    }
 
     override fun add(task: Task) {
         state.update { it.copy(tasks = it.tasks + task) }

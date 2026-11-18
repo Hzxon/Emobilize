@@ -11,6 +11,8 @@ enum class AuthError {
     ShortPassword,
     EmailTaken,
     WrongCredentials,
+    ConfirmEmail,
+    Offline,
 }
 
 sealed interface AuthOutcome {

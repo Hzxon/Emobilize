@@ -40,8 +40,7 @@ class BoardFilterTest {
             id = 50,
             name = "Field trip",
             category = null,
-            deadline = "",
-            filterKey = FilterKey.Later,
+            date = null,
             range = DateRange(start, "09:00", start, "17:00"),
         )
         assertEquals(listOf(trip), boardTasks(listOf(trip), BoardFilter.Upcoming, today))
@@ -52,5 +51,18 @@ class BoardFilterTest {
     fun undatedTasksOnlyShowInNoDate() {
         assertEquals(setOf(9L), ids(BoardFilter.NoDate))
         assertNull(departureDate(tasks.first { it.id == 9L }, today))
+    }
+
+    @Test
+    fun deadlineNextYearKeepsItsYear() {
+        val task = Task(60, "New year essay", null, LocalDate.of(today.year + 1, 1, 5))
+        assertEquals("${today.year + 1}-01-05", departureDate(task, today))
+    }
+
+    @Test
+    fun yesterdaysTaskLeavesToday() {
+        // Saved as "Today" yesterday; the label must follow the date, not the day it was saved.
+        val task = Task(61, "Yesterday's errand", null, today.minusDays(1))
+        assertTrue(boardTasks(listOf(task), BoardFilter.Today, today).isEmpty())
     }
 }

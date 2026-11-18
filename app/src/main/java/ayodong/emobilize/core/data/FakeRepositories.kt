@@ -9,19 +9,24 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-// In-memory stand-ins for the SharedPreferences repositories. Previews and unit tests use them,
+// In-memory stand-ins for the persisted repositories. Previews and unit tests use them,
 // and a feature can build its screen against them before the real data source exists.
-// Tasks and the schedule need no fake: their real repositories are already in-memory.
 
-class FakeCategoryRepository(
+open class FakeCategoryRepository(
     initial: List<Category> = Category.defaults,
 ) : CategoryRepository {
     private val state = MutableStateFlow(initial)
 
     override val categories: StateFlow<List<Category>> = state.asStateFlow()
 
+    protected open fun newId(): Long = (state.value.maxOfOrNull { it.id } ?: 0L) + 1
+
+    protected fun replace(categories: List<Category>) {
+        state.value = categories
+    }
+
     override fun add(name: String, code: String, color: Int): Category? {
-        val id = (state.value.maxOfOrNull { it.id } ?: 0L) + 1
+        val id = newId()
         val saved = Category(id, name, color, code).normalized() ?: return null
         if (codeTaken(saved)) return null
         state.update { it + saved }

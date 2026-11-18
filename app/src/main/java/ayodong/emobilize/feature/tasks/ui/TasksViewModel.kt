@@ -73,11 +73,7 @@ class TasksViewModel(
     fun deleteTask(id: Long) {
         val board = tasks.board.value
         val task = board.tasks.find { it.id == id } ?: return
-        val previous = when (id) {
-            in board.doneIds -> TaskStatus.Done
-            in board.progressIds -> TaskStatus.Progress
-            else -> TaskStatus.Todo
-        }
+        val previous = board.statusOf(id)
         tasks.delete(id)
         undo.value = UndoEntry(id, "Task deleted", task = task, previousStatus = previous)
     }

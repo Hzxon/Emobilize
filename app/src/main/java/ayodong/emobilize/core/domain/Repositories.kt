@@ -16,7 +16,13 @@ data class TaskBoard(
     val tasks: List<Task>,
     val doneIds: Set<Long>,
     val progressIds: Set<Long>,
-)
+) {
+    fun statusOf(id: Long): TaskStatus = when (id) {
+        in doneIds -> TaskStatus.Done
+        in progressIds -> TaskStatus.Progress
+        else -> TaskStatus.Todo
+    }
+}
 
 interface TaskRepository {
     val board: StateFlow<TaskBoard>

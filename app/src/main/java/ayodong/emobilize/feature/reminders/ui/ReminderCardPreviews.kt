@@ -1,5 +1,6 @@
 package ayodong.emobilize.feature.reminders.ui
 
+import java.time.LocalDate
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -27,9 +28,8 @@ private val sampleTaskReminder = Task(
     id = 1L,
     name = "Finish Backend API",
     category = Category.Work,
-    deadline = "Today",
+    date = LocalDate.now(),
     time = "04:00 PM",
-    filterKey = FilterKey.Today,
     priority = Priority.High,
     reminder = ReminderOption.TenMinutesBefore,
 )
@@ -38,9 +38,8 @@ private val sampleTaskDeadline = Task(
     id = 2L,
     name = "Submit Report & Documentation",
     category = Category.Study,
-    deadline = "Today",
+    date = LocalDate.now(),
     time = "02:00 PM",
-    filterKey = FilterKey.Today,
     priority = Priority.High,
     reminder = ReminderOption.AtDeadline,
 )

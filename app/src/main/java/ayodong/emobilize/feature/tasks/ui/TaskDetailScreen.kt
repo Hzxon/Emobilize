@@ -395,7 +395,7 @@ private fun dateLabel(task: Task): String? {
     val range = task.range
     return when {
         range != null -> formatInputDate(range.startDate)
-        task.filterKey == FilterKey.Today && task.deadline.isBlank() -> null
+        task.filterKey() == FilterKey.Today && task.deadline.isBlank() -> null
         else -> task.deadline.takeIf { it.isNotBlank() }
     }
 }

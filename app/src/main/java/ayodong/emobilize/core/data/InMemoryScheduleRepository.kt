@@ -10,12 +10,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.time.LocalDate
 
-class InMemoryScheduleRepository(
+open class InMemoryScheduleRepository(
     initial: Map<LocalDate, List<TimeBlock>> = sampleBlocks(),
 ) : ScheduleRepository {
     private val state = MutableStateFlow(initial)
 
     override val blocks: StateFlow<Map<LocalDate, List<TimeBlock>>> = state.asStateFlow()
+
+    protected fun replace(blocks: Map<LocalDate, List<TimeBlock>>) {
+        state.value = blocks
+    }
 
     override fun place(block: TimeBlock, date: LocalDate) {
         state.update { placeSchedule(it, block, date) }

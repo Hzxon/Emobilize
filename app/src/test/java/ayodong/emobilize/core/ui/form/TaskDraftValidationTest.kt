@@ -1,6 +1,5 @@
 package ayodong.emobilize.core.ui.form
 
-import ayodong.emobilize.core.model.deadlineToInputDate
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -57,12 +56,5 @@ class TaskDraftValidationTest {
     fun eventTimesCompareByValueNotText() {
         // Pickers format with the device locale, so a start time can arrive in Arabic-Indic digits.
         assertNull(eventTimes("٠٨:٠٠", "10:00"))
-    }
-
-    @Test
-    fun deadlineWithMissingLeapDayFallsBackToToday() {
-        val today = LocalDate.of(2026, 10, 22)
-        assertEquals("2026-10-22", deadlineToInputDate("Feb 29", today))
-        assertEquals("2026-10-25", deadlineToInputDate("Oct 25", today))
     }
 }
