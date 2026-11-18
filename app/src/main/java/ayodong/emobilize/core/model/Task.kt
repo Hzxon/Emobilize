@@ -1,5 +1,6 @@
 package ayodong.emobilize.core.model
 
+import java.time.Duration
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -86,12 +87,13 @@ enum class EventType(val label: String) {
     RegularSchedule("Regular Schedule"),
 }
 
-enum class ReminderOption(val label: String) {
-    None("None"),
-    AtDeadline("At deadline"),
-    TenMinutesBefore("10 minutes before"),
-    OneHourBefore("1 hour before"),
-    OneDayBefore("1 day before"),
+/** [lead] is how long before the due time the reminder fires; null means no reminder. */
+enum class ReminderOption(val label: String, val lead: Duration?) {
+    None("None", null),
+    AtDeadline("At deadline", Duration.ZERO),
+    TenMinutesBefore("10 minutes before", Duration.ofMinutes(10)),
+    OneHourBefore("1 hour before", Duration.ofHours(1)),
+    OneDayBefore("1 day before", Duration.ofDays(1)),
 }
 
 enum class Priority { Low, Medium, High }

@@ -13,6 +13,7 @@ import ayodong.emobilize.core.domain.AppSettingsRepository
 import ayodong.emobilize.core.domain.CategoryRepository
 import ayodong.emobilize.core.domain.ScheduleRepository
 import ayodong.emobilize.core.domain.TaskRepository
+import ayodong.emobilize.core.notify.ReminderScheduler
 import ayodong.emobilize.core.sync.SyncManager
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
@@ -57,6 +58,7 @@ class AppContainer(context: Context) {
     val schedule: ScheduleRepository = roomSchedule
     val appSettings: AppSettingsRepository = PreferencesAppSettingsRepository(appContext)
     val sync = SyncManager(appContext, supabase, store, roomCategories, roomTasks, roomSchedule)
+    val reminders = ReminderScheduler(appContext, tasks, schedule, appSettings, store.scope)
 }
 
 val LocalAppContainer = staticCompositionLocalOf<AppContainer> { error("AppContainer is not provided") }
