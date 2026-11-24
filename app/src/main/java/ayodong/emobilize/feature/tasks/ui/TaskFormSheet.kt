@@ -294,7 +294,8 @@ fun TaskFormSheet(
                             .height(52.dp)
                             .background(if (canSubmit) palette.primary else palette.scheme.muted)
                             .border(2.dp, if (canSubmit) palette.primary else palette.scheme.border, RectangleShape)
-                            .clickable(enabled = canSubmit) {
+                            // Stays tappable while invalid: the tap is what reveals the field errors.
+                            .clickable {
                                 showErrors = true
                                 if (canSubmit && draft.descriptionError() == null) onSubmit()
                             },
