@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
@@ -57,6 +58,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -67,6 +69,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ayodong.emobilize.core.model.FilterKey
@@ -109,6 +112,15 @@ private val boardClock: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm",
 private val TimeColumn = 52.dp
 private val LineColumn = 30.dp
 private val StatusColumn = 78.dp
+
+// Single-line labels in fixed-width slots shrink, down to 8sp, instead of clipping or wrapping
+// when the user picks a large font or display size.
+private fun fitTo(size: TextUnit) = TextAutoSize.StepBased(minFontSize = 8.sp, maxFontSize = size)
+
+// Below 360dp (a small phone, or a large Display size setting) the board has no room for every
+// column: the header drops its title and each row shows its status under the name.
+@Composable
+private fun compactBoard(): Boolean = LocalConfiguration.current.screenWidthDp < 360
 private val ColumnGap = 10.dp
 
 @Composable
@@ -209,17 +221,19 @@ fun TasksScreen(
                 maxLines = 1,
             )
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(
+                if (!compactBoard()) Text(
                     text = "DEPARTURES",
                     style = appStyle(11.sp, FontWeight.ExtraBold, letterSpacing = 1.5.sp),
                     color = palette.text,
                     maxLines = 1,
+                    autoSize = fitTo(11.sp),
                 )
                 Text(
                     text = LocalDate.now().format(dividerDate).uppercase(Locale.US),
                     style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 1.sp),
                     color = palette.textMuted,
                     maxLines = 1,
+                    autoSize = fitTo(11.sp),
                     overflow = TextOverflow.Ellipsis,
                 )
             }
@@ -248,6 +262,8 @@ fun TasksScreen(
                         style = appStyle(13.sp, FontWeight.Bold, letterSpacing = 1.sp),
                         color = if (active) palette.onFilled else palette.text,
                         maxLines = 1,
+                        autoSize = fitTo(13.sp),
+                        modifier = Modifier.padding(horizontal = 4.dp),
                     )
                 }
             }
@@ -435,10 +451,19 @@ private fun BoardHeader() {
             horizontalArrangement = Arrangement.spacedBy(ColumnGap),
         ) {
             val style = appStyle(11.sp, FontWeight.Bold, letterSpacing = 1.5.sp)
-            Text("TIME", Modifier.width(TimeColumn), style = style, color = palette.boardMuted)
-            Text("DESTINATION", Modifier.weight(1f), style = style, color = palette.boardMuted)
-            Text("LN", Modifier.width(LineColumn), style = style, color = palette.boardMuted)
-            Text("STATUS", Modifier.width(StatusColumn), style = style, color = palette.boardMuted, textAlign = TextAlign.End)
+            val fit = fitTo(11.sp)
+            Text("TIME", Modifier.width(TimeColumn), style = style, color = palette.boardMuted, maxLines = 1, autoSize = fit)
+            Text("DESTINATION", Modifier.weight(1f), style = style, color = palette.boardMuted, maxLines = 1, autoSize = fit)
+            Text("LN", Modifier.width(LineColumn), style = style, color = palette.boardMuted, maxLines = 1, autoSize = fit)
+            if (!compactBoard()) Text(
+                "STATUS",
+                Modifier.width(StatusColumn),
+                style = style,
+                color = palette.boardMuted,
+                textAlign = TextAlign.End,
+                maxLines = 1,
+                autoSize = fit,
+            )
         }
         Box(Modifier.fillMaxWidth().height(1.dp).background(palette.boardRule))
     }
@@ -454,6 +479,7 @@ private fun BoardRow(
 ) {
     val palette = LocalPalette.current
     val gone = status == BoardStatus.Departed
+    val compact = compactBoard()
     val menu = if (isSelected) pending?.let { palette.menuColor(it) } else null
     val statusColor = when (status) {
         BoardStatus.Departed -> palette.boardGone
@@ -488,7 +514,7 @@ private fun BoardRow(
                 style = monoStyle(15.sp),
                 color = if (gone) palette.boardGone else palette.signal,
                 maxLines = 1,
-                softWrap = false,
+                autoSize = fitTo(15.sp),
             )
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
@@ -496,7 +522,7 @@ private fun BoardRow(
                     style = appStyle(15.sp, FontWeight.SemiBold),
                     color = if (gone) palette.boardGone else palette.boardText,
                     textDecoration = if (gone) TextDecoration.LineThrough else null,
-                    maxLines = 1,
+                    maxLines = if (compact) 2 else 1,
                     overflow = TextOverflow.Ellipsis,
                 )
                 via(task)?.let { line ->
@@ -508,21 +534,28 @@ private fun BoardRow(
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
+                if (compact) StatusLabel(status, statusColor)
             }
             Box(Modifier.width(LineColumn), contentAlignment = Alignment.CenterStart) {
                 LineDot(task)
             }
-            Text(
-                text = status.label,
-                modifier = Modifier.width(StatusColumn),
-                style = monoStyle(11.sp, letterSpacing = 0.5.sp),
-                color = statusColor,
-                textAlign = TextAlign.End,
-                maxLines = 1,
-            )
+            if (!compact) StatusLabel(status, statusColor, Modifier.width(StatusColumn), TextAlign.End)
         }
         Box(Modifier.fillMaxWidth().height(1.dp).background(palette.boardRule))
     }
+}
+
+@Composable
+private fun StatusLabel(status: BoardStatus, color: Color, modifier: Modifier = Modifier, align: TextAlign? = null) {
+    Text(
+        text = status.label,
+        modifier = modifier,
+        style = monoStyle(11.sp, letterSpacing = 0.5.sp),
+        color = color,
+        textAlign = align,
+        maxLines = 1,
+        autoSize = fitTo(11.sp),
+    )
 }
 
 // The category drawn as a round line badge with its initial; tasks without one ride the grey line.
