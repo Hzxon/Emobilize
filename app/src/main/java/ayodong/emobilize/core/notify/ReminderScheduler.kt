@@ -63,7 +63,7 @@ class ReminderScheduler(
     private fun set(reminder: Reminder) {
         val at = reminder.at.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         val intent = pendingIntent(reminder)
-        // Exact alarms need the user's grant on Android 12+; without it Android may deliver a few minutes late.
+        // USE_EXACT_ALARM grants this on Android 13+; on Android 12 the user can deny it, and Android may then deliver late.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarms.canScheduleExactAlarms()) {
             alarms.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, intent)
         } else {
