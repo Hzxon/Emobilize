@@ -33,12 +33,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import ayodong.emobilize.core.model.Category
 import ayodong.emobilize.core.model.EventType
@@ -54,11 +56,9 @@ import ayodong.emobilize.core.ui.form.SectionLabel
 import ayodong.emobilize.core.ui.form.TaskDraft
 import ayodong.emobilize.core.ui.form.TimeField
 import ayodong.emobilize.core.ui.theme.LocalPalette
-import ayodong.emobilize.core.ui.theme.ShadcnRadius
 import ayodong.emobilize.core.ui.theme.appStyle
 import ayodong.emobilize.core.ui.theme.at
 import ayodong.emobilize.core.ui.theme.categoryColor
-import ayodong.emobilize.core.ui.theme.inkOn
 import ayodong.emobilize.core.ui.theme.priorityColor
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -74,7 +74,7 @@ fun CalendarFormSheet(
     onSubmit: () -> Unit,
 ) {
     val palette = LocalPalette.current
-    val shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
+    val shape = RectangleShape
     val scrimSource = remember { MutableInteractionSource() }
     val sheetSource = remember { MutableInteractionSource() }
     var showErrors by remember { mutableStateOf(false) }
@@ -96,9 +96,8 @@ fun CalendarFormSheet(
                 Modifier
                     .fillMaxWidth()
                     .heightIn(max = maxHeight)
-                    .clip(shape)
                     .background(palette.scheme.popover)
-                    .border(1.dp, palette.scheme.border, shape)
+                    .border(1.dp, palette.scheme.border)
                     .verticalScroll(rememberScrollState())
                     .navigationBarsPadding()
                     .padding(start = 22.dp, end = 22.dp, top = 20.dp, bottom = 36.dp),
@@ -108,7 +107,6 @@ fun CalendarFormSheet(
                         .align(Alignment.CenterHorizontally)
                         .width(36.dp)
                         .height(4.dp)
-                        .clip(RoundedCornerShape(2.dp))
                         .background(palette.textMuted.copy(alpha = 0.25f)),
                 )
                 Spacer(Modifier.height(18.dp))
@@ -123,26 +121,28 @@ fun CalendarFormSheet(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(palette.primary.copy(alpha = 0.06f))
-                        .padding(4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        .border(2.dp, palette.text),
                 ) {
-                    types.forEach { type ->
+                    types.forEachIndexed { index, type ->
                         val active = draft.eventType == type
+                        if (index > 0) Box(Modifier.width(2.dp).height(44.dp).background(palette.text))
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .clip(RoundedCornerShape(9.dp))
-                                .background(if (active) palette.primary.copy(alpha = 0.12f) else Color.Transparent)
-                                .clickable(enabled = !lockType) { draft.eventType = type }
-                                .padding(vertical = 8.dp, horizontal = 4.dp),
+                                .height(44.dp)
+                                .background(if (active) palette.primary else palette.card)
+                                .selectable(
+                                    selected = active,
+                                    role = Role.Tab,
+                                    enabled = !lockType,
+                                    onClick = { draft.eventType = type }
+                                ),
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
-                                type.label,
-                                style = appStyle(11.sp, if (active) FontWeight.Bold else FontWeight.Medium),
-                                color = if (active) palette.primaryDark else palette.textMuted,
+                                type.label.uppercase(),
+                                style = appStyle(11.sp, FontWeight.ExtraBold, letterSpacing = 1.sp),
+                                color = if (active) palette.onFilled else palette.text,
                             )
                         }
                     }
@@ -179,16 +179,15 @@ fun CalendarFormSheet(
                 Spacer(Modifier.height(22.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     OutlineAction(
-                        label = "Cancel",
-                        color = palette.textMuted,
+                        label = "CANCEL",
                         enabled = true,
                         modifier = Modifier.weight(1f),
                         onClick = onDismiss,
                     )
                     OutlineAction(
-                        label = submitLabel,
-                        color = saveColor,
+                        label = submitLabel.uppercase(),
                         enabled = true,
+                        isPrimary = true,
                         modifier = Modifier.weight(1.45f),
                         onClick = {
                             showErrors = true
@@ -258,16 +257,16 @@ private fun TaskFields(draft: TaskDraft, categories: List<Category>) {
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .clip(RoundedCornerShape(ShadcnRadius.md))
+                    .clip(RectangleShape)
                     .background(if (selected) color else color.at(0x18))
                     .clickable { draft.priority = level }
-                    .padding(vertical = 8.dp),
+                    .padding(vertical = 10.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    level.name,
-                    style = appStyle(12.sp, FontWeight.Bold),
-                    color = if (selected) palette.inkOn(color) else color,
+                    level.name.uppercase(),
+                    style = appStyle(11.sp, FontWeight.ExtraBold, letterSpacing = 1.sp),
+                    color = if (selected) palette.onDark else color,
                 )
             }
         }
@@ -275,30 +274,31 @@ private fun TaskFields(draft: TaskDraft, categories: List<Category>) {
     Spacer(Modifier.height(14.dp))
     SectionLabel("Schedule")
     Row(
-        modifier = Modifier.padding(top = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier
+            .padding(top = 8.dp)
+            .fillMaxWidth()
+            .border(2.dp, palette.text),
     ) {
-        ScheduleMode.entries.forEach { mode ->
+        ScheduleMode.entries.forEachIndexed { index, mode ->
             val active = draft.scheduleMode == mode
             val label = if (mode == ScheduleMode.Deadline) "Deadline" else "Time range"
+            if (index > 0) Box(Modifier.width(2.dp).height(44.dp).background(palette.text))
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .height(36.dp)
-                    .clip(RoundedCornerShape(ShadcnRadius.md))
-                    .background(if (active) palette.primary.copy(alpha = 0.12f) else Color.Transparent)
-                    .border(
-                        1.5.dp,
-                        if (active) palette.primary else palette.primary.copy(alpha = 0.2f),
-                        RoundedCornerShape(ShadcnRadius.md),
-                    )
-                    .clickable { draft.scheduleMode = mode },
+                    .height(44.dp)
+                    .background(if (active) palette.primary else palette.card)
+                    .selectable(
+                        selected = active,
+                        role = Role.Tab,
+                        onClick = { draft.scheduleMode = mode }
+                    ),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    label,
-                    style = appStyle(12.sp, FontWeight.Bold),
-                    color = if (active) palette.primaryDark else palette.textMuted,
+                    label.uppercase(),
+                    style = appStyle(12.sp, FontWeight.ExtraBold, letterSpacing = 1.sp),
+                    color = if (active) palette.onFilled else palette.text,
                 )
             }
         }
@@ -361,26 +361,20 @@ private fun ReminderPicker(draft: TaskDraft) {
     ) {
         ReminderOption.entries.forEach { option ->
             val active = draft.reminder == option
-            val shape = RoundedCornerShape(ShadcnRadius.md)
             Box(
                 modifier = Modifier
-                    .heightIn(min = 36.dp)
-                    .clip(shape)
-                    .background(if (active) palette.scheme.primary else Color.Transparent)
-                    .border(
-                        1.dp,
-                        if (active) palette.scheme.primary else palette.scheme.border,
-                        shape,
-                    )
+                    .heightIn(min = 40.dp)
+                    .background(if (active) palette.primary else palette.card)
+                    .border(1.5.dp, if (active) palette.primary else palette.scheme.border)
                     .clickable { draft.reminder = option }
                     .semantics { selected = active }
                     .padding(horizontal = 12.dp, vertical = 8.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    option.label,
-                    style = appStyle(12.sp, FontWeight.Bold),
-                    color = if (active) palette.scheme.primaryForeground else palette.scheme.mutedForeground,
+                    option.label.uppercase(),
+                    style = appStyle(11.sp, FontWeight.ExtraBold, letterSpacing = 1.sp),
+                    color = if (active) palette.onFilled else palette.text,
                 )
             }
         }
@@ -401,14 +395,14 @@ private fun CategoryPicker(draft: TaskDraft, categories: List<Category>) {
             val color = palette.categoryColor(category)
             val selected = draft.category == category
             Text(
-                text = category.name,
+                text = category.name.uppercase(),
                 modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
+                    .clip(RectangleShape)
                     .background(if (selected) color else color.at(0x18))
                     .clickable { draft.category = category }
-                    .padding(horizontal = 12.dp, vertical = 5.dp),
-                style = appStyle(12.sp, FontWeight.Bold),
-                color = if (selected) palette.inkOn(color) else color,
+                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                style = appStyle(11.sp, FontWeight.ExtraBold, letterSpacing = 1.sp),
+                color = if (selected) palette.onDark else color,
             )
         }
     }
@@ -417,25 +411,39 @@ private fun CategoryPicker(draft: TaskDraft, categories: List<Category>) {
 @Composable
 private fun OutlineAction(
     label: String,
-    color: Color,
     enabled: Boolean,
     modifier: Modifier,
+    isPrimary: Boolean = false,
     onClick: () -> Unit,
 ) {
-    val shape = RoundedCornerShape(12.dp)
+    val palette = LocalPalette.current
+    val bg = if (isPrimary) {
+        if (enabled) palette.primary else palette.scheme.muted
+    } else {
+        palette.card
+    }
+    val border = if (isPrimary) {
+        if (enabled) palette.primary else palette.scheme.border
+    } else {
+        palette.text
+    }
+    val text = if (isPrimary) {
+        if (enabled) palette.onFilled else palette.textMuted
+    } else {
+        palette.text
+    }
     Box(
         modifier = modifier
-            .height(44.dp)
-            .clip(shape)
-            .background(color.copy(alpha = if (enabled) 0.12f else 0.06f))
-            .border(1.5.dp, color.copy(alpha = if (enabled) 0.40f else 0.18f), shape)
+            .height(52.dp)
+            .background(bg)
+            .border(2.dp, border)
             .clickable(enabled = enabled, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Text(
             label,
-            style = appStyle(13.sp, FontWeight.Bold, letterSpacing = 0.04.em),
-            color = color.copy(alpha = if (enabled) 1f else 0.4f),
+            style = appStyle(13.sp, FontWeight.ExtraBold, letterSpacing = 1.sp),
+            color = text,
         )
     }
 }

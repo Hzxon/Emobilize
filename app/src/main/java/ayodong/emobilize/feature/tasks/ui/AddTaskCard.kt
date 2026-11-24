@@ -22,8 +22,9 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
@@ -45,8 +46,10 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -64,13 +67,10 @@ import ayodong.emobilize.core.ui.form.DateField
 import ayodong.emobilize.core.ui.form.RangeRow
 import ayodong.emobilize.core.ui.form.TaskDraft
 import ayodong.emobilize.core.ui.form.TimeField
-import ayodong.emobilize.core.ui.theme.AppMetrics
 import ayodong.emobilize.core.ui.theme.LocalPalette
-import ayodong.emobilize.core.ui.theme.ShadcnRadius
 import ayodong.emobilize.core.ui.theme.appStyle
 import ayodong.emobilize.core.ui.theme.at
 import ayodong.emobilize.core.ui.theme.categoryColor
-import ayodong.emobilize.core.ui.theme.inkOn
 import ayodong.emobilize.core.ui.theme.priorityColor
 
 private enum class AddOption { Category, Priority, Schedule, Reminder }
@@ -90,7 +90,7 @@ fun AddTaskCard(
     val cardSource = remember { MutableInteractionSource() }
     var option by remember { mutableStateOf<AddOption?>(null) }
     var showErrors by remember { mutableStateOf(false) }
-    val shape = RoundedCornerShape(16.dp)
+    val shape = RectangleShape
 
     fun confirm() {
         showErrors = true
@@ -202,31 +202,30 @@ fun AddTaskCard(
                     }
                     Spacer(Modifier.weight(1f))
                     Text(
-                        "Close",
+                        "CLOSE",
                         modifier = Modifier
                             .heightIn(min = 44.dp)
-                            .clip(RoundedCornerShape(ShadcnRadius.lg))
                             .clickable(onClick = onDismiss)
                             .padding(horizontal = 10.dp, vertical = 12.dp),
-                        style = appStyle(15.sp, FontWeight.Medium),
+                        style = appStyle(12.sp, FontWeight.ExtraBold, letterSpacing = 1.sp),
                         color = palette.text,
                     )
                 }
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(12.dp))
                 Box(
                     Modifier
                         .padding(end = 8.dp)
                         .fillMaxWidth()
-                        .height(AppMetrics.actionHeight)
-                        .clip(RoundedCornerShape(AppMetrics.actionRadius))
-                        .background(palette.scheme.primary)
+                        .height(52.dp)
+                        .background(palette.primary)
+                        .border(2.dp, palette.primary)
                         .clickable(onClick = ::confirm),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        "Add task",
-                        style = appStyle(14.sp, FontWeight.Bold),
-                        color = palette.scheme.primaryForeground,
+                        "ADD TASK",
+                        style = appStyle(13.sp, FontWeight.ExtraBold, letterSpacing = 1.sp),
+                        color = palette.onFilled,
                     )
                 }
             }
@@ -271,14 +270,14 @@ private fun CategoryOptions(draft: TaskDraft, categories: List<Category>) {
             val color = palette.categoryColor(category)
             val selected = draft.category == category
             Text(
-                text = category.name,
+                text = category.name.uppercase(),
                 modifier = Modifier
-                    .clip(RoundedCornerShape(ShadcnRadius.md))
+                    .clip(RectangleShape)
                     .background(if (selected) color else color.at(0x18))
                     .clickable { draft.category = if (selected) null else category }
-                    .padding(horizontal = 12.dp, vertical = 5.dp),
-                style = appStyle(12.sp, FontWeight.Bold),
-                color = if (selected) palette.inkOn(color) else color,
+                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                style = appStyle(11.sp, FontWeight.ExtraBold, letterSpacing = 1.sp),
+                color = if (selected) palette.onDark else color,
             )
         }
     }
@@ -297,16 +296,16 @@ private fun PriorityOptions(draft: TaskDraft) {
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .clip(RoundedCornerShape(ShadcnRadius.md))
+                    .clip(RectangleShape)
                     .background(if (selected) color else color.at(0x18))
                     .clickable { draft.priority = if (selected) null else level }
-                    .padding(vertical = 8.dp),
+                    .padding(vertical = 10.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    level.name,
-                    style = appStyle(12.sp, FontWeight.Bold),
-                    color = if (selected) palette.inkOn(color) else color,
+                    level.name.uppercase(),
+                    style = appStyle(11.sp, FontWeight.ExtraBold, letterSpacing = 1.sp),
+                    color = if (selected) palette.onDark else color,
                 )
             }
         }
@@ -317,35 +316,38 @@ private fun PriorityOptions(draft: TaskDraft) {
 private fun ScheduleOptions(draft: TaskDraft) {
     val palette = LocalPalette.current
     Column(Modifier.padding(bottom = 8.dp)) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            ScheduleMode.entries.forEach { mode ->
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(2.dp, palette.text),
+        ) {
+            ScheduleMode.entries.forEachIndexed { index, mode ->
                 val active = draft.includeSchedule && draft.scheduleMode == mode
                 val label = if (mode == ScheduleMode.Deadline) "Deadline" else "Time range"
+                if (index > 0) Box(Modifier.width(2.dp).height(44.dp).background(palette.text))
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .height(36.dp)
-                        .clip(RoundedCornerShape(ShadcnRadius.md))
-                        .background(if (active) palette.scheme.primary else Color.Transparent)
-                        .border(
-                            1.dp,
-                            if (active) palette.scheme.primary else palette.scheme.border,
-                            RoundedCornerShape(ShadcnRadius.md),
-                        )
-                        .clickable {
-                            if (active) {
-                                draft.includeSchedule = false
-                            } else {
-                                draft.includeSchedule = true
-                                draft.scheduleMode = mode
+                        .height(44.dp)
+                        .background(if (active) palette.primary else palette.card)
+                        .selectable(
+                            selected = active,
+                            role = Role.Tab,
+                            onClick = {
+                                if (active) {
+                                    draft.includeSchedule = false
+                                } else {
+                                    draft.includeSchedule = true
+                                    draft.scheduleMode = mode
+                                }
                             }
-                        },
+                        ),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        label,
-                        style = appStyle(12.sp, FontWeight.Bold),
-                        color = if (active) palette.scheme.primaryForeground else palette.scheme.mutedForeground,
+                        label.uppercase(),
+                        style = appStyle(12.sp, FontWeight.ExtraBold, letterSpacing = 1.sp),
+                        color = if (active) palette.onFilled else palette.text,
                     )
                 }
             }
@@ -434,20 +436,20 @@ private fun ReminderOptions(draft: TaskDraft) {
             val borderModifier = if (selected) {
                 Modifier
             } else {
-                Modifier.border(1.dp, palette.scheme.border, RoundedCornerShape(ShadcnRadius.md))
+                Modifier.border(1.dp, palette.scheme.border, RectangleShape)
             }
             Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(ShadcnRadius.md))
+                    .clip(RectangleShape)
                     .then(borderModifier)
                     .background(bg)
                     .clickable { draft.reminder = option }
-                    .padding(horizontal = 12.dp, vertical = 7.dp),
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = option.label,
-                    style = appStyle(12.sp, if (selected) FontWeight.Bold else FontWeight.Medium),
+                    text = option.label.uppercase(),
+                    style = appStyle(11.sp, if (selected) FontWeight.ExtraBold else FontWeight.Bold, letterSpacing = 1.sp),
                     color = contentColor,
                 )
             }

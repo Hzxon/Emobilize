@@ -20,8 +20,9 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,11 +36,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import ayodong.emobilize.core.model.Category
 import ayodong.emobilize.core.model.Priority
@@ -52,11 +56,9 @@ import ayodong.emobilize.core.ui.form.SectionLabel
 import ayodong.emobilize.core.ui.form.TaskDraft
 import ayodong.emobilize.core.ui.form.TimeField
 import ayodong.emobilize.core.ui.theme.LocalPalette
-import ayodong.emobilize.core.ui.theme.ShadcnRadius
 import ayodong.emobilize.core.ui.theme.appStyle
 import ayodong.emobilize.core.ui.theme.at
 import ayodong.emobilize.core.ui.theme.categoryColor
-import ayodong.emobilize.core.ui.theme.inkOn
 import ayodong.emobilize.core.ui.theme.priorityColor
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
@@ -72,7 +74,7 @@ fun TaskFormSheet(
     onSubmit: () -> Unit,
 ) {
     val palette = LocalPalette.current
-    val shape = RoundedCornerShape(topStart = ShadcnRadius.xl, topEnd = ShadcnRadius.xl)
+    val shape = RectangleShape
     val scrimSource = remember { MutableInteractionSource() }
     val sheetSource = remember { MutableInteractionSource() }
     var showErrors by remember { mutableStateOf(false) }
@@ -93,26 +95,22 @@ fun TaskFormSheet(
                 Modifier
                     .fillMaxWidth()
                     .heightIn(max = maxHeight)
-                    .clip(shape)
                     .background(palette.scheme.popover)
-                    .border(1.dp, palette.scheme.border, shape)
+                    .border(1.dp, palette.scheme.border)
                     .verticalScroll(rememberScrollState())
                     .navigationBarsPadding()
-                    .padding(start = 22.dp, end = 22.dp, top = 24.dp, bottom = 36.dp),
+                    .padding(start = 22.dp, end = 22.dp, top = 20.dp, bottom = 36.dp),
             ) {
+                Box(
+                    Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .width(36.dp)
+                        .height(4.dp)
+                        .background(palette.textMuted.copy(alpha = 0.25f)),
+                )
+                Spacer(Modifier.height(18.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(title, style = appStyle(17.sp, FontWeight.Bold, letterSpacing = 0.02.em), color = palette.text)
-                    Spacer(Modifier.weight(1f))
-                    Box(
-                        Modifier
-                            .size(30.dp)
-                            .clip(CircleShape)
-                            .background(palette.scheme.secondary)
-                            .clickable(onClick = onDismiss),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text("✕", style = appStyle(16.sp), color = palette.scheme.secondaryForeground)
-                    }
+                    Text(title, style = appStyle(18.sp, FontWeight.ExtraBold, letterSpacing = (-0.5).sp), color = palette.text)
                 }
                 Spacer(Modifier.height(20.dp))
                 FormField(
@@ -150,14 +148,14 @@ fun TaskFormSheet(
                         val color = palette.categoryColor(category)
                         val selected = draft.category == category
                         Text(
-                            text = category.name,
+                            text = category.name.uppercase(),
                             modifier = Modifier
-                                .clip(RoundedCornerShape(ShadcnRadius.md))
+                                .clip(RectangleShape)
                                 .background(if (selected) color else color.at(0x18))
                                 .clickable { draft.category = category }
-                                .padding(horizontal = 12.dp, vertical = 5.dp),
-                            style = appStyle(12.sp, FontWeight.Bold),
-                            color = if (selected) palette.inkOn(color) else color,
+                                .padding(horizontal = 12.dp, vertical = 6.dp),
+                            style = appStyle(11.sp, FontWeight.ExtraBold, letterSpacing = 1.sp),
+                            color = if (selected) palette.onDark else color,
                         )
                     }
                 }
@@ -173,16 +171,16 @@ fun TaskFormSheet(
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .clip(RoundedCornerShape(ShadcnRadius.md))
+                                .clip(RectangleShape)
                                 .background(if (selected) color else color.at(0x18))
                                 .clickable { draft.priority = level }
-                                .padding(vertical = 8.dp),
+                                .padding(vertical = 10.dp),
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
-                                level.name,
-                                style = appStyle(12.sp, FontWeight.Bold),
-                                color = if (selected) palette.inkOn(color) else color,
+                                level.name.uppercase(),
+                                style = appStyle(11.sp, FontWeight.ExtraBold, letterSpacing = 1.sp),
+                                color = if (selected) palette.onDark else color,
                             )
                         }
                     }
@@ -190,33 +188,34 @@ fun TaskFormSheet(
                 Spacer(Modifier.height(14.dp))
                 SectionLabel("Schedule")
                 Row(
-                    modifier = Modifier.padding(top = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .fillMaxWidth()
+                        .border(2.dp, palette.text, RectangleShape),
                 ) {
-                    ScheduleMode.entries.forEach { mode ->
+                    ScheduleMode.entries.forEachIndexed { index, mode ->
                         val active = draft.includeSchedule && draft.scheduleMode == mode
                         val label = if (mode == ScheduleMode.Deadline) "Deadline" else "Time range"
+                        if (index > 0) Box(Modifier.width(2.dp).height(44.dp).background(palette.text))
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .height(36.dp)
-                                .clip(RoundedCornerShape(ShadcnRadius.md))
-                                .background(if (active) palette.scheme.primary else Color.Transparent)
-                                .border(
-                                    1.dp,
-                                    if (active) palette.scheme.primary else palette.scheme.border,
-                                    RoundedCornerShape(ShadcnRadius.md),
-                                )
-                                .clickable {
-                                    draft.includeSchedule = true
-                                    draft.scheduleMode = mode
-                                },
+                                .height(44.dp)
+                                .background(if (active) palette.primary else palette.card)
+                                .selectable(
+                                    selected = active,
+                                    role = Role.Tab,
+                                    onClick = {
+                                        draft.includeSchedule = true
+                                        draft.scheduleMode = mode
+                                    }
+                                ),
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
-                                label,
-                                style = appStyle(12.sp, FontWeight.Bold),
-                                color = if (active) palette.scheme.primaryForeground else palette.scheme.mutedForeground,
+                                label.uppercase(),
+                                style = appStyle(12.sp, FontWeight.ExtraBold, letterSpacing = 1.sp),
+                                color = if (active) palette.onFilled else palette.text,
                             )
                         }
                     }
@@ -272,26 +271,41 @@ fun TaskFormSheet(
                         )
                     }
                 }
-                Spacer(Modifier.height(22.dp))
-                val buttonShape = RoundedCornerShape(12.dp)
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(44.dp)
-                        .clip(buttonShape)
-                        .background(saveColor.copy(alpha = if (canSubmit) 0.12f else 0.06f))
-                        .border(1.5.dp, saveColor.copy(alpha = if (canSubmit) 0.40f else 0.18f), buttonShape)
-                        .clickable {
-                            showErrors = true
-                            if (canSubmit && draft.descriptionError() == null) onSubmit()
-                        },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        submitLabel,
-                        style = appStyle(13.sp, FontWeight.Bold, letterSpacing = 0.04.em),
-                        color = saveColor.copy(alpha = if (canSubmit) 1f else 0.4f),
-                    )
+                Spacer(Modifier.height(28.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(52.dp)
+                            .background(palette.card)
+                            .border(2.dp, palette.text, RectangleShape)
+                            .clickable(onClick = onDismiss),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            "CANCEL",
+                            style = appStyle(13.sp, FontWeight.ExtraBold, letterSpacing = 1.sp),
+                            color = palette.text,
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .weight(1.4f)
+                            .height(52.dp)
+                            .background(if (canSubmit) palette.primary else palette.scheme.muted)
+                            .border(2.dp, if (canSubmit) palette.primary else palette.scheme.border, RectangleShape)
+                            .clickable(enabled = canSubmit) {
+                                showErrors = true
+                                if (canSubmit && draft.descriptionError() == null) onSubmit()
+                            },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            submitLabel.uppercase(),
+                            style = appStyle(13.sp, FontWeight.ExtraBold, letterSpacing = 1.sp),
+                            color = if (canSubmit) palette.onFilled else palette.textMuted,
+                        )
+                    }
                 }
             }
         }

@@ -115,12 +115,10 @@ fun CalendarScreen(
         activeIso = date.toString()
         monthIso = date.withDayOfMonth(1).toString()
     }
-    val shiftMonth: (Long) -> Unit = { delta ->
-        val nextMonth = visibleMonth.plusMonths(delta)
-        val nextDate = nextMonth.atDay(activeDate.dayOfMonth.coerceAtMost(nextMonth.lengthOfMonth()))
-        monthIso = nextMonth.atDay(1).toString()
-        activeIso = nextDate.toString()
-    }
+    val shiftMonth: (Long) -> Unit = { delta -> selectDate(stepDate(activeDate, CalView.Month, delta)) }
+    // Week view steps one week at a time from the selected day; month view steps whole months.
+    val shiftBack: () -> Unit = { selectDate(stepDate(activeDate, view, -1)) }
+    val shiftForward: () -> Unit = { selectDate(stepDate(activeDate, view, 1)) }
 
     Column(modifier.fillMaxSize()) {
         CalendarHeader(
@@ -128,8 +126,8 @@ fun CalendarScreen(
             activeDate = activeDate,
             view = view,
             showToday = activeDate != today,
-            onPrev = { shiftMonth(-1) },
-            onNext = { shiftMonth(1) },
+            onPrev = shiftBack,
+            onNext = shiftForward,
             onToday = { selectDate(today) },
             onView = { viewName = it.name },
             actions = headerActions,
@@ -259,7 +257,11 @@ private fun CalendarHeader(
         Spacer(Modifier.height(8.dp))
         Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically) {
             SquareNav(onClick = onPrev) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Previous month", tint = palette.text)
+                Icon(
+                    Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                    contentDescription = if (view == CalView.Month) "Previous month" else "Previous week",
+                    tint = palette.text,
+                )
             }
             Spacer(Modifier.width(8.dp))
             Row(
@@ -288,7 +290,11 @@ private fun CalendarHeader(
             }
             Spacer(Modifier.width(8.dp))
             SquareNav(onClick = onNext) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "Next month", tint = palette.text)
+                Icon(
+                    Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = if (view == CalView.Month) "Next month" else "Next week",
+                    tint = palette.text,
+                )
             }
         }
     }
@@ -543,6 +549,18 @@ private sealed interface RouteStop {
 
 private val dayTitle: DateTimeFormatter = DateTimeFormatter.ofPattern("EEEE d", Locale.US)
 private val monthKicker: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM yyyy", Locale.US)
+
+/**
+ * Moves the selected day by one step of the active view: a week in Week mode, a whole month
+ * in Month mode (keeping the day of month, clamped to the shorter month).
+ */
+internal fun stepDate(date: LocalDate, view: CalView, direction: Long): LocalDate =
+    if (view == CalView.Month) {
+        val nextMonth = YearMonth.from(date).plusMonths(direction)
+        nextMonth.atDay(date.dayOfMonth.coerceAtMost(nextMonth.lengthOfMonth()))
+    } else {
+        date.plusWeeks(direction)
+    }
 
 @Composable
 private fun DayAgenda(
